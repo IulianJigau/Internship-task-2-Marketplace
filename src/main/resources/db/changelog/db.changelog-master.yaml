@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: java-test-junior
+  - include:
+      file: migration/migrate_products.sql
+      relativeToChangelogFile: true
+  - include:
+      file: migration/migrate_users.sql
+      relativeToChangelogFile: true
+  - include:
+      file: migration/migrate_roles.sql
+      relativeToChangelogFile: true
+  - include:
+      file: migration/migrate_product_likes.sql
+      relativeToChangelogFile: true

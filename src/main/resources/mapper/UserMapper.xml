@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.java.test.junior.mapper.UserMapper">
+
+    <select id="findById" parameterType="Long" resultMap="userResultMapper">
+        SELECT *
+        FROM "user"
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByEmail" parameterType="String" resultMap="userResultMapper">
+        SELECT *
+        FROM "user"
+        WHERE email = #{email}
+    </select>
+
+    <select id="getPage" parameterType="map" resultMap="userResultMapper">
+        SELECT *
+        FROM "user"
+        ORDER BY id
+            LIMIT #{size}
+        OFFSET (#{page} - 1) * #{size}
+    </select>
+
+    <insert id="insert"
+            parameterType="com.java.test.junior.model.UserDTO"
+            useGeneratedKeys="true"
+            keyColumn="id">
+        INSERT INTO "user" (email, username, password, created_at, updated_at)
+        VALUES (#{email}, #{username}, #{password}, now(), now())
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE "user"
+        SET email      = #{user.email},
+            username   = #{user.username},
+            password   = #{user.password},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="Long">
+        DELETE
+        FROM "user"
+        WHERE id = #{id}
+    </delete>
+
+    <select id="getRoles" parameterType="Long" resultType="String">
+        SELECT role.name AS role_name
+        FROM role
+        JOIN user_role ON user_role.role_id = role.id
+        WHERE user_role.user_id = #{id};
+    </select>
+
+    <insert id="insertRole" parameterType="map">
+        INSERT INTO user_role (user_id, role_id)
+        VALUES (#{id},
+            (
+                SELECT id
+                FROM role
+                WHERE name = #{role}
+            )
+        )
+    </insert>
+
+    <delete id="deleteRole" parameterType="map">
+        DELETE
+        FROM user_role
+        WHERE user_id = #{id}
+        AND role_id =
+                (
+                    SELECT id
+                    FROM role
+                    WHERE name = #{role}
+                )
+    </delete>
+
+    <resultMap id="userResultMapper" type="com.java.test.junior.model.User">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+</mapper>
