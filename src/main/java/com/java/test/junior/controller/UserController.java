@@ -1,7 +1,10 @@
 package com.java.test.junior.controller;
 
+import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.User;
 import com.java.test.junior.model.UserDTO;
+import com.java.test.junior.service.ProductReviewService;
+import com.java.test.junior.service.RoleService;
 import com.java.test.junior.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -22,6 +25,8 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
+    private final RoleService roleService;
+    private final ProductReviewService productReviewService;
 
     @GetMapping("/self")
     @PreAuthorize("isAuthenticated()")
@@ -42,7 +47,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers(
+    public ResponseEntity<List<User>> getUserPage(
             @NotNull @Positive @RequestParam(required = true) Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
         return userService.getUserPage(page, page_size);
@@ -74,7 +79,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
     public ResponseEntity<List<String>> getUserRoles(
             @NotNull @Positive @PathVariable Long id) {
-        return userService.getUserRoles(id);
+        return roleService.getUserRoles(id);
     }
 
     @PostMapping("/{id}/roles")
@@ -82,7 +87,7 @@ public class UserController {
     public ResponseEntity<String> addUserRoles(
             @NotNull @Positive @PathVariable Long id,
             @NotEmpty @RequestBody List<String> roles) {
-        return  userService.addUserRoles(id, roles);
+        return  roleService.addUserRoles(id, roles);
     }
 
     @DeleteMapping("/{id}/roles")
@@ -90,6 +95,12 @@ public class UserController {
     public ResponseEntity<String> removeUserRoles(
             @NotNull @Positive @PathVariable Long id,
             @NotEmpty @RequestBody List<String> roles) {
-        return  userService.removeUserRoles(id, roles);
+        return  roleService.removeUserRoles(id, roles);
+    }
+
+    @GetMapping("/{id}/reviews")
+    public ResponseEntity<List<ProductReview>> getReviews(
+            @NotNull @Positive @PathVariable Long id) {
+        return productReviewService.getReviewByUserId(id);
     }
 }

@@ -18,10 +18,4 @@ public interface UserService {
     ResponseEntity<String> updateUser(Long id, UserDTO user);
 
     ResponseEntity<String> deleteUser(Long id);
-
-    ResponseEntity<List<String>> getUserRoles(Long id);
-
-    ResponseEntity<String> addUserRoles(Long id, List<String> roles);
-
-    ResponseEntity<String> removeUserRoles(Long id, List<String> roles);
 }

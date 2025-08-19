@@ -53,4 +53,49 @@ public class RoleServiceImp implements RoleService {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @Override
+    public ResponseEntity<List<String>> getUserRoles(Long id) {
+        try {
+            List<String> roles = roleMapper.findUserRoles(id);
+            return ResponseEntity.ok(roles);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> addUserRoles(Long id, List<String> roles) {
+        if (!roles.isEmpty()) {
+            boolean allSuccess = true;
+            for (String role : roles) {
+                try {
+                    roleMapper.insertUserRole(id, role);
+                } catch (Exception e) {
+                    allSuccess = false;
+                    logger.error(e.getMessage());
+                }
+            }
+            return ResponseEntity.ok(allSuccess ? "" : "Some roles could not be assigned");
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> removeUserRoles(Long id, List<String> roles) {
+        if (!roles.isEmpty()) {
+            boolean allSuccess = true;
+            for (String role : roles) {
+                int result = roleMapper.deleteUserRole(id, role);
+                if (!(result > 0)) {
+                    allSuccess = false;
+                }
+            }
+            return ResponseEntity.ok(allSuccess ? "" : "Some roles could not be deleted");
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

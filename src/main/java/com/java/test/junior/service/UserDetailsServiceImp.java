@@ -1,5 +1,6 @@
 package com.java.test.junior.service;
 
+import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.User;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class UserDetailsServiceImp implements UserDetailsService {
 
     private final UserMapper userMapper;
+    private final RoleMapper roleMapper;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -26,7 +28,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
             throw new UsernameNotFoundException("User not found: " + email);
         }
 
-        List<String> roles = userMapper.getRoles(user.getId());
+        List<String> roles = roleMapper.findUserRoles(user.getId());
 
         List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))

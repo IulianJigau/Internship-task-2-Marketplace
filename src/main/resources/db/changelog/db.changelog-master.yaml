@@ -12,5 +12,5 @@ databaseChangeLog:
       file: migration/migrate_roles.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_product_likes.sql
+      file: migration/migrate_product_review.sql
       relativeToChangelogFile: true

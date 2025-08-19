@@ -28,8 +28,8 @@
             parameterType="com.java.test.junior.model.UserDTO"
             useGeneratedKeys="true"
             keyColumn="id">
-        INSERT INTO "user" (email, username, password, created_at, updated_at)
-        VALUES (#{email}, #{username}, #{password}, now(), now())
+        INSERT INTO "user" (email, username, password)
+        VALUES (#{email}, #{username}, #{password})
     </insert>
 
     <update id="update" parameterType="map">
@@ -45,36 +45,6 @@
         DELETE
         FROM "user"
         WHERE id = #{id}
-    </delete>
-
-    <select id="getRoles" parameterType="Long" resultType="String">
-        SELECT role.name AS role_name
-        FROM role
-        JOIN user_role ON user_role.role_id = role.id
-        WHERE user_role.user_id = #{id};
-    </select>
-
-    <insert id="insertRole" parameterType="map">
-        INSERT INTO user_role (user_id, role_id)
-        VALUES (#{id},
-            (
-                SELECT id
-                FROM role
-                WHERE name = #{role}
-            )
-        )
-    </insert>
-
-    <delete id="deleteRole" parameterType="map">
-        DELETE
-        FROM user_role
-        WHERE user_id = #{id}
-        AND role_id =
-                (
-                    SELECT id
-                    FROM role
-                    WHERE name = #{role}
-                )
     </delete>
 
     <resultMap id="userResultMapper" type="com.java.test.junior.model.User">

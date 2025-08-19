@@ -1,5 +1,6 @@
 package com.java.test.junior.service;
 
+import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.User;
 import com.java.test.junior.model.UserDTO;
@@ -156,50 +157,5 @@ public class UserServiceImp implements UserService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-    @Override
-    public ResponseEntity<List<String>> getUserRoles(Long id) {
-        try {
-            List<String> roles = userMapper.getRoles(id);
-            return ResponseEntity.ok(roles);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<String> addUserRoles(Long id, List<String> roles) {
-        if (!roles.isEmpty()) {
-            boolean allSuccess = true;
-            for (String role : roles) {
-                try {
-                    userMapper.insertRole(id, role);
-                } catch (Exception e) {
-                    allSuccess = false;
-                    logger.error(e.getMessage());
-                }
-            }
-            return ResponseEntity.ok(allSuccess ? "" : "Some roles could not be assigned");
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<String> removeUserRoles(Long id, List<String> roles) {
-        if (!roles.isEmpty()) {
-            boolean allSuccess = true;
-            for (String role : roles) {
-                int result = userMapper.deleteRole(id, role);
-                if (!(result > 0)) {
-                    allSuccess = false;
-                }
-            }
-            return ResponseEntity.ok(allSuccess ? "" : "Some roles could not be deleted");
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
     }
 }

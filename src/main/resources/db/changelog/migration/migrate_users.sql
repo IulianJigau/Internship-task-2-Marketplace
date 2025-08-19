@@ -1,6 +1,3 @@
---
--- Name: user; Type: TABLE; Schema: public; Owner: market_user
---
 CREATE TABLE IF NOT EXISTS "user"
 (
     id         BIGSERIAL PRIMARY KEY,

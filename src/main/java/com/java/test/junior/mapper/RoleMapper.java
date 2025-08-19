@@ -10,4 +10,10 @@ public interface RoleMapper {
     void insert(String name);
 
     int delete(Long id);
+
+    List<String> findUserRoles(Long id);
+
+    void insertUserRole(Long id, String role);
+
+    int deleteUserRole(Long id, String role);
 }

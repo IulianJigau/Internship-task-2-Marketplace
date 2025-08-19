@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProductService {
     ResponseEntity<Product> getProductById(Long id);
 
-    ResponseEntity<List<Product>> getProductPage(Integer page, Integer size);
+    ResponseEntity<List<Product>> getProductPage(Integer page, Integer size, String query);
 
     ResponseEntity<String> createProduct(ProductDTO product);
 

@@ -34,11 +34,12 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<List<Product>> getProductPage(Integer page, Integer size) {
+    public ResponseEntity<List<Product>> getProductPage(Integer page, Integer size, String query) {
         try {
             List<Product> products = productMapper.getPage(
                     page,
-                    size);
+                    size,
+                    query);
             return ResponseEntity.ok(products);
         } catch (Exception e) {
             logger.error(e.getMessage());

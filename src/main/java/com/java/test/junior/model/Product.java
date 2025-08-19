@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Product {
     private Long id;
     private String name;
-    private BigDecimal price;
+    private Double price;
     private String description;
     private Long userId;
     private LocalDateTime createdAt;

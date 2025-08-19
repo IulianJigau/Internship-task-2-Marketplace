@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.java.test.junior.mapper.ProductReviewMapper">
+    <select id="findByUserId" parameterType="Long" resultMap="productReviewResultMapper">
+        SELECT *
+        FROM product_review
+        WHERE user_id = #{id}
+    </select>
+
+    <select id="findByProductId" parameterType="map" resultMap="productReviewResultMapper">
+        SELECT *
+        FROM product_review
+        <where>
+            product_id = #{productId}
+            <if test="positive != null">
+                AND positive = #{positive}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="map">
+        INSERT INTO product_review (product_id, user_id, positive)
+        VALUES (#{productId}, #{userId}, #{positive})
+    </insert>
+
+    <delete id="delete" parameterType="map">
+        DELETE FROM product_review
+        WHERE product_id = #{productId}
+        AND user_id = #{userId}
+    </delete>
+
+    <resultMap id="productReviewResultMapper" type="com.java.test.junior.model.ProductReview">
+        <id property="productId" column="product_id"/>
+        <id property="userId" column="user_id"/>
+        <result property="positive" column="positive"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+</mapper>

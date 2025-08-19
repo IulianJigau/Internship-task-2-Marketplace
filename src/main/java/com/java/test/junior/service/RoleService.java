@@ -11,4 +11,10 @@ public interface RoleService {
     ResponseEntity<String> createRole(String name);
 
     ResponseEntity<String> deleteRole(Long id);
+
+    ResponseEntity<List<String>> getUserRoles(Long id);
+
+    ResponseEntity<String> addUserRoles(Long id, List<String> roles);
+
+    ResponseEntity<String> removeUserRoles(Long id, List<String> roles);
 }
