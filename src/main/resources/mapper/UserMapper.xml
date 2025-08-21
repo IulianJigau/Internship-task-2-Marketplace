@@ -39,6 +39,12 @@
         VALUES (#{email}, #{username}, #{password})
     </insert>
 
+    <update id="refreshUpdated" parameterType="Long">
+        UPDATE "user"
+        SET updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
     <update id="update" parameterType="map">
         UPDATE "user"
         SET email      = #{user.email},

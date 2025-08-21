@@ -17,6 +17,8 @@ public interface UserMapper {
 
     void insert(UserDTO user);
 
+    void refreshUpdated(Long id);
+
     int update(Long id, UserDTO user);
 
     int delete(Long id);

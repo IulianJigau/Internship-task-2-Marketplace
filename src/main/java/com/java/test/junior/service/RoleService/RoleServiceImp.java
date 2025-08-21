@@ -87,6 +87,7 @@ public class RoleServiceImp implements RoleService {
             }
 
             roleMapper.insertUserRole(userId, role);
+            userMapper.refreshUpdated(userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -98,9 +99,11 @@ public class RoleServiceImp implements RoleService {
     public ResponseEntity<?> removeUserRole(Long userId, String role) {
         try {
             int result = roleMapper.deleteUserRole(userId, role);
-            return (result > 0)
-                    ? ResponseEntity.ok().build()
-                    : ResponseEntity.notFound().build();
+            if(result > 0){
+                userMapper.refreshUpdated(userId);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
