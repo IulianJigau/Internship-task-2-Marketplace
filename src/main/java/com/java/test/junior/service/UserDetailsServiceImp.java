@@ -26,6 +26,9 @@ public class UserDetailsServiceImp implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userMapper.findByEmail(email);
+        if(user == null || user.getDeleted()){
+            throw new UsernameNotFoundException(email);
+        }
 
         List<String> roles = roleMapper.findUserRoles(user.getId());
 

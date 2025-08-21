@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ProductReviewService {
-    ResponseEntity<List<ProductReview>> getReviewByUserId(Long userId);
+    ResponseEntity<?> getReviewByUserId(Long userId);
 
-    ResponseEntity<List<ProductReview>> getReviewByProductId(Long productId, Boolean positive);
+    ResponseEntity<?> getReviewByProductId(Long productId, Boolean positive);
 
-    ResponseEntity<String> addReview(Long productId, Boolean positive, ExtendedUserDetails userDetails);
+    ResponseEntity<?> addReview(Long productId, Boolean positive, ExtendedUserDetails userDetails);
 
-    ResponseEntity<String> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails);
+    ResponseEntity<?> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails);
 }

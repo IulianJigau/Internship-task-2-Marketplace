@@ -24,7 +24,7 @@ public class RoleServiceImp implements RoleService {
     private final ProductMapper productMapper;
 
     @Override
-    public ResponseEntity<List<Role>> getRoles() {
+    public ResponseEntity<?> getRoles() {
         try {
             List<Role> roles = roleMapper.findAll();
             return ResponseEntity.ok(roles);
@@ -35,7 +35,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<String> createRole(String name) {
+    public ResponseEntity<?> createRole(String name) {
         try {
             if (roleMapper.exists(name)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -50,7 +50,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<String> deleteRole(Long roleId) {
+    public ResponseEntity<?> deleteRole(Long roleId) {
         try {
             int result = roleMapper.delete(roleId);
             return (result > 0)
@@ -63,7 +63,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<List<String>> getUserRoles(Long userId) {
+    public ResponseEntity<?> getUserRoles(Long userId) {
         try {
             boolean exists = userMapper.exists(userId);
             if (!exists) {
@@ -79,7 +79,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<String> addUserRole(Long userId, String role) {
+    public ResponseEntity<?> addUserRole(Long userId, String role) {
         try {
             boolean exists = userMapper.exists(userId) && roleMapper.exists(role);
             if (!exists) {
@@ -95,7 +95,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<String> removeUserRole(Long userId, String role) {
+    public ResponseEntity<?> removeUserRole(Long userId, String role) {
         try {
             int result = roleMapper.deleteUserRole(userId, role);
             return (result > 0)

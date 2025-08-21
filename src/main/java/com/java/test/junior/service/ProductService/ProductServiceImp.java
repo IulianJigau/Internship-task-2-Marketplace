@@ -27,7 +27,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<Product> getProductById(Long productId) {
+    public ResponseEntity<?> getProductById(Long productId) {
         try {
             Product product = productMapper.findById(productId);
             return (product != null)
@@ -40,7 +40,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<List<Product>> getProductPage(Integer page, Integer size, String query) {
+    public ResponseEntity<?> getProductPage(Integer page, Integer size, String query) {
         try {
             List<Product> products = productMapper.getPage(page, size, query);
             return ResponseEntity.ok(products);
@@ -51,7 +51,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<String> createProduct(ProductDTO product, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> createProduct(ProductDTO product, ExtendedUserDetails userDetails) {
         try {
             productMapper.insert(userDetails.getId(), product);
             return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -61,7 +61,7 @@ public class ProductServiceImp implements ProductService {
         }
     }
 
-    public ResponseEntity<String> checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
         try {
             Product product = productMapper.findById(productId);
             if (product == null) {
@@ -81,12 +81,12 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<String> updateProduct(Long productId, ProductDTO productDTO, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> updateProduct(Long productId, ProductDTO productDTO, ExtendedUserDetails userDetails) {
         return checkOwnershipAndRun(() -> productMapper.update(productId, productDTO), productId, userDetails);
     }
 
     @Override
-    public ResponseEntity<String> deleteProduct(Long productId, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> deleteProduct(Long productId, ExtendedUserDetails userDetails) {
         return checkOwnershipAndRun(() -> productMapper.delete(productId), productId, userDetails);
     }
 

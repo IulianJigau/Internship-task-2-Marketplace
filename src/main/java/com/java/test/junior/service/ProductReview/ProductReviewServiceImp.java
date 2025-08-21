@@ -30,7 +30,7 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<List<ProductReview>> getReviewByUserId(Long userId) {
+    public ResponseEntity<?> getReviewByUserId(Long userId) {
         try {
             boolean exists = userMapper.exists(userId);
             if (!exists) {
@@ -46,7 +46,7 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<List<ProductReview>> getReviewByProductId(Long productId, Boolean positive) {
+    public ResponseEntity<?> getReviewByProductId(Long productId, Boolean positive) {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
@@ -62,7 +62,7 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<String> addReview(Long productId, Boolean positive, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> addReview(Long productId, Boolean positive, ExtendedUserDetails userDetails) {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
@@ -81,7 +81,7 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<String> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails) {
         try {
             boolean exists = productReviewMapper.exists(productId, userId);
             if (!exists) {

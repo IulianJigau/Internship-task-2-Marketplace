@@ -8,13 +8,13 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface UserService {
-    ResponseEntity<User> getUserById(Long userId);
+    ResponseEntity<?> getUserById(Long userId);
 
-    ResponseEntity<List<User>> getUserPage(Integer page, Integer size);
+    ResponseEntity<?> getUserPage(Integer page, Integer size);
 
-    ResponseEntity<String> createUser(UserDTO user);
+    ResponseEntity<?> createUser(UserDTO user);
 
-    ResponseEntity<String> updateUser(Long userId, UserDTO user, ExtendedUserDetails userDetails);
+    ResponseEntity<?> updateUser(Long userId, UserDTO user, ExtendedUserDetails userDetails);
 
-    ResponseEntity<String> deleteUser(Long userId,  ExtendedUserDetails userDetails);
+    ResponseEntity<?> deleteUser(Long userId,  ExtendedUserDetails userDetails);
 }

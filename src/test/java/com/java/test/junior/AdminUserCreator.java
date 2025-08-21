@@ -30,7 +30,6 @@ public class AdminUserCreator {
         }
 
         Long userId = userMapper.findByEmail(email).getId();
-        System.out.println(userId);
         if(!roleMapper.existsUserRole(userId, "Admin")){
             roleMapper.insertUserRole(userId, "Admin");
         }

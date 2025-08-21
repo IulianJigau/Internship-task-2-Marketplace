@@ -2,7 +2,6 @@ package com.java.test.junior.component;
 
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.User.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,39 +30,20 @@ public class AuthCheckFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        if ("/login".equals(request.getServletPath()) && "POST".equalsIgnoreCase(request.getMethod())) {
-            String email = request.getParameter("username");
-            if(email == null){
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Credentials cannot be empty");
-                return;
-            }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-            User user = userMapper.findByEmail(email);
-            if (user == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid email or password");
-                return;
-            }
+        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            if (user.getDeleted()) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid email or password");
-                return;
-            }
-        } else {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        ExtendedUserDetails userDetails = (ExtendedUserDetails) auth.getPrincipal();
+        LocalDateTime authTime = userDetails.getAuthTime();
+        LocalDateTime updateTime = userMapper.findById(userDetails.getId()).getUpdatedAt();
 
-            if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            ExtendedUserDetails userDetails = (ExtendedUserDetails) auth.getPrincipal();
-            LocalDateTime authTime = userDetails.getAuthTime();
-            LocalDateTime updateTime = userMapper.findById(userDetails.getId()).getUpdatedAt();
-
-            if (authTime.isBefore(updateTime)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication is outdated due to user update");
-                return;
-            }
+        if (authTime.isBefore(updateTime)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         filterChain.doFilter(request, response);

@@ -29,7 +29,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<User> getUserById(Long userId) {
+    public ResponseEntity<?> getUserById(Long userId) {
         try {
             User user = userMapper.findById(userId);
             if (user != null) {
@@ -44,7 +44,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<List<User>> getUserPage(Integer page, Integer size) {
+    public ResponseEntity<?> getUserPage(Integer page, Integer size) {
         try {
             List<User> users = userMapper.getPage(page, size);
             for (User user : users) {
@@ -58,7 +58,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<String> createUser(UserDTO user) {
+    public ResponseEntity<?> createUser(UserDTO user) {
         try {
             if (userMapper.findByEmail(user.getEmail()) != null) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -73,7 +73,7 @@ public class UserServiceImp implements UserService {
         }
     }
 
-    public ResponseEntity<String> checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
         try {
             User user = userMapper.findById(userId);
             if (user == null) {
@@ -93,13 +93,13 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<String> updateUser(Long userId, UserDTO userDTO, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> updateUser(Long userId, UserDTO userDTO, ExtendedUserDetails userDetails) {
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         return checkOwnershipAndRun(() -> userMapper.update(userId, userDTO), userId, userDetails);
     }
 
     @Override
-    public ResponseEntity<String> deleteUser(Long userId, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> deleteUser(Long userId, ExtendedUserDetails userDetails) {
         return checkOwnershipAndRun(() -> userMapper.delete(userId), userId, userDetails);
     }
 

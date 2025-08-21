@@ -6,15 +6,15 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface RoleService {
-    ResponseEntity<List<Role>> getRoles();
+    ResponseEntity<?> getRoles();
 
-    ResponseEntity<String> createRole(String name);
+    ResponseEntity<?> createRole(String name);
 
-    ResponseEntity<String> deleteRole(Long roleId);
+    ResponseEntity<?> deleteRole(Long roleId);
 
-    ResponseEntity<List<String>> getUserRoles(Long userId);
+    ResponseEntity<?> getUserRoles(Long userId);
 
-    ResponseEntity<String> addUserRole(Long userId, String role);
+    ResponseEntity<?> addUserRole(Long userId, String role);
 
-    ResponseEntity<String> removeUserRole(Long userId, String role);
+    ResponseEntity<?> removeUserRole(Long userId, String role);
 }

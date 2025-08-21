@@ -1,9 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
-import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.ProductService.ProductService;
 import jakarta.validation.Valid;
@@ -12,11 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -27,13 +22,13 @@ public class ProductController {
     private final ProductReviewService productReviewService;
 
     @GetMapping("/{productId}")
-        public ResponseEntity<Product> getProductById(
+        public ResponseEntity<?> getProductById(
             @NotNull @Positive @PathVariable Long productId) {
         return productService.getProductById(productId);
     }
 
     @GetMapping
-        public ResponseEntity<List<Product>> getProductPage(
+        public ResponseEntity<?> getProductPage(
             @NotNull @Positive @RequestParam Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
@@ -41,14 +36,14 @@ public class ProductController {
     }
 
     @PostMapping
-        public ResponseEntity<String> createProduct(
+        public ResponseEntity<?> createProduct(
             @Valid @RequestBody ProductDTO product,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return productService.createProduct(product, userDetails);
     }
 
     @PutMapping("/{productId}")
-        public ResponseEntity<String> updateProduct(
+        public ResponseEntity<?> updateProduct(
             @NotNull @Positive @PathVariable Long productId,
             @Valid @RequestBody ProductDTO product,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
@@ -56,21 +51,21 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-        public ResponseEntity<String> deleteProduct(
+        public ResponseEntity<?> deleteProduct(
             @NotNull @Positive @PathVariable Long productId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return productService.deleteProduct(productId, userDetails);
     }
 
     @GetMapping("/{productId}/reviews")
-    public ResponseEntity<List<ProductReview>> getReviews(
+    public ResponseEntity<?> getReviews(
             @NotNull @Positive @PathVariable Long productId,
             @RequestParam(required = false) Boolean positive) {
         return productReviewService.getReviewByProductId(productId, positive);
     }
 
     @PostMapping("/{productId}/reviews")
-        public ResponseEntity<String> addReview(
+        public ResponseEntity<?> addReview(
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @RequestParam Boolean positive,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
@@ -78,7 +73,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}/reviews")
-        public ResponseEntity<String> deleteReview(
+        public ResponseEntity<?> deleteReview(
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @Positive @RequestBody Long user_id,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {

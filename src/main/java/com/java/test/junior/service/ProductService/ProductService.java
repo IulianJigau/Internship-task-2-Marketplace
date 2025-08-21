@@ -8,13 +8,13 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ProductService {
-    ResponseEntity<Product> getProductById(Long productId);
+    ResponseEntity<?> getProductById(Long productId);
 
-    ResponseEntity<List<Product>> getProductPage(Integer page, Integer size, String query);
+    ResponseEntity<?> getProductPage(Integer page, Integer size, String query);
 
-    ResponseEntity<String> createProduct(ProductDTO product,  ExtendedUserDetails userDetails);
+    ResponseEntity<?> createProduct(ProductDTO product,  ExtendedUserDetails userDetails);
 
-    ResponseEntity<String> updateProduct(Long productId, ProductDTO product,  ExtendedUserDetails userDetails);
+    ResponseEntity<?> updateProduct(Long productId, ProductDTO product,  ExtendedUserDetails userDetails);
 
-    ResponseEntity<String> deleteProduct(Long productId,  ExtendedUserDetails userDetails);
+    ResponseEntity<?> deleteProduct(Long productId,  ExtendedUserDetails userDetails);
 }
