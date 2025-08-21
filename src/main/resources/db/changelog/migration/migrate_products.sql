@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS "product"
     description TEXT,
     user_id     BIGINT         NOT NULL,
     created_at  TIMESTAMP      NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMP      NOT NULL DEFAULT NOW()
+    updated_at  TIMESTAMP      NOT NULL DEFAULT NOW(),
+    deleted     BOOLEAN        NOT NULL DEFAULT false
 );
 
 ALTER TABLE product

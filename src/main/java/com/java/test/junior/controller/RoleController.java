@@ -1,7 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.Role;
-import com.java.test.junior.service.RoleService;
+import com.java.test.junior.service.RoleService.RoleService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -21,22 +21,22 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Role>> getRoles() {
         return roleService.getRoles();
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createRole(
-            @NotBlank @Size(min = 3, max = 30) @RequestBody String name) {
+            @NotBlank @Size(min = 3, max = 30) @RequestParam String name) {
         return roleService.createRole(name);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
+    @DeleteMapping("/{roleId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteRole(
-            @NotNull @Positive @PathVariable Long id) {
-        return roleService.deleteRole(id);
+            @NotNull @Positive @PathVariable Long roleId) {
+        return roleService.deleteRole(roleId);
     }
 }

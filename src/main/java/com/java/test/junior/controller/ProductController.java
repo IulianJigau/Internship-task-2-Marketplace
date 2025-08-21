@@ -1,20 +1,19 @@
 package com.java.test.junior.controller;
 
-import com.java.test.junior.model.Product;
-import com.java.test.junior.model.ProductDTO;
+import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.Product.Product;
+import com.java.test.junior.model.Product.ProductDTO;
 import com.java.test.junior.model.ProductReview;
-import com.java.test.junior.service.ProductReviewService;
-import com.java.test.junior.service.ProductService;
+import com.java.test.junior.service.ProductReview.ProductReviewService;
+import com.java.test.junior.service.ProductService.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,67 +22,66 @@ import java.util.List;
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
-    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService productService;
     private final ProductReviewService productReviewService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(
-            @NotNull @Positive @PathVariable Long id) {
-        return productService.getProductById(id);
+    @GetMapping("/{productId}")
+        public ResponseEntity<Product> getProductById(
+            @NotNull @Positive @PathVariable Long productId) {
+        return productService.getProductById(productId);
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getProductPage(
-            @NotNull @Positive @RequestParam(required = true) Integer page,
+        public ResponseEntity<List<Product>> getProductPage(
+            @NotNull @Positive @RequestParam Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
         return productService.getProductPage(page, page_size, query);
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
-    public ResponseEntity<String> createProduct(
-            @Valid @RequestBody ProductDTO product) {
-        return productService.createProduct(product);
+        public ResponseEntity<String> createProduct(
+            @Valid @RequestBody ProductDTO product,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return productService.createProduct(product, userDetails);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
-    public ResponseEntity<String> updateProduct(
-            @NotNull @Positive @PathVariable Long id,
-            @Valid @RequestBody ProductDTO product) {
-        return productService.updateProduct(id, product);
+    @PutMapping("/{productId}")
+        public ResponseEntity<String> updateProduct(
+            @NotNull @Positive @PathVariable Long productId,
+            @Valid @RequestBody ProductDTO product,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return productService.updateProduct(productId, product, userDetails);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
-    public ResponseEntity<String> deleteProduct(
-            @NotNull @Positive @PathVariable Long id) {
-        return productService.deleteProduct(id);
+    @DeleteMapping("/{productId}")
+        public ResponseEntity<String> deleteProduct(
+            @NotNull @Positive @PathVariable Long productId,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return productService.deleteProduct(productId, userDetails);
     }
 
-    @GetMapping("/{id}/reviews")
+    @GetMapping("/{productId}/reviews")
     public ResponseEntity<List<ProductReview>> getReviews(
-            @NotNull @Positive @PathVariable Long id,
+            @NotNull @Positive @PathVariable Long productId,
             @RequestParam(required = false) Boolean positive) {
-        return productReviewService.getReviewByProductId(id, positive);
+        return productReviewService.getReviewByProductId(productId, positive);
     }
 
-    @PostMapping("/{id}/reviews")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> addReview(
-            @NotNull @Positive @PathVariable Long id,
-            @NotNull @RequestBody Boolean positive) {
-        return productReviewService.addReview(id, positive);
+    @PostMapping("/{productId}/reviews")
+        public ResponseEntity<String> addReview(
+            @NotNull @Positive @PathVariable Long productId,
+            @NotNull @RequestParam Boolean positive,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return productReviewService.addReview(productId, positive, userDetails);
     }
 
-    @DeleteMapping("/{id}/reviews")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> deleteReview(
-            @NotNull @Positive @PathVariable Long id,
-            @NotNull @Positive @RequestBody Long user_id) {
-        return productReviewService.deleteReview(id, user_id);
+    @DeleteMapping("/{productId}/reviews")
+        public ResponseEntity<String> deleteReview(
+            @NotNull @Positive @PathVariable Long productId,
+            @NotNull @Positive @RequestBody Long user_id,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return productReviewService.deleteReview(productId, user_id, userDetails);
     }
 }

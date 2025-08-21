@@ -4,6 +4,13 @@
 
 <mapper namespace="com.java.test.junior.mapper.RoleMapper">
 
+    <select id="exists" parameterType="String">
+        SELECT EXISTS
+            (SELECT 1
+            FROM role
+            WHERE name = #{name});
+    </select>
+
     <select id="findAll" resultMap="roleResultMapper">
         SELECT *
         FROM role
@@ -23,10 +30,19 @@
         WHERE id = #{id}
     </delete>
 
+    <select id="existsUserRole" parameterType="map">
+        SELECT EXISTS
+            (SELECT 1
+            FROM role
+            JOIN user_role ON user_role.role_id = role.id
+            WHERE user_id = #{id}
+            AND name = #{role});
+    </select>
+
     <select id="findUserRoles" parameterType="Long" resultType="String">
         SELECT role.name AS role_name
         FROM role
-                 JOIN user_role ON user_role.role_id = role.id
+        JOIN user_role ON user_role.role_id = role.id
         WHERE user_role.user_id = #{id};
     </select>
 

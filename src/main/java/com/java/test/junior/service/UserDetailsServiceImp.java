@@ -2,7 +2,8 @@ package com.java.test.junior.service;
 
 import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
-import com.java.test.junior.model.User;
+import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.User.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +26,6 @@ public class UserDetailsServiceImp implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userMapper.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + email);
-        }
 
         List<String> roles = roleMapper.findUserRoles(user.getId());
 
@@ -34,10 +33,15 @@ public class UserDetailsServiceImp implements UserDetailsService {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                 .collect(Collectors.toList());
 
-        return new org.springframework.security.core.userdetails.User(
+        LocalDateTime authTime = LocalDateTime.now();
+
+        return new ExtendedUserDetails(
+                user.getId(),
+                user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities
+                authorities,
+                authTime
         );
     }
 }

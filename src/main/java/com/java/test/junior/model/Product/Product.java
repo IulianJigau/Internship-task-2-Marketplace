@@ -1,8 +1,7 @@
-package com.java.test.junior.model;
+package com.java.test.junior.model.Product;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,4 +13,5 @@ public class Product {
     private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean deleted;
 }

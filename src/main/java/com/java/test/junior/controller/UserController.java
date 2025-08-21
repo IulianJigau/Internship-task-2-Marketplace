@@ -1,19 +1,18 @@
 package com.java.test.junior.controller;
 
+import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.ProductReview;
-import com.java.test.junior.model.User;
-import com.java.test.junior.model.UserDTO;
-import com.java.test.junior.service.ProductReviewService;
-import com.java.test.junior.service.RoleService;
-import com.java.test.junior.service.UserService;
+import com.java.test.junior.model.User.User;
+import com.java.test.junior.model.User.UserDTO;
+import com.java.test.junior.service.ProductReview.ProductReviewService;
+import com.java.test.junior.service.RoleService.RoleService;
+import com.java.test.junior.service.UserService.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,32 +21,24 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final RoleService roleService;
     private final ProductReviewService productReviewService;
 
     @GetMapping("/self")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
-        return userService.getUserByEmail(authentication.getName());
+        public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return userService.getUserById(userDetails.getId());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(
-            @NotNull @Positive @PathVariable Long id) {
-        return userService.getUserById(id);
-    }
-
-    @GetMapping("/find")
-    public ResponseEntity<User> getUserByEmail(
-            @NotBlank @Email @RequestParam(required = true) String email) {
-        return userService.getUserByEmail(email);
+    @GetMapping("/{userId}")
+        public ResponseEntity<User> getUserById(
+            @NotNull @Positive @PathVariable Long userId) {
+        return userService.getUserById(userId);
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getUserPage(
+        public ResponseEntity<List<User>> getUserPage(
             @NotNull @Positive @RequestParam(required = true) Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
         return userService.getUserPage(page, page_size);
@@ -59,48 +50,48 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> updateUser(
-            @NotNull @Positive @PathVariable Long id,
-            @Valid @RequestBody UserDTO userDTO){
-        return  userService.updateUser(id, userDTO);
+    @PutMapping("/{userId}")
+        public ResponseEntity<String> updateUser(
+            @NotNull @Positive @PathVariable Long userId,
+            @Valid @RequestBody UserDTO userDTO,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return  userService.updateUser(userId, userDTO, userDetails);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> deleteUser(
-            @NotNull @Positive @PathVariable Long id) {
-        return userService.deleteUser(id);
+    @DeleteMapping("/{userId}")
+        public ResponseEntity<String> deleteUser(
+            @NotNull @Positive @PathVariable Long userId,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return userService.deleteUser(userId,  userDetails);
     }
 
 
-    @GetMapping("/{id}/roles")
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
+    @GetMapping("/{userId}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<String>> getUserRoles(
-            @NotNull @Positive @PathVariable Long id) {
-        return roleService.getUserRoles(id);
+            @NotNull @Positive @PathVariable Long userId) {
+        return roleService.getUserRoles(userId);
     }
 
-    @PostMapping("/{id}/roles")
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
-    public ResponseEntity<String> addUserRoles(
-            @NotNull @Positive @PathVariable Long id,
-            @NotEmpty @RequestBody List<String> roles) {
-        return  roleService.addUserRoles(id, roles);
+    @PostMapping("/{userId}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> addUserRole(
+            @NotNull @Positive @PathVariable Long userId,
+            @NotEmpty @RequestParam(required = true) String role) {
+        return  roleService.addUserRole(userId, role);
     }
 
-    @DeleteMapping("/{id}/roles")
-    @PreAuthorize("isAuthenticated() and hasRole('ADMIN')")
-    public ResponseEntity<String> removeUserRoles(
-            @NotNull @Positive @PathVariable Long id,
-            @NotEmpty @RequestBody List<String> roles) {
-        return  roleService.removeUserRoles(id, roles);
+    @DeleteMapping("/{userId}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> removeUserRole(
+            @NotNull @Positive @PathVariable Long userId,
+            @NotEmpty @RequestParam(required = true) String role) {
+        return  roleService.removeUserRole(userId, role);
     }
 
-    @GetMapping("/{id}/reviews")
-    public ResponseEntity<List<ProductReview>> getReviews(
-            @NotNull @Positive @PathVariable Long id) {
-        return productReviewService.getReviewByUserId(id);
+    @GetMapping("/{userId}/reviews")
+        public ResponseEntity<List<ProductReview>> getReviews(
+            @NotNull @Positive @PathVariable Long userId) {
+        return productReviewService.getReviewByUserId(userId);
     }
 }

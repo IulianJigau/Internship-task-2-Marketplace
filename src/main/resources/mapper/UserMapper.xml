@@ -4,6 +4,13 @@
 
 <mapper namespace="com.java.test.junior.mapper.UserMapper">
 
+    <select id="exists" parameterType="Long">
+        SELECT EXISTS
+            (SELECT 1
+            FROM "user"
+            WHERE id = #{id});
+    </select>
+
     <select id="findById" parameterType="Long" resultMap="userResultMapper">
         SELECT *
         FROM "user"
@@ -25,7 +32,7 @@
     </select>
 
     <insert id="insert"
-            parameterType="com.java.test.junior.model.UserDTO"
+            parameterType="com.java.test.junior.model.User.UserDTO"
             useGeneratedKeys="true"
             keyColumn="id">
         INSERT INTO "user" (email, username, password)
@@ -41,13 +48,14 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="delete" parameterType="Long">
-        DELETE
-        FROM "user"
+    <update id="delete" parameterType="Long">
+        UPDATE "user"
+        SET deleted    = true,
+            updated_at = NOW()
         WHERE id = #{id}
-    </delete>
+    </update>
 
-    <resultMap id="userResultMapper" type="com.java.test.junior.model.User">
+    <resultMap id="userResultMapper" type="com.java.test.junior.model.User.User">
         <id property="id" column="id"/>
         <result property="email" column="email"/>
         <result property="username" column="username"/>

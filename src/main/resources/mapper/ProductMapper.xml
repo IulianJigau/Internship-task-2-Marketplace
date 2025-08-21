@@ -4,6 +4,13 @@
 
 <mapper namespace="com.java.test.junior.mapper.ProductMapper">
 
+    <select id="exists" parameterType="Long">
+        SELECT EXISTS
+            (SELECT 1
+             FROM product
+             WHERE id = #{id});
+    </select>
+
     <select id="findById" parameterType="Long" resultMap="productResultMapper">
         SELECT *
         FROM product
@@ -24,11 +31,11 @@
     </select>
 
     <insert id="insert"
-            parameterType="com.java.test.junior.model.ProductDTO"
+            parameterType="com.java.test.junior.model.Product.ProductDTO"
             useGeneratedKeys="true"
             keyColumn="id">
         INSERT INTO product (name, price, description, user_id)
-        VALUES (#{name}, #{price}, #{description}, 1)
+        VALUES (#{product.name}, #{product.price}, #{product.description}, #{userId})
     </insert>
 
     <update id="update" parameterType="map">
@@ -40,13 +47,14 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="delete" parameterType="Long">
-        DELETE
-        FROM product
+    <update id="delete" parameterType="Long">
+        UPDATE product
+        SET deleted    = true,
+            updated_at = NOW()
         WHERE id = #{id}
-    </delete>
+    </update>
 
-    <resultMap id="productResultMapper" type="com.java.test.junior.model.Product">
+    <resultMap id="productResultMapper" type="com.java.test.junior.model.Product.Product">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="price" column="price"/>

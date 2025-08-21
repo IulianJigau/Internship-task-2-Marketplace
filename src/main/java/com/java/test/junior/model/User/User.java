@@ -1,4 +1,4 @@
-package com.java.test.junior.model;
+package com.java.test.junior.model.User;
 
 import lombok.Data;
 
@@ -12,5 +12,6 @@ public class User {
     private String password;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean deleted;
 }
 

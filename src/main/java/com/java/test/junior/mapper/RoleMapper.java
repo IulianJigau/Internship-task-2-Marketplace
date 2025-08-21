@@ -5,11 +5,16 @@ import com.java.test.junior.model.Role;
 import java.util.List;
 
 public interface RoleMapper {
+
+    boolean exists(String name);
+
     List<Role> findAll();
 
     void insert(String name);
 
     int delete(Long id);
+
+    boolean existsUserRole(Long id, String role);
 
     List<String> findUserRoles(Long id);
 
