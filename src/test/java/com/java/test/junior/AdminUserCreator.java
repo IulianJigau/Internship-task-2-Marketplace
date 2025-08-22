@@ -4,8 +4,8 @@ import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.User.UserDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -25,12 +25,12 @@ public class AdminUserCreator {
         userDTO.setUsername(username);
         userDTO.setPassword(passwordEncoder.encode(rawPassword));
 
-        if(!userMapper.exists(userMapper.findByEmail(userDTO.getEmail()).getId())){
+        if (!userMapper.exists(userMapper.findByEmail(userDTO.getEmail()).getId())) {
             userMapper.insert(userDTO);
         }
 
         Long userId = userMapper.findByEmail(email).getId();
-        if(!roleMapper.existsUserRole(userId, "Admin")){
+        if (!roleMapper.existsUserRole(userId, "Admin")) {
             roleMapper.insertUserRole(userId, "Admin");
         }
     }

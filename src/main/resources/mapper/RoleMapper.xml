@@ -49,12 +49,9 @@
     <insert id="insertUserRole" parameterType="map">
         INSERT INTO user_role (user_id, role_id)
         VALUES (#{id},
-                (
-                    SELECT id
-                    FROM role
-                    WHERE name = #{role}
-                )
-               )
+                (SELECT id
+                 FROM role
+                 WHERE name = #{role}))
     </insert>
 
     <delete id="deleteUserRole" parameterType="map">

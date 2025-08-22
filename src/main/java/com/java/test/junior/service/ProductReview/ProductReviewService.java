@@ -1,10 +1,7 @@
 package com.java.test.junior.service.ProductReview;
 
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.ProductReview;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 public interface ProductReviewService {
     ResponseEntity<?> getReviewByUserId(Long userId);

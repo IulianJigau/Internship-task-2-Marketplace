@@ -1,9 +1,6 @@
 package com.java.test.junior.service.RoleService;
 
-import com.java.test.junior.model.Role;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 public interface RoleService {
     ResponseEntity<?> getRoles();

@@ -99,7 +99,7 @@ public class RoleServiceImp implements RoleService {
     public ResponseEntity<?> removeUserRole(Long userId, String role) {
         try {
             int result = roleMapper.deleteUserRole(userId, role);
-            if(result > 0){
+            if (result > 0) {
                 userMapper.refreshUpdated(userId);
                 return ResponseEntity.ok().build();
             }

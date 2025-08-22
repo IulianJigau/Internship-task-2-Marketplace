@@ -6,7 +6,10 @@ import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.RoleService.RoleService;
 import com.java.test.junior.service.UserService.UserService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,18 +26,18 @@ public class UserController {
     private final ProductReviewService productReviewService;
 
     @GetMapping("/self")
-        public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return userService.getUserById(userDetails.getId());
     }
 
     @GetMapping("/{userId}")
-        public ResponseEntity<?> getUserById(
+    public ResponseEntity<?> getUserById(
             @NotNull @Positive @PathVariable Long userId) {
         return userService.getUserById(userId);
     }
 
     @GetMapping
-        public ResponseEntity<?> getUserPage(
+    public ResponseEntity<?> getUserPage(
             @NotNull @Positive @RequestParam(required = true) Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
         return userService.getUserPage(page, page_size);
@@ -47,18 +50,18 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-        public ResponseEntity<?> updateUser(
+    public ResponseEntity<?> updateUser(
             @NotNull @Positive @PathVariable Long userId,
             @Valid @RequestBody UserDTO userDTO,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return  userService.updateUser(userId, userDTO, userDetails);
+        return userService.updateUser(userId, userDTO, userDetails);
     }
 
     @DeleteMapping("/{userId}")
-        public ResponseEntity<?> deleteUser(
+    public ResponseEntity<?> deleteUser(
             @NotNull @Positive @PathVariable Long userId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return userService.deleteUser(userId,  userDetails);
+        return userService.deleteUser(userId, userDetails);
     }
 
 
@@ -74,7 +77,7 @@ public class UserController {
     public ResponseEntity<?> addUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotEmpty @RequestParam(required = true) String role) {
-        return  roleService.addUserRole(userId, role);
+        return roleService.addUserRole(userId, role);
     }
 
     @DeleteMapping("/{userId}/roles")
@@ -82,11 +85,11 @@ public class UserController {
     public ResponseEntity<?> removeUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotEmpty @RequestParam(required = true) String role) {
-        return  roleService.removeUserRole(userId, role);
+        return roleService.removeUserRole(userId, role);
     }
 
     @GetMapping("/{userId}/reviews")
-        public ResponseEntity<?> getReviews(
+    public ResponseEntity<?> getReviews(
             @NotNull @Positive @PathVariable Long userId) {
         return productReviewService.getReviewByUserId(userId);
     }

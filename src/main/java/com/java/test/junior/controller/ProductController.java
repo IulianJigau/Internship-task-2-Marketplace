@@ -22,13 +22,13 @@ public class ProductController {
     private final ProductReviewService productReviewService;
 
     @GetMapping("/{productId}")
-        public ResponseEntity<?> getProductById(
+    public ResponseEntity<?> getProductById(
             @NotNull @Positive @PathVariable Long productId) {
         return productService.getProductById(productId);
     }
 
     @GetMapping
-        public ResponseEntity<?> getProductPage(
+    public ResponseEntity<?> getProductPage(
             @NotNull @Positive @RequestParam Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
@@ -36,14 +36,14 @@ public class ProductController {
     }
 
     @PostMapping
-        public ResponseEntity<?> createProduct(
+    public ResponseEntity<?> createProduct(
             @Valid @RequestBody ProductDTO product,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return productService.createProduct(product, userDetails);
     }
 
     @PutMapping("/{productId}")
-        public ResponseEntity<?> updateProduct(
+    public ResponseEntity<?> updateProduct(
             @NotNull @Positive @PathVariable Long productId,
             @Valid @RequestBody ProductDTO product,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
@@ -51,7 +51,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-        public ResponseEntity<?> deleteProduct(
+    public ResponseEntity<?> deleteProduct(
             @NotNull @Positive @PathVariable Long productId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return productService.deleteProduct(productId, userDetails);
@@ -65,7 +65,7 @@ public class ProductController {
     }
 
     @PostMapping("/{productId}/reviews")
-        public ResponseEntity<?> addReview(
+    public ResponseEntity<?> addReview(
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @RequestParam Boolean positive,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
@@ -73,7 +73,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}/reviews")
-        public ResponseEntity<?> deleteReview(
+    public ResponseEntity<?> deleteReview(
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @Positive @RequestBody Long user_id,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
