@@ -4,12 +4,32 @@
 
 <mapper namespace="com.java.test.junior.mapper.RoleMapper">
 
-    <select id="exists" parameterType="String">
+    <select id="exists" parameterType="Integer">
         SELECT EXISTS
             (SELECT 1
             FROM role
-            WHERE name = #{name});
+            WHERE id = #{id});
     </select>
+
+    <select id="existsName" parameterType="String">
+        SELECT EXISTS
+            (SELECT 1
+            FROM role
+            WHERE name = UPPER(#{name}));
+    </select>
+
+    <select id="find" parameterType="Integer" resultMap="roleResultMapper">
+        SELECT *
+        FROM role
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByName" parameterType="String" resultMap="roleResultMapper">
+        SELECT *
+        FROM role
+        WHERE name = UPPER(#{name})
+    </select>
+
 
     <select id="findAll" resultMap="roleResultMapper">
         SELECT *
@@ -21,10 +41,10 @@
             useGeneratedKeys="true"
             keyColumn="id">
         INSERT INTO role (name)
-        VALUES (#{name})
+        VALUES (UPPER(#{name}))
     </insert>
 
-    <delete id="delete" parameterType="Long">
+    <delete id="delete" parameterType="Integer">
         DELETE
         FROM role
         WHERE id = #{id}
@@ -33,37 +53,28 @@
     <select id="existsUserRole" parameterType="map">
         SELECT EXISTS
             (SELECT 1
-            FROM role
-            JOIN user_role ON user_role.role_id = role.id
-            WHERE user_id = #{id}
-            AND name = #{role});
+            FROM user_role
+            WHERE user_id = #{userId}
+            AND role_id = #{roleId});
     </select>
 
     <select id="findUserRoles" parameterType="Long" resultType="String">
         SELECT role.name AS role_name
         FROM role
         JOIN user_role ON user_role.role_id = role.id
-        WHERE user_role.user_id = #{id};
+        WHERE user_role.user_id = #{userId};
     </select>
 
     <insert id="insertUserRole" parameterType="map">
         INSERT INTO user_role (user_id, role_id)
-        VALUES (#{id},
-                (SELECT id
-                 FROM role
-                 WHERE name = #{role}))
+        VALUES (#{userId}, #{roleId})
     </insert>
 
     <delete id="deleteUserRole" parameterType="map">
         DELETE
         FROM user_role
-        WHERE user_id = #{id}
-          AND role_id =
-              (
-                  SELECT id
-                  FROM role
-                  WHERE name = #{role}
-              )
+        WHERE user_id = #{userId}
+        AND role_id = #{roleId}
     </delete>
 
     <resultMap id="roleResultMapper" type="com.java.test.junior.model.Role">

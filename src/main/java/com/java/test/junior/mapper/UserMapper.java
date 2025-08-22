@@ -9,7 +9,9 @@ public interface UserMapper {
 
     boolean exists(Long id);
 
-    User findById(Long id);
+    boolean existsEmail(String email);
+
+    User find(Long id);
 
     User findByEmail(String email);
 
@@ -17,9 +19,9 @@ public interface UserMapper {
 
     void insert(UserDTO user);
 
-    void refreshUpdated(Long id);
+    int updateUsername(Long id, String username);
 
-    int update(Long id, UserDTO user);
+    int updatePassword(Long id, String password);
 
     int delete(Long id);
 }

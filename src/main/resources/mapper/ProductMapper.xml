@@ -6,12 +6,12 @@
 
     <select id="exists" parameterType="Long">
         SELECT EXISTS
-            (SELECT 1
-             FROM product
-             WHERE id = #{id});
+                   (SELECT 1
+                    FROM product
+                    WHERE id = #{id});
     </select>
 
-    <select id="findById" parameterType="Long" resultMap="productResultMapper">
+    <select id="find" parameterType="Long" resultMap="productResultMapper">
         SELECT *
         FROM product
         WHERE id = #{id}
@@ -42,15 +42,13 @@
         UPDATE product
         SET name        = #{product.name},
             price       = #{product.price},
-            description = #{product.description},
-            updated_at  = NOW()
+            description = #{product.description}
         WHERE id = #{id}
     </update>
 
     <update id="delete" parameterType="Long">
         UPDATE product
-        SET deleted    = true,
-            updated_at = NOW()
+        SET deleted = true
         WHERE id = #{id}
     </update>
 

@@ -19,12 +19,26 @@ CREATE INDEX IF NOT EXISTS idx_product_fts_vector
 DO $$
 BEGIN
     IF NOT EXISTS (
-        SELECT 1 FROM pg_trigger WHERE tgname = 'trg_product_fts_vector'
+        SELECT 1 FROM pg_trigger WHERE tgname = 'set_product_fts_vector'
     ) THEN
-CREATE TRIGGER trg_product_fts_vector
+CREATE TRIGGER set_product_fts_vector
     BEFORE INSERT OR UPDATE ON product
     FOR EACH ROW EXECUTE FUNCTION
     tsvector_update_trigger(fts_vector, 'pg_catalog.english', name);
 END IF;
 END
 $$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'set_product_updated_at'
+    ) THEN
+        CREATE TRIGGER set_product_updated_at
+        BEFORE UPDATE ON product
+        FOR EACH ROW
+        EXECUTE FUNCTION refresh_updated_at();
+    END IF;
+END
+$$;
+

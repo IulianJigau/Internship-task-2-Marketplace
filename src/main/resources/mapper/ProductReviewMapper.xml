@@ -15,7 +15,8 @@
     <select id="findByUserId" parameterType="Long" resultMap="productReviewResultMapper">
         SELECT *
         FROM product_review
-        WHERE user_id = #{id}
+        WHERE user_id = #{id} LIMIT #{size}
+        OFFSET #{size} * (#{page} - 1)
     </select>
 
     <select id="findByProductId" parameterType="map" resultMap="productReviewResultMapper">
@@ -27,6 +28,8 @@
                 AND positive = #{positive}
             </if>
         </where>
+        LIMIT #{size}
+        OFFSET #{size} * (#{page} - 1)
     </select>
 
     <insert id="insert" parameterType="map">

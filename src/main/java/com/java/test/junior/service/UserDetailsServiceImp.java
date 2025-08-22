@@ -33,7 +33,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
         List<String> roles = roleMapper.findUserRoles(user.getId());
 
         List<GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
 
         LocalDateTime authTime = LocalDateTime.now();

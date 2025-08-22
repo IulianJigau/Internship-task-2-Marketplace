@@ -9,13 +9,13 @@ public interface ProductMapper {
 
     boolean exists(Long id);
 
-    Product findById(Long id);
+    Product find(Long id);
 
     List<Product> getPage(Integer page, Integer size, String query);
 
     void insert(Long userId, ProductDTO product);
 
-    int update(Long id, ProductDTO product);
+    void update(Long id, ProductDTO product);
 
-    int delete(Long id);
+    void delete(Long id);
 }

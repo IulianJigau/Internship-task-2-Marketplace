@@ -31,7 +31,7 @@ public class UserServiceImp implements UserService {
     @Override
     public ResponseEntity<?> getUserById(Long userId) {
         try {
-            User user = userMapper.findById(userId);
+            User user = userMapper.find(userId);
             if (user != null) {
                 user.setPassword("Hidden");
                 return ResponseEntity.ok(user);
@@ -60,7 +60,7 @@ public class UserServiceImp implements UserService {
     @Override
     public ResponseEntity<?> createUser(UserDTO user) {
         try {
-            if (userMapper.findByEmail(user.getEmail()) != null) {
+            if (userMapper.existsEmail(user.getEmail())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
 
@@ -75,17 +75,13 @@ public class UserServiceImp implements UserService {
 
     public ResponseEntity<?> checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
         try {
-            User user = userMapper.findById(userId);
-            if (user == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            if (!isAdmin(userDetails) && !user.getId().equals(userDetails.getId())) {
+            if (!isAdmin(userDetails) && !userId.equals(userDetails.getId())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            action.execute();
-            return ResponseEntity.ok().build();
+            return action.execute() > 0 ?
+                    ResponseEntity.ok().build() :
+                    ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -93,9 +89,13 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> updateUser(Long userId, UserDTO userDTO, ExtendedUserDetails userDetails) {
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        return checkOwnershipAndRun(() -> userMapper.update(userId, userDTO), userId, userDetails);
+    public ResponseEntity<?> updateUsername(Long userId, String username, ExtendedUserDetails userDetails) {
+        return checkOwnershipAndRun(() -> userMapper.updateUsername(userId, username), userId, userDetails);
+    }
+
+    @Override
+    public ResponseEntity<?> updatePassword(Long userId, String password, ExtendedUserDetails userDetails) {
+        return checkOwnershipAndRun(() -> userMapper.updatePassword(userId, passwordEncoder.encode(password)), userId, userDetails);
     }
 
     @Override
@@ -105,6 +105,6 @@ public class UserServiceImp implements UserService {
 
     @FunctionalInterface
     public interface Action {
-        void execute() throws Exception;
+        int execute() throws Exception;
     }
 }

@@ -4,6 +4,8 @@ import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Product.ProductDTO;
 import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.ProductService.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Product Handler", description = "Performs product oriented operations")
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
@@ -21,12 +24,20 @@ public class ProductController {
     private final ProductService productService;
     private final ProductReviewService productReviewService;
 
+    @Operation(
+            summary = "Get product by id",
+            description = "Retrieves the product based on it's id"
+    )
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductById(
             @NotNull @Positive @PathVariable Long productId) {
         return productService.getProductById(productId);
     }
 
+    @Operation(
+            summary = "Get products page",
+            description = "Retrieves a selection of products based on the page number, page size and the keywords requested"
+    )
     @GetMapping
     public ResponseEntity<?> getProductPage(
             @NotNull @Positive @RequestParam Integer page,
@@ -35,6 +46,10 @@ public class ProductController {
         return productService.getProductPage(page, page_size, query);
     }
 
+    @Operation(
+            summary = "Create a product",
+            description = "Creates a product and appends it to the current user"
+    )
     @PostMapping
     public ResponseEntity<?> createProduct(
             @Valid @RequestBody ProductDTO product,
@@ -42,6 +57,10 @@ public class ProductController {
         return productService.createProduct(product, userDetails);
     }
 
+    @Operation(
+            summary = "Update a product",
+            description = "Updates a product based on the product object and the id provided"
+    )
     @PutMapping("/{productId}")
     public ResponseEntity<?> updateProduct(
             @NotNull @Positive @PathVariable Long productId,
@@ -50,6 +69,10 @@ public class ProductController {
         return productService.updateProduct(productId, product, userDetails);
     }
 
+    @Operation(
+            summary = "Delete a product",
+            description = "Deletes a product based on the id provided"
+    )
     @DeleteMapping("/{productId}")
     public ResponseEntity<?> deleteProduct(
             @NotNull @Positive @PathVariable Long productId,
@@ -57,13 +80,23 @@ public class ProductController {
         return productService.deleteProduct(productId, userDetails);
     }
 
+    @Operation(
+            summary = "Get product reviews page",
+            description = "Retrieves a selection of product reviews based on the product's id, page number, page size and the filter provided"
+    )
     @GetMapping("/{productId}/reviews")
     public ResponseEntity<?> getReviews(
             @NotNull @Positive @PathVariable Long productId,
+            @NotNull @Positive @RequestParam Integer page,
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) Boolean positive) {
-        return productReviewService.getReviewByProductId(productId, positive);
+        return productReviewService.getReviewsByProductId(productId, page, page_size, positive);
     }
 
+    @Operation(
+            summary = "Add a product review",
+            description = "Adds a review on a product based on the id provided, whether the review is positive or not, and appends it to the current user"
+    )
     @PostMapping("/{productId}/reviews")
     public ResponseEntity<?> addReview(
             @NotNull @Positive @PathVariable Long productId,
@@ -72,6 +105,10 @@ public class ProductController {
         return productReviewService.addReview(productId, positive, userDetails);
     }
 
+    @Operation(
+            summary = "Remove a product review",
+            description = "Deletes a review based on the id of the user who submitted it and the product's id"
+    )
     @DeleteMapping("/{productId}/reviews")
     public ResponseEntity<?> deleteReview(
             @NotNull @Positive @PathVariable Long productId,

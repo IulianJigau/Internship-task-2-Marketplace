@@ -6,12 +6,19 @@
 
     <select id="exists" parameterType="Long">
         SELECT EXISTS
-            (SELECT 1
-            FROM "user"
-            WHERE id = #{id});
+                   (SELECT 1
+                    FROM "user"
+                    WHERE id = #{id});
     </select>
 
-    <select id="findById" parameterType="Long" resultMap="userResultMapper">
+    <select id="existsEmail" parameterType="String">
+        SELECT EXISTS
+                   (SELECT 1
+                    FROM "user"
+                    WHERE email = LOWER(#{email}));
+    </select>
+
+    <select id="find" parameterType="Long" resultMap="userResultMapper">
         SELECT *
         FROM "user"
         WHERE id = #{id}
@@ -20,7 +27,7 @@
     <select id="findByEmail" parameterType="String" resultMap="userResultMapper">
         SELECT *
         FROM "user"
-        WHERE email = #{email}
+        WHERE email = LOWER(#{email})
     </select>
 
     <select id="getPage" parameterType="map" resultMap="userResultMapper">
@@ -36,28 +43,24 @@
             useGeneratedKeys="true"
             keyColumn="id">
         INSERT INTO "user" (email, username, password)
-        VALUES (#{email}, #{username}, #{password})
+        VALUES (LOWER(#{email}), #{username}, #{password})
     </insert>
 
-    <update id="refreshUpdated" parameterType="Long">
+    <update id="updateUsername" parameterType="map">
         UPDATE "user"
-        SET updated_at = NOW()
+        SET username = #{username}
         WHERE id = #{id}
     </update>
 
-    <update id="update" parameterType="map">
+    <update id="updatePassword" parameterType="map">
         UPDATE "user"
-        SET email      = #{user.email},
-            username   = #{user.username},
-            password   = #{user.password},
-            updated_at = NOW()
+        SET password = #{password}
         WHERE id = #{id}
     </update>
 
     <update id="delete" parameterType="Long">
         UPDATE "user"
-        SET deleted    = true,
-            updated_at = NOW()
+        SET deleted = true
         WHERE id = #{id}
     </update>
 

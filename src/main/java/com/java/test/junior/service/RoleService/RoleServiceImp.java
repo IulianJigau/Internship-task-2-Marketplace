@@ -1,6 +1,5 @@
 package com.java.test.junior.service.RoleService;
 
-import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.Role;
@@ -21,7 +20,6 @@ public class RoleServiceImp implements RoleService {
 
     private final RoleMapper roleMapper;
     private final UserMapper userMapper;
-    private final ProductMapper productMapper;
 
     @Override
     public ResponseEntity<?> getRoles() {
@@ -37,7 +35,7 @@ public class RoleServiceImp implements RoleService {
     @Override
     public ResponseEntity<?> createRole(String name) {
         try {
-            if (roleMapper.exists(name)) {
+            if (roleMapper.existsName(name)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
 
@@ -50,7 +48,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<?> deleteRole(Long roleId) {
+    public ResponseEntity<?> deleteRole(Integer roleId) {
         try {
             int result = roleMapper.delete(roleId);
             return (result > 0)
@@ -79,15 +77,18 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<?> addUserRole(Long userId, String role) {
+    public ResponseEntity<?> addUserRole(Long userId, Integer roleId) {
         try {
-            boolean exists = userMapper.exists(userId) && roleMapper.exists(role);
+            boolean exists = userMapper.exists(userId) && roleMapper.exists(roleId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            roleMapper.insertUserRole(userId, role);
-            userMapper.refreshUpdated(userId);
+            if (roleMapper.existsUserRole(userId, roleId)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+
+            roleMapper.insertUserRole(userId, roleId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -96,14 +97,12 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<?> removeUserRole(Long userId, String role) {
+    public ResponseEntity<?> removeUserRole(Long userId, Integer roleId) {
         try {
-            int result = roleMapper.deleteUserRole(userId, role);
-            if (result > 0) {
-                userMapper.refreshUpdated(userId);
-                return ResponseEntity.ok().build();
-            }
-            return ResponseEntity.notFound().build();
+            int result = roleMapper.deleteUserRole(userId, roleId);
+            return (result > 0) ?
+                    ResponseEntity.ok().build() :
+                    ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

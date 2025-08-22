@@ -30,14 +30,14 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<?> getReviewByUserId(Long userId) {
+    public ResponseEntity<?> getReviewsByUserId(Long userId, Integer page, Integer size) {
         try {
             boolean exists = userMapper.exists(userId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            List<ProductReview> reviews = productReviewMapper.findByUserId(userId);
+            List<ProductReview> reviews = productReviewMapper.findByUserId(userId, page, size);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -46,14 +46,14 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<?> getReviewByProductId(Long productId, Boolean positive) {
+    public ResponseEntity<?> getReviewsByProductId(Long productId, Integer page, Integer size, Boolean positive) {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            List<ProductReview> reviews = productReviewMapper.findByProductId(productId, positive);
+            List<ProductReview> reviews = productReviewMapper.findByProductId(productId, page, size, positive);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             logger.error(e.getMessage());

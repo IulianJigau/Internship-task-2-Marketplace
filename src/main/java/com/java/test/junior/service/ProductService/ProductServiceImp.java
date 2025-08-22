@@ -29,7 +29,7 @@ public class ProductServiceImp implements ProductService {
     @Override
     public ResponseEntity<?> getProductById(Long productId) {
         try {
-            Product product = productMapper.findById(productId);
+            Product product = productMapper.find(productId);
             return (product != null)
                     ? ResponseEntity.ok(product)
                     : ResponseEntity.notFound().build();
@@ -63,7 +63,7 @@ public class ProductServiceImp implements ProductService {
 
     public ResponseEntity<?> checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
         try {
-            Product product = productMapper.findById(productId);
+            Product product = productMapper.find(productId);
             if (product == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }

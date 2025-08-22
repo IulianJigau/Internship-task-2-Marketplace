@@ -7,11 +7,11 @@ public interface RoleService {
 
     ResponseEntity<?> createRole(String name);
 
-    ResponseEntity<?> deleteRole(Long roleId);
+    ResponseEntity<?> deleteRole(Integer roleId);
 
     ResponseEntity<?> getUserRoles(Long userId);
 
-    ResponseEntity<?> addUserRole(Long userId, String role);
+    ResponseEntity<?> addUserRole(Long userId, Integer roleId);
 
-    ResponseEntity<?> removeUserRole(Long userId, String role);
+    ResponseEntity<?> removeUserRole(Long userId, Integer roleId);
 }

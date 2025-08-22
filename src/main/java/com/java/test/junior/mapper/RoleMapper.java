@@ -6,19 +6,25 @@ import java.util.List;
 
 public interface RoleMapper {
 
-    boolean exists(String name);
+    boolean exists(Integer id);
+
+    boolean existsName(String name);
+
+    Role find(Integer id);
+
+    Role findByName(String name);
 
     List<Role> findAll();
 
     void insert(String name);
 
-    int delete(Long id);
+    int delete(Integer id);
 
-    boolean existsUserRole(Long id, String role);
+    boolean existsUserRole(Long userId, Integer roleId);
 
-    List<String> findUserRoles(Long id);
+    List<String> findUserRoles(Long userId);
 
-    void insertUserRole(Long id, String role);
+    void insertUserRole(Long userId, Integer roleId);
 
-    int deleteUserRole(Long id, String role);
+    int deleteUserRole(Long userId, Integer roleId);
 }

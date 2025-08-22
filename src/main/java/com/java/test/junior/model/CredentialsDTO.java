@@ -2,6 +2,8 @@ package com.java.test.junior.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -10,5 +12,7 @@ public class CredentialsDTO {
     @Email
     private String email;
     @NotBlank
+    @Size(min = 5, max = 30)
+    @Pattern(regexp = "\\S+")
     private String password;
 }

@@ -22,6 +22,11 @@ import java.time.LocalDateTime;
 public class AuthCheckFilter extends OncePerRequestFilter {
 
     private final UserMapper userMapper;
+    private final PermitAllConfig permitAllConfig;
+
+    private boolean requiresAuth(HttpServletRequest request) {
+        return permitAllConfig.getMatchers().stream().noneMatch(matcher -> matcher.matches(request));
+    }
 
     @Override
     protected void doFilterInternal(
@@ -30,16 +35,21 @@ public class AuthCheckFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
+        if (!requiresAuth(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
-            filterChain.doFilter(request, response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         ExtendedUserDetails userDetails = (ExtendedUserDetails) auth.getPrincipal();
         LocalDateTime authTime = userDetails.getAuthTime();
-        LocalDateTime updateTime = userMapper.findById(userDetails.getId()).getUpdatedAt();
+        LocalDateTime updateTime = userMapper.find(userDetails.getId()).getUpdatedAt();
 
         if (authTime.isBefore(updateTime)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
