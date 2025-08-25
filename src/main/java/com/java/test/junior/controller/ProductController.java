@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,7 @@ public class ProductController {
 
     @Operation(summary = "Clear deleted products")
     @DeleteMapping("/deleted/clear")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> clearDeletedProducts() {
         return productService.clearDeletedProducts();
     }

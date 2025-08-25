@@ -58,6 +58,7 @@ public class UserController {
 
     @Operation(summary = "Clear deleted users")
     @DeleteMapping("/deleted/clear")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> clearDeletedUsers() {
         return userService.clearDeletedUsers();
     }
