@@ -22,10 +22,10 @@ import java.time.LocalDateTime;
 public class AuthCheckFilter extends OncePerRequestFilter {
 
     private final UserMapper userMapper;
-    private final PermitAllConfig permitAllConfig;
+    private final PermitAllList permitAllList;
 
     private boolean requiresAuth(HttpServletRequest request) {
-        return permitAllConfig.getMatchers().stream().noneMatch(matcher -> matcher.matches(request));
+        return permitAllList.getMatchers().stream().noneMatch(matcher -> matcher.matches(request));
     }
 
     @Override

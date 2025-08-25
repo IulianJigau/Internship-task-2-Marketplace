@@ -1,7 +1,7 @@
 package com.java.test.junior.config;
 
 import com.java.test.junior.component.AuthCheckFilter;
-import com.java.test.junior.component.PermitAllConfig;
+import com.java.test.junior.component.PermitAllList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +24,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class SecurityConfig {
 
     private final AuthCheckFilter authCheckFilter;
-    private final PermitAllConfig permitAllConfig;
+    private final PermitAllList permitAllList;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,7 +46,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                            for (RequestMatcher matcher : permitAllConfig.getMatchers()) {
+                            for (RequestMatcher matcher : permitAllList.getMatchers()) {
                                 auth.requestMatchers(matcher).permitAll();
                             }
                             auth.anyRequest().authenticated();

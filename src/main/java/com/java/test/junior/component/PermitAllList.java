@@ -10,11 +10,11 @@ import java.util.List;
 
 @Component
 @Data
-public class PermitAllConfig {
+public class PermitAllList {
 
     private List<RequestMatcher> matchers;
 
-    public PermitAllConfig() {
+    public PermitAllList() {
         matchers = List.of(
                 PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/users"),
                 PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/login"),
