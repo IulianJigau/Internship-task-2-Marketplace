@@ -8,9 +8,9 @@ public interface ProductReviewMapper {
 
     boolean exists(Long productId, Long userId);
 
-    List<ProductReview> findByUserId(Long userId, Integer page, Integer size);
+    List<ProductReview> getPageByUserId(Long userId, Integer page, Integer size);
 
-    List<ProductReview> findByProductId(Long productId, Integer page, Integer size, Boolean positive);
+    List<ProductReview> getPageByProductId(Long productId, Integer page, Integer size, Boolean positive);
 
     void insert(Long productId, Long userId, Boolean positive);
 

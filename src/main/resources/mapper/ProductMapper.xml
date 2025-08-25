@@ -21,8 +21,38 @@
         SELECT *
         FROM product
         <where>
+            deleted = false
             <if test="query != null and query != ''">
-                fts_vector @@ plainto_tsquery('english', #{query})
+                AND fts_vector @@ plainto_tsquery('english', #{query})
+            </if>
+        </where>
+        ORDER BY id
+        LIMIT #{size}
+        OFFSET #{size} * (#{page} - 1)
+    </select>
+
+    <select id="getPageByUserId" parameterType="map" resultMap="productResultMapper">
+        SELECT *
+        FROM product
+        <where>
+            deleted = false
+            AND user_id = #{userId}
+            <if test="query != null and query != ''">
+                AND fts_vector @@ plainto_tsquery('english', #{query})
+            </if>
+        </where>
+        ORDER BY id
+        LIMIT #{size}
+        OFFSET #{size} * (#{page} - 1)
+    </select>
+
+    <select id="getDeletedPage" parameterType="map" resultMap="productResultMapper">
+        SELECT *
+        FROM product
+        <where>
+            deleted = true
+            <if test="query != null and query != ''">
+                AND fts_vector @@ plainto_tsquery('english', #{query})
             </if>
         </where>
         ORDER BY id
@@ -51,6 +81,11 @@
         SET deleted = true
         WHERE id = #{id}
     </update>
+
+    <delete id="clearDeleted">
+        DELETE FROM product
+        WHERE deleted = true
+    </delete>
 
     <resultMap id="productResultMapper" type="com.java.test.junior.model.Product.Product">
         <id property="id" column="id"/>

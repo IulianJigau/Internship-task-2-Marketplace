@@ -12,14 +12,14 @@
                       AND user_id = #{userId});
     </select>
 
-    <select id="findByUserId" parameterType="Long" resultMap="productReviewResultMapper">
+    <select id="getPageByUserId" parameterType="Long" resultMap="productReviewResultMapper">
         SELECT *
         FROM product_review
         WHERE user_id = #{id} LIMIT #{size}
         OFFSET #{size} * (#{page} - 1)
     </select>
 
-    <select id="findByProductId" parameterType="map" resultMap="productReviewResultMapper">
+    <select id="getPageByProductId" parameterType="map" resultMap="productReviewResultMapper">
         SELECT *
         FROM product_review
         <where>

@@ -39,11 +39,32 @@ public class ProductController {
             description = "Retrieves a selection of products based on the page number, page size and the keywords requested"
     )
     @GetMapping
-    public ResponseEntity<?> getProductPage(
+    public ResponseEntity<?> getProductsPage(
             @NotNull @Positive @RequestParam Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
-        return productService.getProductPage(page, page_size, query);
+        return productService.getProductsPage(page, page_size, query);
+    }
+
+    @Operation(
+            summary = "Get deleted products page",
+            description = "Retrieves a selection of the deleted products based on the page number, page size and the keywords requested"
+    )
+    @GetMapping("/deleted")
+    public ResponseEntity<?> getDeletedProductsPage(
+            @NotNull @Positive @RequestParam Integer page,
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(required = false) String query) {
+        return productService.getDeletedProductsPage(page, page_size, query);
+    }
+
+    @Operation(
+            summary = "Clear deleted products",
+            description = "Removes deleted products' entries from the database"
+    )
+    @DeleteMapping("/deleted/clear")
+    public ResponseEntity<?> clearDeletedProducts() {
+        return productService.clearDeletedProducts();
     }
 
     @Operation(
@@ -85,12 +106,12 @@ public class ProductController {
             description = "Retrieves a selection of product reviews based on the product's id, page number, page size and the filter provided"
     )
     @GetMapping("/{productId}/reviews")
-    public ResponseEntity<?> getReviews(
+    public ResponseEntity<?> getReviewsPage(
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @Positive @RequestParam Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) Boolean positive) {
-        return productReviewService.getReviewsByProductId(productId, page, page_size, positive);
+        return productReviewService.getReviewsPageByProductId(productId, page, page_size, positive);
     }
 
     @Operation(
@@ -107,13 +128,13 @@ public class ProductController {
 
     @Operation(
             summary = "Remove a product review",
-            description = "Deletes a review based on the id of the user who submitted it and the product's id"
+            description = "Deletes a review based on the product id and user id provided"
     )
     @DeleteMapping("/{productId}/reviews")
     public ResponseEntity<?> deleteReview(
             @NotNull @Positive @PathVariable Long productId,
-            @NotNull @Positive @RequestBody Long user_id,
+            @NotNull @Positive @RequestParam Long userId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productReviewService.deleteReview(productId, user_id, userDetails);
+        return productReviewService.deleteReview(productId, userId, userDetails);
     }
 }

@@ -13,9 +13,15 @@ public interface ProductMapper {
 
     List<Product> getPage(Integer page, Integer size, String query);
 
+    List<Product> getPageByUserId(Integer page, Integer size, String query, Long userId);
+
+    List<Product> getDeletedPage(Integer page, Integer size, String query);
+
     void insert(Long userId, ProductDTO product);
 
     void update(Long id, ProductDTO product);
 
     void delete(Long id);
+
+    int clearDeleted();
 }

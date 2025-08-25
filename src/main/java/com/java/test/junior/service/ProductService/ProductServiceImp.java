@@ -40,9 +40,31 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<?> getProductPage(Integer page, Integer size, String query) {
+    public ResponseEntity<?> getProductsPage(Integer page, Integer size, String query) {
         try {
             List<Product> products = productMapper.getPage(page, size, query);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getProductsPageByUserId(Integer page, Integer size, String query, Long userId) {
+        try {
+            List<Product> products = productMapper.getPageByUserId(page, size, query, userId);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getDeletedProductsPage(Integer page, Integer size, String query) {
+        try {
+            List<Product> products = productMapper.getDeletedPage(page, size, query);
             return ResponseEntity.ok(products);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -88,6 +110,19 @@ public class ProductServiceImp implements ProductService {
     @Override
     public ResponseEntity<?> deleteProduct(Long productId, ExtendedUserDetails userDetails) {
         return checkOwnershipAndRun(() -> productMapper.delete(productId), productId, userDetails);
+    }
+
+    @Override
+    public ResponseEntity<?> clearDeletedProducts() {
+        try {
+            int result = productMapper.clearDeleted();
+            return (result > 0)
+                    ? ResponseEntity.ok().build()
+                    : ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @FunctionalInterface

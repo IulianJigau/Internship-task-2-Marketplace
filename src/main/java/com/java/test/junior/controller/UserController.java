@@ -3,6 +3,7 @@ package com.java.test.junior.controller;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.User.UserDTO;
 import com.java.test.junior.service.ProductReview.ProductReviewService;
+import com.java.test.junior.service.ProductService.ProductService;
 import com.java.test.junior.service.RoleService.RoleService;
 import com.java.test.junior.service.UserService.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ public class UserController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final ProductService productService;
     private final ProductReviewService productReviewService;
 
     @Operation(
@@ -46,13 +48,46 @@ public class UserController {
 
     @Operation(
             summary = "Get users page",
-            description = "Retrieves a selection of users based on the page number, page size and the keywords requested"
+            description = "Retrieves a selection of users based on the page number and page size attributes"
     )
     @GetMapping
-    public ResponseEntity<?> getUserPage(
+    public ResponseEntity<?> getUsersPage(
             @NotNull @Positive @RequestParam Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return userService.getUserPage(page, page_size);
+        return userService.getUsersPage(page, page_size);
+    }
+
+    @Operation(
+            summary = "Get deleted users page",
+            description = "Retrieves a selection of the deleted users based on the page number and page size attributes"
+    )
+    @GetMapping("/deleted")
+    public ResponseEntity<?> getDeletedUsersPage(
+            @NotNull @Positive @RequestParam Integer page,
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
+        return userService.getDeletedUsersPage(page, page_size);
+    }
+
+    @Operation(
+            summary = "Clear deleted users",
+            description = "Removes deleted users' entries from the database"
+    )
+    @DeleteMapping("/deleted/clear")
+    public ResponseEntity<?> clearDeletedUsers() {
+        return userService.clearDeletedUsers();
+    }
+
+    @Operation(
+            summary = "Get users page",
+            description = "Retrieves a selection of users based on the page number and page size attributes"
+    )
+    @GetMapping("/{userId}/products")
+    public ResponseEntity<?> getUserProductsPage(
+            @NotNull @Positive @RequestParam Integer page,
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(required = false) String query,
+            @NotNull @Positive @PathVariable Long userId) {
+        return productService.getProductsPageByUserId(page, page_size, query, userId);
     }
 
     @Operation(
@@ -95,7 +130,6 @@ public class UserController {
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return userService.deleteUser(userId, userDetails);
     }
-
 
     @Operation(
             summary = "Get an user's roles",
@@ -141,6 +175,6 @@ public class UserController {
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return productReviewService.getReviewsByUserId(userId, page, page_size);
+        return productReviewService.getReviewsPageByUserId(userId, page, page_size);
     }
 }

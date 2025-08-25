@@ -30,14 +30,14 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<?> getReviewsByUserId(Long userId, Integer page, Integer size) {
+    public ResponseEntity<?> getReviewsPageByUserId(Long userId, Integer page, Integer size) {
         try {
             boolean exists = userMapper.exists(userId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            List<ProductReview> reviews = productReviewMapper.findByUserId(userId, page, size);
+            List<ProductReview> reviews = productReviewMapper.getPageByUserId(userId, page, size);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -46,14 +46,14 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<?> getReviewsByProductId(Long productId, Integer page, Integer size, Boolean positive) {
+    public ResponseEntity<?> getReviewsPageByProductId(Long productId, Integer page, Integer size, Boolean positive) {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            List<ProductReview> reviews = productReviewMapper.findByProductId(productId, page, size, positive);
+            List<ProductReview> reviews = productReviewMapper.getPageByProductId(productId, page, size, positive);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -69,11 +69,14 @@ public class ProductReviewServiceImp implements ProductReviewService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            int result = productReviewMapper.update(productId, userDetails.getId(), positive);
-            if (result == 0) {
+            exists = productReviewMapper.exists(productId, userDetails.getId());
+            if (exists) {
+                productReviewMapper.update(productId, userDetails.getId(), positive);
+                return ResponseEntity.status(HttpStatus.OK).build();
+            } else {
                 productReviewMapper.insert(productId, userDetails.getId(), positive);
+                return ResponseEntity.status(HttpStatus.CREATED).build();
             }
-            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -83,17 +86,13 @@ public class ProductReviewServiceImp implements ProductReviewService {
     @Override
     public ResponseEntity<?> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails) {
         try {
-            boolean exists = productReviewMapper.exists(productId, userId);
-            if (!exists) {
-                ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-
             if (!isAdmin(userDetails) && !userDetails.getId().equals(userId)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            productReviewMapper.delete(productId, userId);
-            return ResponseEntity.ok().build();
+            return productReviewMapper.delete(productId, userId) > 0 ?
+                    ResponseEntity.ok().build() :
+                    ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

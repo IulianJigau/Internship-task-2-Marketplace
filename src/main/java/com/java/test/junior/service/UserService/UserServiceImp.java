@@ -44,9 +44,23 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> getUserPage(Integer page, Integer size) {
+    public ResponseEntity<?> getUsersPage(Integer page, Integer size) {
         try {
             List<User> users = userMapper.getPage(page, size);
+            for (User user : users) {
+                user.setPassword("Hidden");
+            }
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getDeletedUsersPage(Integer page, Integer size) {
+        try {
+            List<User> users = userMapper.getDeletedPage(page, size);
             for (User user : users) {
                 user.setPassword("Hidden");
             }
@@ -101,6 +115,19 @@ public class UserServiceImp implements UserService {
     @Override
     public ResponseEntity<?> deleteUser(Long userId, ExtendedUserDetails userDetails) {
         return checkOwnershipAndRun(() -> userMapper.delete(userId), userId, userDetails);
+    }
+
+    @Override
+    public ResponseEntity<?> clearDeletedUsers() {
+        try {
+            int result = userMapper.clearDeleted();
+            return (result > 0)
+                    ? ResponseEntity.ok().build()
+                    : ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @FunctionalInterface

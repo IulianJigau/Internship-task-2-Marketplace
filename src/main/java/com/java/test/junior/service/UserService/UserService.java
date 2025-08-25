@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 public interface UserService {
     ResponseEntity<?> getUserById(Long userId);
 
-    ResponseEntity<?> getUserPage(Integer page, Integer size);
+    ResponseEntity<?> getUsersPage(Integer page, Integer size);
+
+    ResponseEntity<?> getDeletedUsersPage(Integer page, Integer size);
 
     ResponseEntity<?> createUser(UserDTO user);
 
@@ -16,4 +18,6 @@ public interface UserService {
     ResponseEntity<?> updatePassword(Long userId, String password, ExtendedUserDetails userDetails);
 
     ResponseEntity<?> deleteUser(Long userId, ExtendedUserDetails userDetails);
+
+    ResponseEntity<?> clearDeletedUsers();
 }

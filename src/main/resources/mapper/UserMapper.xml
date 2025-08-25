@@ -33,6 +33,16 @@
     <select id="getPage" parameterType="map" resultMap="userResultMapper">
         SELECT *
         FROM "user"
+        WHERE deleted = false
+        ORDER BY id
+            LIMIT #{size}
+        OFFSET (#{page} - 1) * #{size}
+    </select>
+
+    <select id="getDeletedPage" parameterType="map" resultMap="userResultMapper">
+        SELECT *
+        FROM "user"
+        WHERE deleted = true
         ORDER BY id
             LIMIT #{size}
         OFFSET (#{page} - 1) * #{size}
@@ -63,6 +73,11 @@
         SET deleted = true
         WHERE id = #{id}
     </update>
+
+    <delete id="clearDeleted">
+        DELETE FROM "user"
+        WHERE deleted = true
+    </delete>
 
     <resultMap id="userResultMapper" type="com.java.test.junior.model.User.User">
         <id property="id" column="id"/>

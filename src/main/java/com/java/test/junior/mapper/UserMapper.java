@@ -2,6 +2,7 @@ package com.java.test.junior.mapper;
 
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface UserMapper {
 
     List<User> getPage(Integer page, Integer size);
 
+    List<User> getDeletedPage(Integer page, Integer size);
+
     void insert(UserDTO user);
 
     int updateUsername(Long id, String username);
@@ -24,4 +27,6 @@ public interface UserMapper {
     int updatePassword(Long id, String password);
 
     int delete(Long id);
+
+    int clearDeleted();
 }
