@@ -20,10 +20,7 @@ public class LoaderController {
 
     private final LoaderService loaderService;
 
-    @Operation(
-            summary = "Load products",
-            description = "Adds products from the provided csv file and appends them to the current admin"
-    )
+    @Operation(summary = "Load products from csv")
     @PostMapping("/products")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> loadProducts(

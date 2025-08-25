@@ -20,10 +20,7 @@ public class SessionController {
 
     private final SessionService sessionService;
 
-    @Operation(
-            summary = "Logs the user in",
-            description = "Logs the user based on the credentials provided (email and password)"
-    )
+    @Operation(summary = "Logs the user in")
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @Valid @RequestBody CredentialsDTO credentials,
@@ -32,10 +29,7 @@ public class SessionController {
         return sessionService.login(credentials, request, response);
     }
 
-    @Operation(
-            summary = "Logs the user out",
-            description = "Logs out the current user"
-    )
+    @Operation(summary = "Logs the user out")
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
             HttpServletRequest request) {
