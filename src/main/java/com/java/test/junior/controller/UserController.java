@@ -113,13 +113,13 @@ public class UserController {
         return roleService.getUserRoles(userId);
     }
 
-    @Operation(summary = "Append a role")
+    @Operation(summary = "Assign a role")
     @PostMapping("/{userId}/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addUserRole(
+    public ResponseEntity<?> assignUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer roleId) {
-        return roleService.addUserRole(userId, roleId);
+        return roleService.assignUserRole(userId, roleId);
     }
 
     @Operation(summary = "Remove a role")

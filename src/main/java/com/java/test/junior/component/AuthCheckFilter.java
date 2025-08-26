@@ -1,5 +1,6 @@
 package com.java.test.junior.component;
 
+import com.java.test.junior.config.EndpointAccessConfig;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import jakarta.servlet.FilterChain;
@@ -11,21 +12,23 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class AuthCheckFilter extends OncePerRequestFilter {
 
     private final UserMapper userMapper;
-    private final PermitAllList permitAllList;
+    private final List<RequestMatcher> permittedEndpointMatchers;
 
     private boolean requiresAuth(HttpServletRequest request) {
-        return permitAllList.getMatchers().stream().noneMatch(matcher -> matcher.matches(request));
+        return permittedEndpointMatchers.stream().noneMatch(matcher -> matcher.matches(request));
     }
 
     @Override

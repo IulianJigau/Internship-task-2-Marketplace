@@ -77,7 +77,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public ResponseEntity<?> addUserRole(Long userId, Integer roleId) {
+    public ResponseEntity<?> assignUserRole(Long userId, Integer roleId) {
         try {
             boolean exists = userMapper.exists(userId) && roleMapper.exists(roleId);
             if (!exists) {
@@ -89,7 +89,7 @@ public class RoleServiceImp implements RoleService {
             }
 
             roleMapper.insertUserRole(userId, roleId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

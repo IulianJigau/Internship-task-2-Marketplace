@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 public class ProductReview {
     private Long productId;
     private Long userId;
-    private Boolean positive;
+    private Boolean isLiked;
     private LocalDateTime createdAt;
 }

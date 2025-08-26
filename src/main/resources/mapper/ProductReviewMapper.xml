@@ -12,10 +12,18 @@
                       AND user_id = #{userId});
     </select>
 
+    <select id="getProductReview" parameterType="Long" resultMap="productReviewResultMapper">
+        SELECT *
+        FROM product_review
+        WHERE product_id = #{productId}
+        AND user_id = #{userId}
+    </select>
+
     <select id="getPageByUserId" parameterType="Long" resultMap="productReviewResultMapper">
         SELECT *
         FROM product_review
-        WHERE user_id = #{id} LIMIT #{size}
+        WHERE user_id = #{userId}
+        LIMIT #{size}
         OFFSET #{size} * (#{page} - 1)
     </select>
 
@@ -24,8 +32,8 @@
         FROM product_review
         <where>
             product_id = #{productId}
-            <if test="positive != null">
-                AND positive = #{positive}
+            <if test="isLiked != null">
+                AND is_liked = #{isLiked}
             </if>
         </where>
         LIMIT #{size}
@@ -33,8 +41,8 @@
     </select>
 
     <insert id="insert" parameterType="map">
-        INSERT INTO product_review (product_id, user_id, positive)
-        VALUES (#{productId}, #{userId}, #{positive})
+        INSERT INTO product_review (product_id, user_id, is_liked)
+        VALUES (#{productId}, #{userId}, #{isLiked})
     </insert>
 
     <delete id="delete" parameterType="map">
@@ -46,7 +54,7 @@
 
     <update id="update" parameterType="map">
         UPDATE product_review
-        SET positive   = #{positive},
+        SET is_liked   = #{isLiked},
             created_at = NOW()
         WHERE product_id = #{productId}
           AND user_id = #{userId}
@@ -55,7 +63,7 @@
     <resultMap id="productReviewResultMapper" type="com.java.test.junior.model.ProductReview">
         <id property="productId" column="product_id"/>
         <id property="userId" column="user_id"/>
-        <result property="positive" column="positive"/>
+        <result property="isLiked" column="is_liked"/>
         <result property="createdAt" column="created_at"/>
     </resultMap>
 </mapper>

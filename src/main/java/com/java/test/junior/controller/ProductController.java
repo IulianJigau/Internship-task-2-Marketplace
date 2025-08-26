@@ -88,17 +88,17 @@ public class ProductController {
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @Positive @RequestParam Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(required = false) Boolean positive) {
-        return productReviewService.getReviewsPageByProductId(productId, page, page_size, positive);
+            @RequestParam(required = false) Boolean isLiked) {
+        return productReviewService.getReviewsPageByProductId(productId, page, page_size, isLiked);
     }
 
-    @Operation(summary = "Add a product review")
+    @Operation(summary = "Add, update or remove a product review")
     @PostMapping("/{productId}/reviews")
     public ResponseEntity<?> addReview(
             @NotNull @Positive @PathVariable Long productId,
-            @NotNull @RequestParam Boolean positive,
+            @NotNull @RequestParam Boolean isLiked,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productReviewService.addReview(productId, positive, userDetails);
+        return productReviewService.addReview(productId, isLiked, userDetails);
     }
 
     @Operation(summary = "Remove a product review")

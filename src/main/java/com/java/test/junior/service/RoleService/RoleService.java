@@ -11,7 +11,7 @@ public interface RoleService {
 
     ResponseEntity<?> getUserRoles(Long userId);
 
-    ResponseEntity<?> addUserRole(Long userId, Integer roleId);
+    ResponseEntity<?> assignUserRole(Long userId, Integer roleId);
 
     ResponseEntity<?> removeUserRole(Long userId, Integer roleId);
 }

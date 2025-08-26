@@ -46,14 +46,14 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<?> getReviewsPageByProductId(Long productId, Integer page, Integer size, Boolean positive) {
+    public ResponseEntity<?> getReviewsPageByProductId(Long productId, Integer page, Integer size, Boolean isLiked) {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            List<ProductReview> reviews = productReviewMapper.getPageByProductId(productId, page, size, positive);
+            List<ProductReview> reviews = productReviewMapper.getPageByProductId(productId, page, size, isLiked);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -62,19 +62,24 @@ public class ProductReviewServiceImp implements ProductReviewService {
     }
 
     @Override
-    public ResponseEntity<?> addReview(Long productId, Boolean positive, ExtendedUserDetails userDetails) {
+    public ResponseEntity<?> addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails) {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            exists = productReviewMapper.exists(productId, userDetails.getId());
-            if (exists) {
-                productReviewMapper.update(productId, userDetails.getId(), positive);
+            ProductReview productReview = productReviewMapper.getProductReview(productId, userDetails.getId());
+            if (productReview != null) {
+                if(productReview.getIsLiked() == isLiked) {
+                    productReviewMapper.delete(productId, userDetails.getId());
+                }
+                else{
+                    productReviewMapper.update(productId, userDetails.getId(), isLiked);
+                }
                 return ResponseEntity.status(HttpStatus.OK).build();
             } else {
-                productReviewMapper.insert(productId, userDetails.getId(), positive);
+                productReviewMapper.insert(productId, userDetails.getId(), isLiked);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             }
         } catch (Exception e) {

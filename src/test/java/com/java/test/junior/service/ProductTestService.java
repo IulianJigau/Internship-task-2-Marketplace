@@ -1,4 +1,4 @@
-package com.java.test.junior;
+package com.java.test.junior.service;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,54 +14,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Service
 @RequiredArgsConstructor
-public class TestService {
+public class ProductTestService {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductTestService.class);
     private final MockMvc mockMvc;
+    private final MockHttpSession session;
 
-    public void checkLogin(MockHttpSession session) {
+    public void checkAddProducts() {
         try {
             String body = """
                         {
-                            "email": "admin@example.com",
-                            "password": "Password123"
+                            "name": "tom",
+                            "price": 11.1,
+                            "description": "jerry"
                         }
                     """;
 
             MvcResult result =
-                    mockMvc.perform(post("/login")
+                    mockMvc.perform(post("/products")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(body)
-                                    .session(session))
-                            .andExpect(status().isOk())
-                            .andReturn();
-
-            int status = result.getResponse().getStatus();
-
-            logger.info("Login: {}", status);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    public void checkLoadProducts(MockHttpSession session) {
-        try {
-            MvcResult result =
-                    mockMvc.perform(post("/loading/products")
-                                    .contentType(MediaType.APPLICATION_JSON)
                                     .session(session))
                             .andExpect(status().isCreated())
                             .andReturn();
 
             int status = result.getResponse().getStatus();
 
-            logger.info("Product loading: {}", status);
+            logger.info("Add product: {}", status);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
 
-    public void checkGetProducts(MockHttpSession session) {
+    public void checkGetProducts() {
         try {
             MvcResult result =
                     mockMvc.perform(get("/products?page=1")
@@ -71,15 +56,14 @@ public class TestService {
                             .andReturn();
 
             int status = result.getResponse().getStatus();
-            String content = result.getResponse().getContentAsString();
 
-            logger.info("Get products: {}\nContent: {}", status, content);
+            logger.info("Get products: {}", status);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
 
-    public void checkUpdateProducts(MockHttpSession session, int id) {
+    public void checkUpdateProducts(int productId) {
         try {
             String body = """
                         {
@@ -90,7 +74,7 @@ public class TestService {
                     """;
 
             MvcResult result =
-                    mockMvc.perform(put("/products/" + id)
+                    mockMvc.perform(put("/products/" + productId)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(body)
                                     .session(session))
@@ -99,34 +83,16 @@ public class TestService {
 
             int status = result.getResponse().getStatus();
 
-            logger.info("Update product {}: {}", id, status);
+            logger.info("Update product {}: {}", productId, status);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
 
-    public void checkGetProduct(MockHttpSession session, int id) {
+    public void checkGetProduct(int productId) {
         try {
             MvcResult result =
-                    mockMvc.perform(get("/products/" + id)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .session(session))
-                            .andExpect(status().isOk())
-                            .andReturn();
-
-            int status = result.getResponse().getStatus();
-            String content = result.getResponse().getContentAsString();
-
-            logger.info("Get product {}: {}\nContent: {}", id, status, content);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    public void checkDeleteProduct(MockHttpSession session, int id) {
-        try {
-            MvcResult result =
-                    mockMvc.perform(delete("/products/" + id)
+                    mockMvc.perform(get("/products/" + productId)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .session(session))
                             .andExpect(status().isOk())
@@ -134,7 +100,75 @@ public class TestService {
 
             int status = result.getResponse().getStatus();
 
-            logger.info("Delete product {}: {}", id, status);
+            logger.info("Get product {}: {}", productId, status);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public void checkAddReview(int productId, boolean isLiked) {
+        try {
+            MvcResult result =
+                    mockMvc.perform(post("/products/" + productId + "/reviews?isLiked=" + isLiked)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .session(session))
+                            .andExpect(status().isCreated())
+                            .andReturn();
+
+            int status = result.getResponse().getStatus();
+
+            logger.info("Add review on product {}: {}", productId, status);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public void checkGetReview(int productId) {
+        try {
+            MvcResult result =
+                    mockMvc.perform(get("/products/" + productId + "/reviews?page=1")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .session(session))
+                            .andExpect(status().isOk())
+                            .andReturn();
+
+            int status = result.getResponse().getStatus();
+
+            logger.info("Get product {} reviews: {}", productId, status);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public void checkDeleteReview(int productId, int userId) {
+        try {
+            MvcResult result =
+                    mockMvc.perform(delete("/products/" + productId + "/reviews?userId=" + userId)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .session(session))
+                            .andExpect(status().isOk())
+                            .andReturn();
+
+            int status = result.getResponse().getStatus();
+
+            logger.info("Delete product {} review made by user {}: {}", productId, userId, status);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public void checkDeleteProduct(int productId) {
+        try {
+            MvcResult result =
+                    mockMvc.perform(delete("/products/" + productId)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .session(session))
+                            .andExpect(status().isOk())
+                            .andReturn();
+
+            int status = result.getResponse().getStatus();
+
+            logger.info("Delete product {}: {}", productId, status);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

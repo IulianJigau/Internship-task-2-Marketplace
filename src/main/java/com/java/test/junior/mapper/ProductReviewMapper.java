@@ -8,13 +8,15 @@ public interface ProductReviewMapper {
 
     boolean exists(Long productId, Long userId);
 
+    ProductReview getProductReview(Long productId, Long userId);
+
     List<ProductReview> getPageByUserId(Long userId, Integer page, Integer size);
 
-    List<ProductReview> getPageByProductId(Long productId, Integer page, Integer size, Boolean positive);
+    List<ProductReview> getPageByProductId(Long productId, Integer page, Integer size, Boolean isLiked);
 
-    void insert(Long productId, Long userId, Boolean positive);
+    void insert(Long productId, Long userId, Boolean isLiked);
 
-    int update(Long productId, Long userId, Boolean positive);
+    int update(Long productId, Long userId, Boolean isLiked);
 
     int delete(Long productId, Long userId);
 }

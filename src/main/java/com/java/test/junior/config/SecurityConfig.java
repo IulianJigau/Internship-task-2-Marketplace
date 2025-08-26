@@ -1,7 +1,6 @@
 package com.java.test.junior.config;
 
 import com.java.test.junior.component.AuthCheckFilter;
-import com.java.test.junior.component.PermitAllList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,13 +17,15 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.util.List;
+
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthCheckFilter authCheckFilter;
-    private final PermitAllList permitAllList;
+    private final List<RequestMatcher> permittedEndpointMatchers;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,12 +47,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                            for (RequestMatcher matcher : permitAllList.getMatchers()) {
-                                auth.requestMatchers(matcher).permitAll();
-                            }
-                            auth.anyRequest().authenticated();
-                        }
-                )
+                    auth.anyRequest().permitAll();
+                })
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .addFilterBefore(authCheckFilter, UsernamePasswordAuthenticationFilter.class);

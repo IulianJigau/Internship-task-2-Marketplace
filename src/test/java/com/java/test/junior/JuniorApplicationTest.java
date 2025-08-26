@@ -1,5 +1,6 @@
 package com.java.test.junior;
 
+import com.java.test.junior.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,11 +22,27 @@ class JuniorApplicationTest {
             .withDatabaseName("testdb")
             .withUsername("testuser")
             .withPassword("testpass");
-    private final TestService testService;
+
+    private final LoaderTestService loaderTestService;
+    private final ProductTestService productTestService;
+    private final RoleTestService roleTestService;
+    private final SessionTestService sessionTestService;
+    private final UserTestService userTestService;
 
     @Autowired
-    JuniorApplicationTest(TestService testService) {
-        this.testService = testService;
+    JuniorApplicationTest(
+            LoaderTestService loaderTestService,
+            ProductTestService productTestService,
+            RoleTestService roleTestService,
+            SessionTestService sessionTestService,
+            UserTestService userTestService) {
+        this.loaderTestService = loaderTestService;
+        this.productTestService = productTestService;
+        this.roleTestService = roleTestService;
+        this.sessionTestService = sessionTestService;
+        this.userTestService = userTestService;
+
+        MockHttpSession session = new MockHttpSession();
     }
 
     @DynamicPropertySource
@@ -37,12 +54,26 @@ class JuniorApplicationTest {
 
     @Test
     void RunTests() {
-        MockHttpSession session = new MockHttpSession();
-        testService.checkLogin(session);
-        testService.checkLoadProducts(session);
-        testService.checkGetProducts(session);
-        testService.checkUpdateProducts(session, 2);
-        testService.checkGetProduct(session, 2);
-        testService.checkDeleteProduct(session, 2);
+        sessionTestService.checkLoginAsAdmin();
+        userTestService.checkAddUsers();
+        userTestService.checkGetUsers();
+        userTestService.checkUpdateUsername(2);
+        userTestService.checkUpdatePassword(2);
+        userTestService.checkGetUser(2);
+        roleTestService.checkCreateRole("basic");
+        roleTestService.checkGetRoles();
+        userTestService.checkAssignRole(2, 2);
+        userTestService.checkRemoveUserRole(2, 2);
+        roleTestService.checkDeleteRole(2);
+        loaderTestService.checkLoadProducts();
+        productTestService.checkAddProducts();
+        productTestService.checkGetProducts();
+        productTestService.checkUpdateProducts(2);
+        productTestService.checkGetProduct(2);
+        productTestService.checkAddReview(2, true);
+        productTestService.checkGetReview(2);
+        productTestService.checkDeleteReview(2, 1);
+        productTestService.checkDeleteProduct(2);
+        sessionTestService.checkLogout();
     }
 }
