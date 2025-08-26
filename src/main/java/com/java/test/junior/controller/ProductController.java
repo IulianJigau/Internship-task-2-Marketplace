@@ -100,13 +100,4 @@ public class ProductController {
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return productReviewService.addReview(productId, isLiked, userDetails);
     }
-
-    @Operation(summary = "Remove a product review")
-    @DeleteMapping("/{productId}/reviews")
-    public ResponseEntity<?> deleteReview(
-            @NotNull @Positive @PathVariable Long productId,
-            @NotNull @Positive @RequestParam Long userId,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productReviewService.deleteReview(productId, userId, userDetails);
-    }
 }

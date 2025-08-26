@@ -9,6 +9,4 @@ public interface ProductReviewService {
     ResponseEntity<?> getReviewsPageByProductId(Long productId, Integer page, Integer size, Boolean isLiked);
 
     ResponseEntity<?> addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails);
-
-    ResponseEntity<?> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails);
 }

@@ -1,6 +1,7 @@
 package com.java.test.junior.service.SessionService;
 
 import com.java.test.junior.model.CredentialsDTO;
+import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +26,21 @@ public class SessionServiceImp implements SessionService {
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword());
 
+        Authentication authResult;
+
         try {
-            Authentication authResult = authManager.authenticate(authToken);
-
-            SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
-            SecurityContextHolder.getContext().setAuthentication(authResult);
-            securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response);
-
-            return ResponseEntity.ok().build();
+            authResult = authManager.authenticate(authToken);
         } catch (AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ErrorResponse("The provided credentials are incorrect.")
+            );
         }
+
+        SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+        securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response);
+
+        return ResponseEntity.ok().build();
     }
 
     @Override

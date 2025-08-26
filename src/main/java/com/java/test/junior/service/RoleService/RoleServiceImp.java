@@ -2,6 +2,7 @@ package com.java.test.junior.service.RoleService;
 
 import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
+import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import com.java.test.junior.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -36,7 +37,9 @@ public class RoleServiceImp implements RoleService {
     public ResponseEntity<?> createRole(String name) {
         try {
             if (roleMapper.existsName(name)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                        new ErrorResponse("A role with this name already exists.")
+                );
             }
 
             roleMapper.insert(name);
@@ -53,7 +56,9 @@ public class RoleServiceImp implements RoleService {
             int result = roleMapper.delete(roleId);
             return (result > 0)
                     ? ResponseEntity.ok().build()
-                    : ResponseEntity.notFound().build();
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorResponse("The requested role was not found.")
+            );
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -65,7 +70,9 @@ public class RoleServiceImp implements RoleService {
         try {
             boolean exists = userMapper.exists(userId);
             if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ErrorResponse("The requested user was not found.")
+                );
             }
 
             List<String> roles = roleMapper.findUserRoles(userId);
@@ -81,11 +88,15 @@ public class RoleServiceImp implements RoleService {
         try {
             boolean exists = userMapper.exists(userId) && roleMapper.exists(roleId);
             if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ErrorResponse("The requested role was not found.")
+                );
             }
 
             if (roleMapper.existsUserRole(userId, roleId)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                        new ErrorResponse("The user role has already been assigned.")
+                );
             }
 
             roleMapper.insertUserRole(userId, roleId);
@@ -102,7 +113,9 @@ public class RoleServiceImp implements RoleService {
             int result = roleMapper.deleteUserRole(userId, roleId);
             return (result > 0) ?
                     ResponseEntity.ok().build() :
-                    ResponseEntity.notFound().build();
+                    ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                            new ErrorResponse("The requested user was not found.")
+                    );
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

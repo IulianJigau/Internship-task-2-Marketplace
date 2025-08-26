@@ -5,6 +5,7 @@ import com.java.test.junior.mapper.ProductReviewMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.ProductReview;
+import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,9 @@ public class ProductReviewServiceImp implements ProductReviewService {
         try {
             boolean exists = userMapper.exists(userId);
             if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ErrorResponse("The requested user was not found.")
+                );
             }
 
             List<ProductReview> reviews = productReviewMapper.getPageByUserId(userId, page, size);
@@ -50,7 +53,9 @@ public class ProductReviewServiceImp implements ProductReviewService {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ErrorResponse("The requested product was not found.")
+                );
             }
 
             List<ProductReview> reviews = productReviewMapper.getPageByProductId(productId, page, size, isLiked);
@@ -66,7 +71,9 @@ public class ProductReviewServiceImp implements ProductReviewService {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ErrorResponse("The requested product was not found.")
+                );
             }
 
             ProductReview productReview = productReviewMapper.getProductReview(productId, userDetails.getId());
@@ -82,22 +89,6 @@ public class ProductReviewServiceImp implements ProductReviewService {
                 productReviewMapper.insert(productId, userDetails.getId(), isLiked);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<?> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails) {
-        try {
-            if (!isAdmin(userDetails) && !userDetails.getId().equals(userId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-
-            return productReviewMapper.delete(productId, userId) > 0 ?
-                    ResponseEntity.ok().build() :
-                    ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

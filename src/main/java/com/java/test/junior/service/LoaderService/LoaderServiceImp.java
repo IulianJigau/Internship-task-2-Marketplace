@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Product.ProductDTO;
+import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,9 @@ public class LoaderServiceImp implements LoaderService {
             products = loadCSV(path, ProductDTO.class);
         } catch (Exception e) {
             logger.error("Failed to load products from CSV: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorResponse("The input file was not found.")
+            );
         }
 
         try {
@@ -56,7 +59,7 @@ public class LoaderServiceImp implements LoaderService {
             }
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
-            logger.error("Failed to persist products: {}", e.getMessage(), e);
+            logger.error("Failed to insert products: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
