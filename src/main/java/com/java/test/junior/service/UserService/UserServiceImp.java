@@ -32,11 +32,13 @@ public class UserServiceImp implements UserService {
     public ResponseEntity<?> getUserById(Long userId) {
         try {
             User user = userMapper.find(userId);
-            if (user != null) {
-                user.setPassword("Hidden");
-                return ResponseEntity.ok(user);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
+            if(user.getIsDeleted()){
+                return ResponseEntity.status(HttpStatus.GONE).build();
+            }
+            return ResponseEntity.ok(user);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -47,9 +49,6 @@ public class UserServiceImp implements UserService {
     public ResponseEntity<?> getUsersPage(Integer page, Integer size) {
         try {
             List<User> users = userMapper.getPage(page, size);
-            for (User user : users) {
-                user.setPassword("Hidden");
-            }
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -61,9 +60,6 @@ public class UserServiceImp implements UserService {
     public ResponseEntity<?> getDeletedUsersPage(Integer page, Integer size) {
         try {
             List<User> users = userMapper.getDeletedPage(page, size);
-            for (User user : users) {
-                user.setPassword("Hidden");
-            }
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -90,7 +86,7 @@ public class UserServiceImp implements UserService {
     public ResponseEntity<?> checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
         try {
             if (!isAdmin(userDetails) && !userId.equals(userDetails.getId())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
             return action.execute() > 0 ?

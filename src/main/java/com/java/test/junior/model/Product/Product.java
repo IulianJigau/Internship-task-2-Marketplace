@@ -1,5 +1,6 @@
 package com.java.test.junior.model.Product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -13,5 +14,6 @@ public class Product {
     private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Boolean deleted;
+    @JsonIgnore
+    private Boolean isDeleted;
 }

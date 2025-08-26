@@ -1,5 +1,6 @@
 package com.java.test.junior.model.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,9 +10,11 @@ public class User {
     private Long id;
     private String email;
     private String username;
+    @JsonIgnore
     private String password;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Boolean deleted;
+    @JsonIgnore
+    private Boolean isDeleted;
 }
 

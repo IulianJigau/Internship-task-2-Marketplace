@@ -33,7 +33,7 @@
     <select id="getPage" parameterType="map" resultMap="userResultMapper">
         SELECT *
         FROM "user"
-        WHERE deleted = false
+        WHERE is_deleted = false
         ORDER BY id
             LIMIT #{size}
         OFFSET (#{page} - 1) * #{size}
@@ -42,7 +42,7 @@
     <select id="getDeletedPage" parameterType="map" resultMap="userResultMapper">
         SELECT *
         FROM "user"
-        WHERE deleted = true
+        WHERE is_deleted = true
         ORDER BY id
             LIMIT #{size}
         OFFSET (#{page} - 1) * #{size}
@@ -70,13 +70,13 @@
 
     <update id="delete" parameterType="Long">
         UPDATE "user"
-        SET deleted = true
+        SET is_deleted = true
         WHERE id = #{id}
     </update>
 
     <delete id="clearDeleted">
         DELETE FROM "user"
-        WHERE deleted = true
+        WHERE is_deleted = true
     </delete>
 
     <resultMap id="userResultMapper" type="com.java.test.junior.model.User.User">
@@ -86,6 +86,7 @@
         <result property="password" column="password"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="isDeleted" column="is_deleted"/>
     </resultMap>
 
 </mapper>

@@ -30,9 +30,13 @@ public class ProductServiceImp implements ProductService {
     public ResponseEntity<?> getProductById(Long productId) {
         try {
             Product product = productMapper.find(productId);
-            return (product != null)
-                    ? ResponseEntity.ok(product)
-                    : ResponseEntity.notFound().build();
+            if (product == null) {
+                return ResponseEntity.notFound().build();
+            }
+            if(product.getIsDeleted()){
+                return ResponseEntity.status(HttpStatus.GONE).build();
+            }
+            return ResponseEntity.ok(product);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -91,7 +95,7 @@ public class ProductServiceImp implements ProductService {
             }
 
             if (!isAdmin(userDetails) && !userDetails.getId().equals(product.getUserId())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
             action.execute();
@@ -103,8 +107,8 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<?> updateProduct(Long productId, ProductDTO productDTO, ExtendedUserDetails userDetails) {
-        return checkOwnershipAndRun(() -> productMapper.update(productId, productDTO), productId, userDetails);
+    public ResponseEntity<?> updateProduct(Long productId, ProductDTO product, ExtendedUserDetails userDetails) {
+        return checkOwnershipAndRun(() -> productMapper.update(productId, product), productId, userDetails);
     }
 
     @Override

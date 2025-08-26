@@ -92,7 +92,7 @@ public class ProductReviewServiceImp implements ProductReviewService {
     public ResponseEntity<?> deleteReview(Long productId, Long userId, ExtendedUserDetails userDetails) {
         try {
             if (!isAdmin(userDetails) && !userDetails.getId().equals(userId)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
             return productReviewMapper.delete(productId, userId) > 0 ?

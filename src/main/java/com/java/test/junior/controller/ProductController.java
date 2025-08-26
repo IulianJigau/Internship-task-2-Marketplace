@@ -35,16 +35,16 @@ public class ProductController {
     @Operation(summary = "Get products page")
     @GetMapping
     public ResponseEntity<?> getProductsPage(
-            @NotNull @Positive @RequestParam Integer page,
+            @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
         return productService.getProductsPage(page, page_size, query);
     }
 
-    @Operation(summary = "Get deleted products page")
+    @Operation(summary = "Get the deleted products' page")
     @GetMapping("/deleted")
     public ResponseEntity<?> getDeletedProductsPage(
-            @NotNull @Positive @RequestParam Integer page,
+            @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
         return productService.getDeletedProductsPage(page, page_size, query);
@@ -86,7 +86,7 @@ public class ProductController {
     @GetMapping("/{productId}/reviews")
     public ResponseEntity<?> getReviewsPage(
             @NotNull @Positive @PathVariable Long productId,
-            @NotNull @Positive @RequestParam Integer page,
+            @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) Boolean isLiked) {
         return productReviewService.getReviewsPageByProductId(productId, page, page_size, isLiked);

@@ -21,7 +21,7 @@
         SELECT *
         FROM product
         <where>
-            deleted = false
+            is_deleted = false
             <if test="query != null and query != ''">
                 AND fts_vector @@ plainto_tsquery('english', #{query})
             </if>
@@ -35,7 +35,7 @@
         SELECT *
         FROM product
         <where>
-            deleted = false
+            is_deleted = false
             AND user_id = #{userId}
             <if test="query != null and query != ''">
                 AND fts_vector @@ plainto_tsquery('english', #{query})
@@ -50,7 +50,7 @@
         SELECT *
         FROM product
         <where>
-            deleted = true
+            is_deleted = true
             <if test="query != null and query != ''">
                 AND fts_vector @@ plainto_tsquery('english', #{query})
             </if>
@@ -78,13 +78,13 @@
 
     <update id="delete" parameterType="Long">
         UPDATE product
-        SET deleted = true
+        SET is_deleted = true
         WHERE id = #{id}
     </update>
 
     <delete id="clearDeleted">
         DELETE FROM product
-        WHERE deleted = true
+        WHERE is_deleted = true
     </delete>
 
     <resultMap id="productResultMapper" type="com.java.test.junior.model.Product.Product">
@@ -95,6 +95,7 @@
         <result property="userId" column="user_id"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="isDeleted" column="is_deleted"/>
     </resultMap>
 
 </mapper>
