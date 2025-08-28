@@ -1,7 +1,9 @@
 package com.java.test.junior.config;
 
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,12 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    private String lastNodeName(Path path) {
+        Path.Node last = null;
+        for (Path.Node n : path) last = n;
+        return last != null ? last.getName() : "param";
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -34,21 +42,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleGenericException(ConstraintViolationException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getMessage()));
-    }
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+        ConstraintViolation<?> violation = ex.getConstraintViolations().iterator().next();
+        String paramName = lastNodeName(violation.getPropertyPath());
+        String message = violation.getMessage();
 
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<?> handleGenericException(HandlerMethodValidationException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getMessage()));
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(paramName + " " + message));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleGenericException(MethodArgumentTypeMismatchException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse("The request parameter " + ex.getName() + " has the wrong type"));
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<?> handleGenericException(HandlerMethodValidationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("There was an error validating the request"));
     }
 
     @ExceptionHandler(Exception.class)
