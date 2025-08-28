@@ -10,10 +10,12 @@ import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Role Handler", description = "Performs role oriented operations")
 @RestController
+@Validated
 @RequestMapping("/roles")
 @RequiredArgsConstructor
 public class RoleController {

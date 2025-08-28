@@ -14,10 +14,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User Handler", description = "Performs user oriented operations")
 @RestController
+@Validated
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
@@ -88,14 +90,7 @@ public class UserController {
             @Size(min = 3, max = 30) @RequestParam(required = false) String username,
             @Size(min = 5, max = 30) @RequestBody(required = false) @Pattern(regexp = "\\S+") String password,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        ResponseEntity<?> response = ResponseEntity.badRequest().build();
-        if (username != null) {
-            response = userService.updateUsername(userId, username, userDetails);
-        }
-        if (password != null) {
-            response = userService.updatePassword(userId, password, userDetails);
-        }
-        return response;
+            return userService.update(userId, username, password, userDetails);
     }
 
     @Operation(summary = "Delete an user")

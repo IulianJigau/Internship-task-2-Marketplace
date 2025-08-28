@@ -2,7 +2,6 @@ package com.java.test.junior.mapper;
 
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -22,9 +21,7 @@ public interface UserMapper {
 
     long insert(UserDTO user);
 
-    int updateUsername(Long id, String username);
-
-    int updatePassword(Long id, String password);
+    int update(Long id, String username, String password);
 
     int delete(Long id);
 

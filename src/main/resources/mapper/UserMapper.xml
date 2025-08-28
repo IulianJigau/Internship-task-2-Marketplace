@@ -56,15 +56,16 @@
         RETURNING id
     </select>
 
-    <update id="updateUsername" parameterType="map">
+    <update id="update" parameterType="map">
         UPDATE "user"
-        SET username = #{username}
-        WHERE id = #{id}
-    </update>
-
-    <update id="updatePassword" parameterType="map">
-        UPDATE "user"
-        SET password = #{password}
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+        </set>
         WHERE id = #{id}
     </update>
 
