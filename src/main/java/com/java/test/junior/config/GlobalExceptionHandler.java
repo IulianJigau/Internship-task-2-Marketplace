@@ -1,7 +1,6 @@
 package com.java.test.junior.config;
 
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
-import com.java.test.junior.component.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,13 +24,6 @@ public class GlobalExceptionHandler {
         String field = fieldError.getField();
         String message = fieldError.getDefaultMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(field + " field " + message));
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
