@@ -37,17 +37,20 @@ public class ProductController {
     public ResponseEntity<?> getProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(required = false) String query) {
-        return productService.getProductsPage(page, page_size, query);
+            @RequestParam(required = false) String query,
+            @Positive @RequestParam(required = false) Long userId){
+        return productService.getProductsPage(page, page_size, query, userId, false);
     }
 
     @Operation(summary = "Get the deleted products' page")
     @GetMapping("/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getDeletedProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(required = false) String query) {
-        return productService.getDeletedProductsPage(page, page_size, query);
+            @RequestParam(required = false) String query,
+            @Positive @RequestParam(required = false) Long userId) {
+        return productService.getProductsPage(page, page_size, query, userId, true);
     }
 
     @Operation(summary = "Clear deleted products")

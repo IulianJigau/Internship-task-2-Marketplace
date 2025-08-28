@@ -33,28 +33,28 @@
     <select id="getPage" parameterType="map" resultMap="userResultMapper">
         SELECT *
         FROM "user"
-        WHERE is_deleted = false
+        <if test="isDeleted != null">
+            WHERE is_deleted = #{isDeleted}
+        </if>
         ORDER BY id
             LIMIT #{size}
         OFFSET (#{page} - 1) * #{size}
     </select>
 
-    <select id="getDeletedPage" parameterType="map" resultMap="userResultMapper">
-        SELECT *
+    <select id="getTotalEntries" parameterType="Boolean">
+        SELECT COUNT(*)
         FROM "user"
-        WHERE is_deleted = true
-        ORDER BY id
-            LIMIT #{size}
-        OFFSET (#{page} - 1) * #{size}
+        <if test="isDeleted != null">
+            WHERE is_deleted = #{isDeleted}
+        </if>
     </select>
 
-    <insert id="insert"
-            parameterType="com.java.test.junior.model.User.UserDTO"
-            useGeneratedKeys="true"
-            keyColumn="id">
+    <select id="insert"
+            parameterType="com.java.test.junior.model.User.UserDTO">
         INSERT INTO "user" (email, username, password)
         VALUES (LOWER(#{email}), #{username}, #{password})
-    </insert>
+        RETURNING id
+    </select>
 
     <update id="updateUsername" parameterType="map">
         UPDATE "user"

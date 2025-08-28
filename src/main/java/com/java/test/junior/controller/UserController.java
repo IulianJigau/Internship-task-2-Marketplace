@@ -45,15 +45,16 @@ public class UserController {
     public ResponseEntity<?> getUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return userService.getUsersPage(page, page_size);
+        return userService.getUsersPage(page, page_size, false);
     }
 
     @Operation(summary = "Get deleted users' page")
     @GetMapping("/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getDeletedUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return userService.getDeletedUsersPage(page, page_size);
+        return userService.getUsersPage(page, page_size, true);
     }
 
     @Operation(summary = "Clear deleted users")
@@ -61,16 +62,6 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> clearDeletedUsers() {
         return userService.clearDeletedUsers();
-    }
-
-    @Operation(summary = "Get users page")
-    @GetMapping("/{userId}/products")
-    public ResponseEntity<?> getUserProductsPage(
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(required = false) String query,
-            @NotNull @Positive @PathVariable Long userId) {
-        return productService.getProductsPageByUserId(page, page_size, query, userId);
     }
 
     @Operation(summary = "Create an user")

@@ -5,6 +5,7 @@ import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
+import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class ProductServiceImp implements ProductService {
                         new ErrorResponse("The requested product was not found.")
                 );
             }
-            if(product.getIsDeleted()){
+            if (product.getIsDeleted()) {
                 return ResponseEntity.status(HttpStatus.GONE).body(
                         new ErrorResponse("The requested product has been deleted.")
                 );
@@ -51,32 +52,13 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<?> getProductsPage(Integer page, Integer size, String query) {
+    public ResponseEntity<?> getProductsPage(Integer page, Integer size, String query, Long userId,  Boolean isDeleted) {
         try {
-            List<Product> products = productMapper.getPage(page, size, query);
-            return ResponseEntity.ok(products);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<?> getProductsPageByUserId(Integer page, Integer size, String query, Long userId) {
-        try {
-            List<Product> products = productMapper.getPageByUserId(page, size, query, userId);
-            return ResponseEntity.ok(products);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<?> getDeletedProductsPage(Integer page, Integer size, String query) {
-        try {
-            List<Product> products = productMapper.getDeletedPage(page, size, query);
-            return ResponseEntity.ok(products);
+            List<Product> products = productMapper.getPage(page, size, query, userId, isDeleted);
+            Long entries = productMapper.getTotalEntries(query, userId, isDeleted);
+            return ResponseEntity.ok(
+                    new PaginationResponse<>(entries, products)
+            );
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -86,8 +68,9 @@ public class ProductServiceImp implements ProductService {
     @Override
     public ResponseEntity<?> createProduct(ProductDTO product, ExtendedUserDetails userDetails) {
         try {
-            productMapper.insert(userDetails.getId(), product);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            Long newId = productMapper.insert(userDetails.getId(), product);
+            Product newProduct = productMapper.find(newId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

@@ -7,11 +7,7 @@ import org.springframework.http.ResponseEntity;
 public interface ProductService {
     ResponseEntity<?> getProductById(Long productId);
 
-    ResponseEntity<?> getProductsPage(Integer page, Integer size, String query);
-
-    ResponseEntity<?> getProductsPageByUserId(Integer page, Integer size, String query, Long userId);
-
-    ResponseEntity<?> getDeletedProductsPage(Integer page, Integer size, String query);
+    ResponseEntity<?> getProductsPage(Integer page, Integer size, String query, Long userId, Boolean isDeleted);
 
     ResponseEntity<?> createProduct(ProductDTO product, ExtendedUserDetails userDetails);
 

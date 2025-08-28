@@ -21,9 +21,14 @@
         SELECT *
         FROM product
         <where>
-            is_deleted = false
+            <if test="isDeleted != null">
+                AND is_deleted = #{isDeleted}
+            </if>
             <if test="query != null and query != ''">
                 AND fts_vector @@ plainto_tsquery('english', #{query})
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
             </if>
         </where>
         ORDER BY id
@@ -31,42 +36,28 @@
         OFFSET #{size} * (#{page} - 1)
     </select>
 
-    <select id="getPageByUserId" parameterType="map" resultMap="productResultMapper">
-        SELECT *
+    <select id="getTotalEntries" parameterType="map">
+        SELECT COUNT(*)
         FROM product
         <where>
-            is_deleted = false
-            AND user_id = #{userId}
+            <if test="isDeleted != null">
+                AND is_deleted = #{isDeleted}
+            </if>
             <if test="query != null and query != ''">
                 AND fts_vector @@ plainto_tsquery('english', #{query})
             </if>
-        </where>
-        ORDER BY id
-        LIMIT #{size}
-        OFFSET #{size} * (#{page} - 1)
-    </select>
-
-    <select id="getDeletedPage" parameterType="map" resultMap="productResultMapper">
-        SELECT *
-        FROM product
-        <where>
-            is_deleted = true
-            <if test="query != null and query != ''">
-                AND fts_vector @@ plainto_tsquery('english', #{query})
+            <if test="userId != null">
+                AND user_id = #{userId}
             </if>
         </where>
-        ORDER BY id
-        LIMIT #{size}
-        OFFSET #{size} * (#{page} - 1)
     </select>
 
-    <insert id="insert"
-            parameterType="com.java.test.junior.model.Product.ProductDTO"
-            useGeneratedKeys="true"
-            keyColumn="id">
+    <select id="insert"
+            parameterType="com.java.test.junior.model.Product.ProductDTO">
         INSERT INTO product (name, price, description, user_id)
         VALUES (#{product.name}, #{product.price}, #{product.description}, #{userId})
-    </insert>
+        RETURNING id
+    </select>
 
     <update id="update" parameterType="map">
         UPDATE product

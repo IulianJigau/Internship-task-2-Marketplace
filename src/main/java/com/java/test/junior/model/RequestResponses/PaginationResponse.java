@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class PaginationResponse<T> {
-    private List<T> data;
     private Long totalElements;
-    private Integer totalPages;
+    private List<T> data;
 }

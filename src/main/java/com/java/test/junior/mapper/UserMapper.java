@@ -16,11 +16,11 @@ public interface UserMapper {
 
     User findByEmail(String email);
 
-    List<User> getPage(Integer page, Integer size);
+    List<User> getPage(Integer page, Integer size, Boolean isDeleted);
 
-    List<User> getDeletedPage(Integer page, Integer size);
+    long getTotalEntries(Boolean isDeleted);
 
-    void insert(UserDTO user);
+    long insert(UserDTO user);
 
     int updateUsername(Long id, String username);
 
@@ -28,5 +28,5 @@ public interface UserMapper {
 
     int delete(Long id);
 
-    int clearDeleted();
+    void clearDeleted();
 }

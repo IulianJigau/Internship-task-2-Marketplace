@@ -37,9 +37,7 @@
     </select>
 
     <insert id="insert"
-            parameterType="String"
-            useGeneratedKeys="true"
-            keyColumn="id">
+            parameterType="String">
         INSERT INTO role (name)
         VALUES (UPPER(#{name}))
     </insert>

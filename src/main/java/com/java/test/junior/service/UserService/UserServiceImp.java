@@ -3,6 +3,7 @@ package com.java.test.junior.service.UserService;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
+import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
 import lombok.RequiredArgsConstructor;
@@ -51,21 +52,13 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> getUsersPage(Integer page, Integer size) {
+    public ResponseEntity<?> getUsersPage(Integer page, Integer size, Boolean isDeleted) {
         try {
-            List<User> users = userMapper.getPage(page, size);
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<?> getDeletedUsersPage(Integer page, Integer size) {
-        try {
-            List<User> users = userMapper.getDeletedPage(page, size);
-            return ResponseEntity.ok(users);
+            List<User> users = userMapper.getPage(page, size, isDeleted);
+            Long entries = userMapper.getTotalEntries(isDeleted);
+            return ResponseEntity.ok(
+                    new PaginationResponse<>(entries, users)
+            );
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -82,8 +75,9 @@ public class UserServiceImp implements UserService {
             }
 
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userMapper.insert(user);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            Long newId = userMapper.insert(user);
+            User newUser = userMapper.find(newId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

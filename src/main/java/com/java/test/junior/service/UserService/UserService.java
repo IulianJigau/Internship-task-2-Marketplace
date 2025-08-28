@@ -7,9 +7,7 @@ import org.springframework.http.ResponseEntity;
 public interface UserService {
     ResponseEntity<?> getUserById(Long userId);
 
-    ResponseEntity<?> getUsersPage(Integer page, Integer size);
-
-    ResponseEntity<?> getDeletedUsersPage(Integer page, Integer size);
+    ResponseEntity<?> getUsersPage(Integer page, Integer size, Boolean isDeleted);
 
     ResponseEntity<?> createUser(UserDTO user);
 

@@ -11,17 +11,15 @@ public interface ProductMapper {
 
     Product find(Long id);
 
-    List<Product> getPage(Integer page, Integer size, String query);
+    List<Product> getPage(Integer page, Integer size, String query, Long userId, Boolean isDeleted);
 
-    List<Product> getPageByUserId(Integer page, Integer size, String query, Long userId);
+    long getTotalEntries(String query, Long userId, Boolean isDeleted);
 
-    List<Product> getDeletedPage(Integer page, Integer size, String query);
-
-    void insert(Long userId, ProductDTO product);
+    long insert(Long userId, ProductDTO product);
 
     void update(Long id, ProductDTO product);
 
     void delete(Long id);
 
-    int clearDeleted();
+    void clearDeleted();
 }
