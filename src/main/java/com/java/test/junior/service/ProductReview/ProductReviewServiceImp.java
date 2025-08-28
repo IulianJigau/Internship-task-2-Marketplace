@@ -2,7 +2,6 @@ package com.java.test.junior.service.ProductReview;
 
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.mapper.ProductReviewMapper;
-import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
@@ -22,34 +21,10 @@ public class ProductReviewServiceImp implements ProductReviewService {
     private static final Logger logger = LoggerFactory.getLogger(ProductReviewServiceImp.class);
 
     private final ProductMapper productMapper;
-    private final UserMapper userMapper;
     private final ProductReviewMapper productReviewMapper;
 
-    private boolean isAdmin(ExtendedUserDetails userDetails) {
-        return userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-    }
-
     @Override
-    public ResponseEntity<?> getReviewsPageByUserId(Long userId, Integer page, Integer size) {
-        try {
-            boolean exists = userMapper.exists(userId);
-            if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ErrorResponse("The requested user was not found.")
-                );
-            }
-
-            List<ProductReview> reviews = productReviewMapper.getPageByUserId(userId, page, size);
-            return ResponseEntity.ok(reviews);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<?> getReviewsPageByProductId(Long productId, Integer page, Integer size, Boolean isLiked) {
+    public ResponseEntity<?> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked) {
         try {
             boolean exists = productMapper.exists(productId);
             if (!exists) {
@@ -58,7 +33,7 @@ public class ProductReviewServiceImp implements ProductReviewService {
                 );
             }
 
-            List<ProductReview> reviews = productReviewMapper.getPageByProductId(productId, page, size, isLiked);
+            List<ProductReview> reviews = productReviewMapper.getPage(userId, productId, page, size, isLiked);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -78,10 +53,9 @@ public class ProductReviewServiceImp implements ProductReviewService {
 
             ProductReview productReview = productReviewMapper.getProductReview(productId, userDetails.getId());
             if (productReview != null) {
-                if(productReview.getIsLiked() == isLiked) {
+                if (productReview.getIsLiked() == isLiked) {
                     productReviewMapper.delete(productId, userDetails.getId());
-                }
-                else{
+                } else {
                     productReviewMapper.update(productId, userDetails.getId(), isLiked);
                 }
                 return ResponseEntity.status(HttpStatus.OK).build();

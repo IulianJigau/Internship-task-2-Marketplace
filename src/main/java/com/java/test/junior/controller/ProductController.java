@@ -37,9 +37,8 @@ public class ProductController {
     public ResponseEntity<?> getProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(required = false) String query,
-            @Positive @RequestParam(required = false) Long userId){
-        return productService.getProductsPage(page, page_size, query, userId, false);
+            @RequestParam(required = false) String query){
+        return productService.getProductsPage(page, page_size, query, null, false);
     }
 
     @Operation(summary = "Get the deleted products' page")
@@ -48,9 +47,8 @@ public class ProductController {
     public ResponseEntity<?> getDeletedProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(required = false) String query,
-            @Positive @RequestParam(required = false) Long userId) {
-        return productService.getProductsPage(page, page_size, query, userId, true);
+            @RequestParam(required = false) String query) {
+        return productService.getProductsPage(page, page_size, query, null, true);
     }
 
     @Operation(summary = "Clear deleted products")
@@ -92,7 +90,7 @@ public class ProductController {
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) Boolean isLiked) {
-        return productReviewService.getReviewsPageByProductId(productId, page, page_size, isLiked);
+        return productReviewService.getReviewsPage(null, productId, page, page_size, isLiked);
     }
 
     @Operation(summary = "Add, update or remove a product review")

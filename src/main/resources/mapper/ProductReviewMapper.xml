@@ -19,19 +19,16 @@
         AND user_id = #{userId}
     </select>
 
-    <select id="getPageByUserId" parameterType="Long" resultMap="productReviewResultMapper">
-        SELECT *
-        FROM product_review
-        WHERE user_id = #{userId}
-        LIMIT #{size}
-        OFFSET #{size} * (#{page} - 1)
-    </select>
-
-    <select id="getPageByProductId" parameterType="map" resultMap="productReviewResultMapper">
+    <select id="getPage" parameterType="map" resultMap="productReviewResultMapper">
         SELECT *
         FROM product_review
         <where>
-            product_id = #{productId}
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="productId != null">
+                AND product_id = #{productId}
+            </if>
             <if test="isLiked != null">
                 AND is_liked = #{isLiked}
             </if>

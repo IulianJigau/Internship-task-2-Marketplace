@@ -48,6 +48,16 @@ public class UserController {
         return userService.getUsersPage(page, page_size, false);
     }
 
+    @Operation(summary = "Get users page")
+    @GetMapping("/{userId}/products")
+    public ResponseEntity<?> getUserProductsPage(
+            @Positive @RequestParam(defaultValue = "1") Integer page,
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(required = false) String query,
+            @NotNull @Positive @PathVariable Long userId) {
+        return productService.getProductsPage(page, page_size, query, userId, false);
+    }
+
     @Operation(summary = "Get deleted users' page")
     @GetMapping("/deleted")
     @PreAuthorize("hasRole('ADMIN')")
@@ -128,6 +138,6 @@ public class UserController {
             @NotNull @Positive @PathVariable Long userId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return productReviewService.getReviewsPageByUserId(userId, page, page_size);
+        return productReviewService.getReviewsPage(userId, null, page, page_size, null);
     }
 }

@@ -4,9 +4,8 @@ import com.java.test.junior.model.ExtendedUserDetails;
 import org.springframework.http.ResponseEntity;
 
 public interface ProductReviewService {
-    ResponseEntity<?> getReviewsPageByUserId(Long userId, Integer page, Integer size);
 
-    ResponseEntity<?> getReviewsPageByProductId(Long productId, Integer page, Integer size, Boolean isLiked);
+    ResponseEntity<?> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked);
 
     ResponseEntity<?> addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails);
 }

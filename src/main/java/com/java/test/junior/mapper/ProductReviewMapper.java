@@ -10,9 +10,7 @@ public interface ProductReviewMapper {
 
     ProductReview getProductReview(Long productId, Long userId);
 
-    List<ProductReview> getPageByUserId(Long userId, Integer page, Integer size);
-
-    List<ProductReview> getPageByProductId(Long productId, Integer page, Integer size, Boolean isLiked);
+    List<ProductReview> getPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked);
 
     void insert(Long productId, Long userId, Boolean isLiked);
 
