@@ -26,13 +26,6 @@ public class ProductReviewServiceImp implements ProductReviewService {
     @Override
     public ResponseEntity<?> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked) {
         try {
-            boolean exists = productMapper.exists(productId);
-            if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ErrorResponse("The requested product was not found.")
-                );
-            }
-
             List<ProductReview> reviews = productReviewMapper.getPage(userId, productId, page, size, isLiked);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
