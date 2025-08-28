@@ -15,9 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -25,7 +22,6 @@ import java.util.List;
 public class SecurityConfig {
 
     private final AuthCheckFilter authCheckFilter;
-    private final List<RequestMatcher> permittedEndpointMatchers;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

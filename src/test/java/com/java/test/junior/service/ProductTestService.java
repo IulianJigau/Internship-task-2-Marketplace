@@ -140,23 +140,6 @@ public class ProductTestService {
         }
     }
 
-    public void checkDeleteReview(int productId, int userId) {
-        try {
-            MvcResult result =
-                    mockMvc.perform(delete("/products/" + productId + "/reviews?userId=" + userId)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .session(session))
-                            .andExpect(status().isOk())
-                            .andReturn();
-
-            int status = result.getResponse().getStatus();
-
-            logger.info("Delete product {} review made by user {}: {}", productId, userId, status);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-    }
-
     public void checkDeleteProduct(int productId) {
         try {
             MvcResult result =

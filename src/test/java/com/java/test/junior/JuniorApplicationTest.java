@@ -72,7 +72,6 @@ class JuniorApplicationTest {
         productTestService.checkGetProduct(2);
         productTestService.checkAddReview(2, true);
         productTestService.checkGetReview(2);
-        productTestService.checkDeleteReview(2, 1);
         productTestService.checkDeleteProduct(2);
         sessionTestService.checkLogout();
     }

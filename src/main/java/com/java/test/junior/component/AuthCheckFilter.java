@@ -1,8 +1,9 @@
 package com.java.test.junior.component;
 
-import com.java.test.junior.config.EndpointAccessConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,9 +27,18 @@ public class AuthCheckFilter extends OncePerRequestFilter {
 
     private final UserMapper userMapper;
     private final List<RequestMatcher> permittedEndpointMatchers;
+    private final ObjectMapper objectMapper;
 
     private boolean requiresAuth(HttpServletRequest request) {
         return permittedEndpointMatchers.stream().noneMatch(matcher -> matcher.matches(request));
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write(objectMapper.writeValueAsString(
+                new ErrorResponse(message)
+        ));
     }
 
     @Override
@@ -46,7 +56,7 @@ public class AuthCheckFilter extends OncePerRequestFilter {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            sendErrorResponse(response, "You must be logged in to access this resource");
             return;
         }
 
@@ -55,7 +65,7 @@ public class AuthCheckFilter extends OncePerRequestFilter {
         LocalDateTime updateTime = userMapper.find(userDetails.getId()).getUpdatedAt();
 
         if (authTime.isBefore(updateTime)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            sendErrorResponse(response, "Your session has expired");
             return;
         }
 
