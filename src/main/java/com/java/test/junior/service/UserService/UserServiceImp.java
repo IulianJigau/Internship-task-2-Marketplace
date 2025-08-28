@@ -103,7 +103,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     public ResponseEntity<?> update(Long userId, String username, String password, ExtendedUserDetails userDetails) {
-        return checkOwnershipAndRun(() -> userMapper.update(userId, username, passwordEncoder.encode(password)), userId, userDetails);
+        return checkOwnershipAndRun(
+                () -> userMapper.update(userId, username, password != null ? passwordEncoder.encode(password) : null),
+                userId, userDetails);
     }
 
     @Override
