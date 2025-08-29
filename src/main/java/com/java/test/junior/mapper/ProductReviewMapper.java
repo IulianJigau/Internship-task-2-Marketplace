@@ -12,6 +12,8 @@ public interface ProductReviewMapper {
 
     List<ProductReview> getPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked);
 
+    Long getTotalEntries(Long userId, Long productId, Boolean isLiked);
+
     void insert(Long productId, Long userId, Boolean isLiked);
 
     int update(Long productId, Long userId, Boolean isLiked);

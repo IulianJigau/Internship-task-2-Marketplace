@@ -1,6 +1,10 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.Product.Product;
+import com.java.test.junior.model.ProductReview;
+import com.java.test.junior.model.RequestResponses.PaginationResponse;
+import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
 import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.ProductService.ProductService;
@@ -17,6 +21,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "User Handler", description = "Performs user oriented operations")
 @RestController
 @Validated
@@ -31,20 +37,20 @@ public class UserController {
 
     @Operation(summary = "Get the current user")
     @GetMapping("/self")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public User getCurrentUser(@AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return userService.getUserById(userDetails.getId());
     }
 
     @Operation(summary = "Get user by id")
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserById(
+    public User getUserById(
             @NotNull @Positive @PathVariable Long userId) {
         return userService.getUserById(userId);
     }
 
     @Operation(summary = "Get users page")
     @GetMapping
-    public ResponseEntity<?> getUsersPage(
+    public PaginationResponse<User> getUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
         return userService.getUsersPage(page, page_size, false);
@@ -52,7 +58,7 @@ public class UserController {
 
     @Operation(summary = "Get users page")
     @GetMapping("/{userId}/products")
-    public ResponseEntity<?> getUserProductsPage(
+    public PaginationResponse<Product> getUserProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query,
@@ -63,7 +69,7 @@ public class UserController {
     @Operation(summary = "Get deleted users' page")
     @GetMapping("/deleted")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getDeletedUsersPage(
+    public PaginationResponse<User> getDeletedUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
         return userService.getUsersPage(page, page_size, true);
@@ -72,39 +78,39 @@ public class UserController {
     @Operation(summary = "Clear deleted users")
     @DeleteMapping("/deleted/clear")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> clearDeletedUsers() {
-        return userService.clearDeletedUsers();
+    public void clearDeletedUsers() {
+        userService.clearDeletedUsers();
     }
 
     @Operation(summary = "Create an user")
     @PostMapping
-    public ResponseEntity<?> createUser(
+    public User createUser(
             @Valid @RequestBody UserDTO user) {
         return userService.createUser(user);
     }
 
     @Operation(summary = "Update user's credentials")
     @PutMapping("/{userId}")
-    public ResponseEntity<?> updateUser(
+    public void updateUser(
             @NotNull @Positive @PathVariable Long userId,
             @Size(min = 3, max = 30) @RequestParam(required = false) String username,
             @Size(min = 5, max = 30) @RequestBody(required = false) @Pattern(regexp = "\\S+") String password,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-            return userService.update(userId, username, password, userDetails);
+            userService.update(userId, username, password, userDetails);
     }
 
     @Operation(summary = "Delete an user")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUser(
+    public void deleteUser(
             @NotNull @Positive @PathVariable Long userId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return userService.deleteUser(userId, userDetails);
+        userService.deleteUser(userId, userDetails);
     }
 
     @Operation(summary = "Get an user's roles")
     @GetMapping("/{userId}/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getUserRoles(
+    public List<String> getUserRoles(
             @NotNull @Positive @PathVariable Long userId) {
         return roleService.getUserRoles(userId);
     }
@@ -112,24 +118,24 @@ public class UserController {
     @Operation(summary = "Assign a role")
     @PostMapping("/{userId}/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> assignUserRole(
+    public void assignUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer roleId) {
-        return roleService.assignUserRole(userId, roleId);
+        roleService.assignUserRole(userId, roleId);
     }
 
     @Operation(summary = "Remove a role")
     @DeleteMapping("/{userId}/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> removeUserRole(
+    public void removeUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer roleId) {
-        return roleService.removeUserRole(userId, roleId);
+        roleService.removeUserRole(userId, roleId);
     }
 
     @Operation(summary = "Get an user's reviews")
     @GetMapping("/{userId}/reviews")
-    public ResponseEntity<?> getReviews(
+    public PaginationResponse<ProductReview> getReviews(
             @NotNull @Positive @PathVariable Long userId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {

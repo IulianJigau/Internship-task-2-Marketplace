@@ -112,7 +112,7 @@ public class ProductTestService {
                     mockMvc.perform(post("/products/" + productId + "/reviews?isLiked=" + isLiked)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .session(session))
-                            .andExpect(status().isCreated())
+                            .andExpect(status().isOk())
                             .andReturn();
 
             int status = result.getResponse().getStatus();

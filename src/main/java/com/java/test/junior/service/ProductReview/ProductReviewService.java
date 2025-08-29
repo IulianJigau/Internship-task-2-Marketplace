@@ -1,11 +1,13 @@
 package com.java.test.junior.service.ProductReview;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.ProductReview;
+import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface ProductReviewService {
 
-    ResponseEntity<?> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked);
+    PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked);
 
-    ResponseEntity<?> addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails);
+    void addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails);
 }

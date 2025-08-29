@@ -1,16 +1,17 @@
 package com.java.test.junior.service.UserService;
 
+import com.java.test.junior.exception.DatabaseFailException;
+import com.java.test.junior.exception.ResourceConflictException;
+import com.java.test.junior.exception.ResourceDeletedException;
+import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp implements UserService {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
 
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
@@ -31,101 +30,85 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> getUserById(Long userId) {
+    public User getUserById(Long userId) {
         try {
             User user = userMapper.find(userId);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ErrorResponse("The requested user was not found.")
-                );
+                throw new ResourceNotFoundException("The requested user was not found.");
             }
             if (user.getIsDeleted()) {
-                return ResponseEntity.status(HttpStatus.GONE).body(
-                        new ErrorResponse("The requested user has been deleted.")
-                );
+                throw new ResourceDeletedException("The requested user was deleted.");
             }
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return user;
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> getUsersPage(Integer page, Integer size, Boolean isDeleted) {
+    public PaginationResponse<User> getUsersPage(Integer page, Integer size, Boolean isDeleted) {
         try {
             List<User> users = userMapper.getPage(page, size, isDeleted);
             Long entries = userMapper.getTotalEntries(isDeleted);
-            return ResponseEntity.ok(
-                    new PaginationResponse<>(entries, users)
-            );
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return new PaginationResponse<>(entries, users);
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> createUser(UserDTO user) {
+    public User createUser(UserDTO user) {
         try {
             if (userMapper.existsEmail(user.getEmail())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                        new ErrorResponse("The provided email is already in use.")
-                );
+                throw new ResourceConflictException("The provided email is already in use.");
             }
 
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             Long newId = userMapper.insert(user);
-            User newUser = userMapper.find(newId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return userMapper.find(newId);
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
-    public ResponseEntity<?> checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
+    public void checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
         try {
             if (!isAdmin(userDetails) && !userId.equals(userDetails.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                        new ErrorResponse("You must be the owner of this account to perform this operation.")
-                );
+                throw new AccessDeniedException("You must be the owner of this account to perform this operation.");
             }
 
-            return action.execute() > 0 ?
-                    ResponseEntity.ok().build() :
-                    ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            int result = action.execute();
+            if (result == 0) {
+                throw new ResourceNotFoundException("The requested user was not found.");
+            }
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> update(Long userId, String username, String password, ExtendedUserDetails userDetails) {
-        return checkOwnershipAndRun(
+    public void update(Long userId, String username, String password, ExtendedUserDetails userDetails) {
+        checkOwnershipAndRun(
                 () -> userMapper.update(userId, username, password != null ? passwordEncoder.encode(password) : null),
                 userId, userDetails);
     }
 
     @Override
-    public ResponseEntity<?> deleteUser(Long userId, ExtendedUserDetails userDetails) {
-        return checkOwnershipAndRun(() -> userMapper.delete(userId), userId, userDetails);
+    public void deleteUser(Long userId, ExtendedUserDetails userDetails) {
+        checkOwnershipAndRun(() -> userMapper.delete(userId), userId, userDetails);
     }
 
     @Override
-    public ResponseEntity<?> clearDeletedUsers() {
+    public void clearDeletedUsers() {
         try {
             userMapper.clearDeleted();
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @FunctionalInterface
     public interface Action {
-        int execute() throws Exception;
+        int execute();
     }
 }

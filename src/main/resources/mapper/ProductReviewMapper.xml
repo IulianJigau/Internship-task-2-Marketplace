@@ -37,6 +37,22 @@
         OFFSET #{size} * (#{page} - 1)
     </select>
 
+    <select id="getTotalEntries" parameterType="map">
+        SELECT COUNT(*)
+        FROM product
+        <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="productId != null">
+                AND product_id = #{productId}
+            </if>
+            <if test="isLiked != null">
+                AND is_liked = #{isLiked}
+            </if>
+        </where>
+    </select>
+
     <insert id="insert" parameterType="map">
         INSERT INTO product_review (product_id, user_id, is_liked)
         VALUES (#{productId}, #{userId}, #{isLiked})

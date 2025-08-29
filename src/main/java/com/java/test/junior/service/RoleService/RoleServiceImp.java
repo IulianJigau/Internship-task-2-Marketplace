@@ -1,14 +1,13 @@
 package com.java.test.junior.service.RoleService;
 
+import com.java.test.junior.exception.DatabaseFailException;
+import com.java.test.junior.exception.ResourceConflictException;
+import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
-import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import com.java.test.junior.model.Role;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,108 +16,84 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleServiceImp implements RoleService {
 
-    private static final Logger logger = LoggerFactory.getLogger(RoleServiceImp.class);
-
     private final RoleMapper roleMapper;
     private final UserMapper userMapper;
 
     @Override
-    public ResponseEntity<?> getRoles() {
+    public List<Role> getRoles() {
         try {
-            List<Role> roles = roleMapper.findAll();
-            return ResponseEntity.ok(roles);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return roleMapper.findAll();
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> createRole(String name) {
+    public void createRole(String name) {
         try {
             if (roleMapper.existsName(name)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                        new ErrorResponse("A role with this name already exists.")
-                );
+                throw new ResourceConflictException("A role with this name already exists.");
             }
 
             roleMapper.insert(name);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> deleteRole(Integer roleId) {
+    public void deleteRole(Integer roleId) {
         try {
             int result = roleMapper.delete(roleId);
-            return (result > 0)
-                    ? ResponseEntity.ok().build()
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ErrorResponse("The requested role was not found.")
-            );
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            if (result == 0) {
+                throw new ResourceNotFoundException("The requested role was not found.");
+            }
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> getUserRoles(Long userId) {
+    public List<String> getUserRoles(Long userId) {
         try {
             boolean exists = userMapper.exists(userId);
             if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ErrorResponse("The requested user was not found.")
-                );
+                throw new ResourceNotFoundException("The requested user was not found.");
             }
 
-            List<String> roles = roleMapper.findUserRoles(userId);
-            return ResponseEntity.ok(roles);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return roleMapper.findUserRoles(userId);
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> assignUserRole(Long userId, Integer roleId) {
+    public void assignUserRole(Long userId, Integer roleId) {
         try {
             boolean exists = userMapper.exists(userId) && roleMapper.exists(roleId);
             if (!exists) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ErrorResponse("The requested role was not found.")
-                );
+                throw new ResourceNotFoundException("The requested user or role were not found.");
             }
 
             if (roleMapper.existsUserRole(userId, roleId)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                        new ErrorResponse("The user role has already been assigned.")
-                );
+                throw new ResourceConflictException("The user role has already been assigned.");
             }
 
             roleMapper.insertUserRole(userId, roleId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> removeUserRole(Long userId, Integer roleId) {
+    public void removeUserRole(Long userId, Integer roleId) {
         try {
             int result = roleMapper.deleteUserRole(userId, roleId);
-            return (result > 0) ?
-                    ResponseEntity.ok().build() :
-                    ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                            new ErrorResponse("The requested user was not found.")
-                    );
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            if (result == 0) {
+                throw new ResourceNotFoundException("The requested role was not found.");
+            }
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 }

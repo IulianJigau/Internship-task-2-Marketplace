@@ -1,17 +1,20 @@
 package com.java.test.junior.service.RoleService;
 
+import com.java.test.junior.model.Role;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface RoleService {
-    ResponseEntity<?> getRoles();
+    List<Role> getRoles();
 
-    ResponseEntity<?> createRole(String name);
+    void createRole(String name);
 
-    ResponseEntity<?> deleteRole(Integer roleId);
+    void deleteRole(Integer roleId);
 
-    ResponseEntity<?> getUserRoles(Long userId);
+    List<String> getUserRoles(Long userId);
 
-    ResponseEntity<?> assignUserRole(Long userId, Integer roleId);
+    void assignUserRole(Long userId, Integer roleId);
 
-    ResponseEntity<?> removeUserRole(Long userId, Integer roleId);
+    void removeUserRole(Long userId, Integer roleId);
 }

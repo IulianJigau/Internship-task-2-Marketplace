@@ -3,18 +3,18 @@ package com.java.test.junior.service.LoaderService;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.java.test.junior.exception.DatabaseFailException;
+import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Product.ProductDTO;
-import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -22,45 +22,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoaderServiceImp implements LoaderService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoaderServiceImp.class);
-
     private final ProductMapper productMapper;
 
-    private <T> List<T> loadCSV(String path, Class<T> type) throws Exception {
+    @Value("${app.product-file}")
+    private String productFilePath;
+
+    private <T> List<T> loadCSV(String path, Class<T> type) {
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
 
         try (InputStream stream = getClass().getResourceAsStream("/data/" + path)) {
             if (stream == null) {
-                throw new FileNotFoundException("Resource not found: /data/" + path);
+                throw new ResourceNotFoundException("Resource not found: /data/" + path);
             }
             MappingIterator<T> iterator = mapper.readerFor(type).with(schema).readValues(stream);
             return iterator.readAll();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> loadProducts(ExtendedUserDetails userDetails) {
-        final String path = "products.csv";
+    public void loadProducts(ExtendedUserDetails userDetails) {
         final List<ProductDTO> products;
 
-        try {
-            products = loadCSV(path, ProductDTO.class);
-        } catch (Exception e) {
-            logger.error("Failed to load products from CSV: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ErrorResponse("The input file was not found.")
-            );
-        }
+        products = loadCSV(productFilePath, ProductDTO.class);
 
         try {
             for (ProductDTO product : products) {
                 productMapper.insert(userDetails.getId(), product);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (Exception e) {
-            logger.error("Failed to insert products: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 }

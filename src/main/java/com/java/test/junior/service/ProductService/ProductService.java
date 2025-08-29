@@ -1,19 +1,21 @@
 package com.java.test.junior.service.ProductService;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
-import org.springframework.http.ResponseEntity;
+import com.java.test.junior.model.RequestResponses.PaginationResponse;
 
 public interface ProductService {
-    ResponseEntity<?> getProductById(Long productId);
 
-    ResponseEntity<?> getProductsPage(Integer page, Integer size, String query, Long userId, Boolean isDeleted);
+    Product getProductById(Long productId);
 
-    ResponseEntity<?> createProduct(ProductDTO product, ExtendedUserDetails userDetails);
+    PaginationResponse<Product> getProductsPage(Integer page, Integer size, String query, Long userId, Boolean isDeleted);
 
-    ResponseEntity<?> updateProduct(Long productId, ProductDTO product, ExtendedUserDetails userDetails);
+    Product createProduct(ProductDTO product, ExtendedUserDetails userDetails);
 
-    ResponseEntity<?> deleteProduct(Long productId, ExtendedUserDetails userDetails);
+    void updateProduct(Long productId, ProductDTO product, ExtendedUserDetails userDetails);
 
-    ResponseEntity<?> clearDeletedProducts();
+    void deleteProduct(Long productId, ExtendedUserDetails userDetails);
+
+    void clearDeletedProducts();
 }

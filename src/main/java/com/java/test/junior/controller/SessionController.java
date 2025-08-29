@@ -8,10 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Session Handler", description = "Performs session oriented operations")
@@ -24,17 +25,19 @@ public class SessionController {
 
     @Operation(summary = "Logs the user in")
     @PostMapping("/login")
-    public ResponseEntity<?> login(
+    @ResponseStatus(HttpStatus.OK)
+    public void login(
             @Valid @RequestBody CredentialsDTO credentials,
             HttpServletRequest request,
             HttpServletResponse response) {
-        return sessionService.login(credentials, request, response);
+        sessionService.login(credentials, request, response);
     }
 
     @Operation(summary = "Logs the user out")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(
+    @ResponseStatus(HttpStatus.OK)
+    public void logout(
             HttpServletRequest request) {
-        return sessionService.logout(request);
+        sessionService.logout(request);
     }
 }

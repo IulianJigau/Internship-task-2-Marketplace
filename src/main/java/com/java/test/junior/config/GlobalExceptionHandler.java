@@ -1,5 +1,6 @@
 package com.java.test.junior.config;
 
+import com.java.test.junior.exception.*;
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -16,11 +17,40 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.io.IOException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(DatabaseFailException.class)
+    public ResponseEntity<?> handleDatabaseFailException(DatabaseFailException ex) {
+        logger.error(ex.toString());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("The database malfunctioned"));
+    }
+
+    @ExceptionHandler(ResourceConflictException.class)
+    public ResponseEntity<?> handleResourceConflictException(ResourceConflictException ex) {
+        logger.error(ex.toString());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceDeletedException.class)
+    public ResponseEntity<?> handleResourceDeletedException(ResourceDeletedException ex) {
+        return ResponseEntity.status(HttpStatus.GONE)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    //Pre-defined exceptions
     private String lastNodeName(Path path) {
         Path.Node last = null;
         for (Path.Node n : path) last = n;
@@ -42,11 +72,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         ConstraintViolation<?> violation = ex.getConstraintViolations().iterator().next();
         String paramName = lastNodeName(violation.getPropertyPath());
         String message = violation.getMessage();
-
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(paramName + " " + message));
     }

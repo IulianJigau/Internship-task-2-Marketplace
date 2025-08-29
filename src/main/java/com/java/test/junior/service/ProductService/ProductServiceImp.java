@@ -1,17 +1,16 @@
 package com.java.test.junior.service.ProductService;
 
+import com.java.test.junior.exception.DatabaseFailException;
+import com.java.test.junior.exception.ResourceDeletedException;
+import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
-import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,10 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductServiceImp implements ProductService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
-
     private final ProductMapper productMapper;
-    private final HttpServletResponse httpServletResponse;
 
     private boolean isAdmin(ExtendedUserDetails userDetails) {
         return userDetails.getAuthorities().stream()
@@ -31,98 +27,80 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ResponseEntity<?> getProductById(Long productId) {
+    public Product getProductById(Long productId) {
         try {
             Product product = productMapper.find(productId);
             if (product == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ErrorResponse("The requested product was not found.")
-                );
+                throw new ResourceNotFoundException("The requested product was not found.");
             }
             if (product.getIsDeleted()) {
-                return ResponseEntity.status(HttpStatus.GONE).body(
-                        new ErrorResponse("The requested product has been deleted.")
-                );
+                throw new ResourceDeletedException("The requested product was deleted.");
             }
-            return ResponseEntity.ok(product);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return product;
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> getProductsPage(Integer page, Integer size, String query, Long userId,  Boolean isDeleted) {
+    public PaginationResponse<Product> getProductsPage(Integer page, Integer size, String query, Long userId, Boolean isDeleted) {
         try {
             List<Product> products = productMapper.getPage(page, size, query, userId, isDeleted);
             Long entries = productMapper.getTotalEntries(query, userId, isDeleted);
-            return ResponseEntity.ok(
-                    new PaginationResponse<>(entries, products)
-            );
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return new PaginationResponse<>(entries, products);
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> createProduct(ProductDTO product, ExtendedUserDetails userDetails) {
+    public Product createProduct(ProductDTO product, ExtendedUserDetails userDetails) {
         try {
             Long newId = productMapper.insert(userDetails.getId(), product);
-            Product newProduct = productMapper.find(newId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return productMapper.find(newId);
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
-    public ResponseEntity<?> checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
+    public void checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
         try {
             Product product = productMapper.find(productId);
             if (product == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ErrorResponse("The requested product was not found.")
-                );
+                throw new ResourceNotFoundException("The requested product was not found.");
             }
 
             if (!isAdmin(userDetails) && !userDetails.getId().equals(product.getUserId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                        new ErrorResponse("You must be the owner of this product to perform this operation.")
-                );
+                throw new AccessDeniedException("You must be the owner of this product to perform this operation.");
             }
 
             action.execute();
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> updateProduct(Long productId, ProductDTO product, ExtendedUserDetails userDetails) {
-        return checkOwnershipAndRun(() -> productMapper.update(productId, product), productId, userDetails);
+    public void updateProduct(Long productId, ProductDTO product, ExtendedUserDetails userDetails) {
+        checkOwnershipAndRun(() -> productMapper.update(productId, product), productId, userDetails);
     }
 
     @Override
-    public ResponseEntity<?> deleteProduct(Long productId, ExtendedUserDetails userDetails) {
-        return checkOwnershipAndRun(() -> productMapper.delete(productId), productId, userDetails);
+    public void deleteProduct(Long productId, ExtendedUserDetails userDetails) {
+        checkOwnershipAndRun(() -> productMapper.delete(productId), productId, userDetails);
     }
 
     @Override
-    public ResponseEntity<?> clearDeletedProducts() {
+    public void clearDeletedProducts() {
         try {
             productMapper.clearDeleted();
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+        } catch (DataAccessException e) {
+            throw new DatabaseFailException(e.getMessage());
         }
     }
 
     @FunctionalInterface
     public interface Action {
-        void execute() throws Exception;
+        void execute();
     }
 }

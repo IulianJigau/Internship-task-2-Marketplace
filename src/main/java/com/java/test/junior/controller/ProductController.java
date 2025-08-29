@@ -1,7 +1,10 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
+import com.java.test.junior.model.ProductReview;
+import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.ProductService.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +14,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -29,24 +32,27 @@ public class ProductController {
 
     @Operation(summary = "Get product by id")
     @GetMapping("/{productId}")
-    public ResponseEntity<?> getProductById(
+    @ResponseStatus(HttpStatus.OK)
+    public Product getProductById(
             @NotNull @Positive @PathVariable Long productId) {
         return productService.getProductById(productId);
     }
 
     @Operation(summary = "Get products page")
     @GetMapping
-    public ResponseEntity<?> getProductsPage(
+    @ResponseStatus(HttpStatus.OK)
+    public PaginationResponse<Product> getProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(required = false) String query){
+            @RequestParam(required = false) String query) {
         return productService.getProductsPage(page, page_size, query, null, false);
     }
 
     @Operation(summary = "Get the deleted products' page")
     @GetMapping("/deleted")
+    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getDeletedProductsPage(
+    public PaginationResponse<Product> getDeletedProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
@@ -55,14 +61,16 @@ public class ProductController {
 
     @Operation(summary = "Clear deleted products")
     @DeleteMapping("/deleted/clear")
+    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> clearDeletedProducts() {
-        return productService.clearDeletedProducts();
+    public void clearDeletedProducts() {
+        productService.clearDeletedProducts();
     }
 
     @Operation(summary = "Create a product")
     @PostMapping
-    public ResponseEntity<?> createProduct(
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product createProduct(
             @Valid @RequestBody ProductDTO product,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return productService.createProduct(product, userDetails);
@@ -70,24 +78,27 @@ public class ProductController {
 
     @Operation(summary = "Update a product")
     @PutMapping("/{productId}")
-    public ResponseEntity<?> updateProduct(
+    @ResponseStatus(HttpStatus.OK)
+    public void updateProduct(
             @NotNull @Positive @PathVariable Long productId,
             @Valid @RequestBody ProductDTO product,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productService.updateProduct(productId, product, userDetails);
+        productService.updateProduct(productId, product, userDetails);
     }
 
     @Operation(summary = "Delete a product")
     @DeleteMapping("/{productId}")
-    public ResponseEntity<?> deleteProduct(
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteProduct(
             @NotNull @Positive @PathVariable Long productId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productService.deleteProduct(productId, userDetails);
+        productService.deleteProduct(productId, userDetails);
     }
 
     @Operation(summary = "Get product reviews page")
     @GetMapping("/{productId}/reviews")
-    public ResponseEntity<?> getReviewsPage(
+    @ResponseStatus(HttpStatus.OK)
+    public PaginationResponse<ProductReview> getReviewsPage(
             @NotNull @Positive @PathVariable Long productId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
@@ -97,10 +108,11 @@ public class ProductController {
 
     @Operation(summary = "Add, update or remove a product review")
     @PostMapping("/{productId}/reviews")
-    public ResponseEntity<?> addReview(
+    @ResponseStatus(HttpStatus.OK)
+    public void addReview(
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @RequestParam Boolean isLiked,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productReviewService.addReview(productId, isLiked, userDetails);
+        productReviewService.addReview(productId, isLiked, userDetails);
     }
 }
