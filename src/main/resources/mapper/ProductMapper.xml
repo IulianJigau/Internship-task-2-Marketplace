@@ -78,6 +78,18 @@
         WHERE is_deleted = true
     </delete>
 
+    <update id="bulkImport" parameterType="map">
+        TRUNCATE TABLE product_import;
+
+        COPY product_import(name, price, description)
+            FROM '${filePath}'
+            WITH (FORMAT csv, HEADER true, ENCODING 'UTF8');
+
+        INSERT INTO product (name, price, description, user_id)
+        SELECT name, price, description, #{userId}
+        FROM product_import;
+    </update>
+
     <resultMap id="productResultMapper" type="com.java.test.junior.model.Product.Product">
         <id property="id" column="id"/>
         <result property="name" column="name"/>

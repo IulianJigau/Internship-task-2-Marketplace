@@ -6,16 +6,16 @@
 
     <select id="exists" parameterType="Integer">
         SELECT EXISTS
-            (SELECT 1
-            FROM role
-            WHERE id = #{id});
+                   (SELECT 1
+                    FROM role
+                    WHERE id = #{id});
     </select>
 
     <select id="existsName" parameterType="String">
         SELECT EXISTS
-            (SELECT 1
-            FROM role
-            WHERE name = UPPER(#{name}));
+                   (SELECT 1
+                    FROM role
+                    WHERE name = UPPER(#{name}));
     </select>
 
     <select id="find" parameterType="Integer" resultMap="roleResultMapper">
@@ -50,16 +50,16 @@
 
     <select id="existsUserRole" parameterType="map">
         SELECT EXISTS
-            (SELECT 1
-            FROM user_role
-            WHERE user_id = #{userId}
-            AND role_id = #{roleId});
+                   (SELECT 1
+                    FROM user_role
+                    WHERE user_id = #{userId}
+                      AND role_id = #{roleId});
     </select>
 
     <select id="findUserRoles" parameterType="Long" resultType="String">
         SELECT role.name AS role_name
         FROM role
-        JOIN user_role ON user_role.role_id = role.id
+                 JOIN user_role ON user_role.role_id = role.id
         WHERE user_role.user_id = #{userId};
     </select>
 
@@ -72,7 +72,7 @@
         DELETE
         FROM user_role
         WHERE user_id = #{userId}
-        AND role_id = #{roleId}
+          AND role_id = #{roleId}
     </delete>
 
     <resultMap id="roleResultMapper" type="com.java.test.junior.model.Role">

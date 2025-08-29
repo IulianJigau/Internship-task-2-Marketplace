@@ -22,4 +22,6 @@ public interface ProductMapper {
     void delete(Long id);
 
     void clearDeleted();
+
+    void bulkImport(String filePath, Long userId);
 }

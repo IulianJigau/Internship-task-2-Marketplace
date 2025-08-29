@@ -13,14 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LoaderServiceImp implements LoaderService {
+public class LoaderServiceInsertImp implements LoaderService {
 
     private final ProductMapper productMapper;
 

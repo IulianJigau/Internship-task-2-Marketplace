@@ -1,6 +1,9 @@
 package com.java.test.junior.config;
 
-import com.java.test.junior.exception.*;
+import com.java.test.junior.exception.DatabaseFailException;
+import com.java.test.junior.exception.ResourceConflictException;
+import com.java.test.junior.exception.ResourceDeletedException;
+import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -16,8 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.io.IOException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -68,7 +70,9 @@ public class GlobalExceptionHandler {
         FieldError fieldError = (FieldError) ex.getBindingResult().getAllErrors().getFirst();
         String field = fieldError.getField();
         String message = fieldError.getDefaultMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(field + " field " + message));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(field + " field " + message)
+        );
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -90,6 +94,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleGenericException(HandlerMethodValidationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("There was an error validating the request"));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
