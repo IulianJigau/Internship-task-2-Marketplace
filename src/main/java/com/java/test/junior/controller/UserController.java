@@ -75,13 +75,6 @@ public class UserController {
         return userService.getUsersPage(page, page_size, true);
     }
 
-    @Operation(summary = "Clear deleted users")
-    @DeleteMapping("/deleted/clear")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void clearDeletedUsers() {
-        userService.clearDeletedUsers();
-    }
-
     @Operation(summary = "Create an user")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -106,6 +99,13 @@ public class UserController {
             @NotNull @Positive @PathVariable Long userId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         userService.deleteUser(userId, userDetails);
+    }
+
+    @Operation(summary = "Clear deleted users")
+    @DeleteMapping("/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void clearDeletedUsers() {
+        userService.clearDeletedUsers();
     }
 
     @Operation(summary = "Get an user's roles")

@@ -1,16 +1,15 @@
-package com.java.test.junior;
+package com.java.test.junior.integration.config;
 
-import lombok.Data;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockHttpSession;
 
 @Configuration
-@Data
-public class SessionConfig {
+public class sessionConfig {
+    MockHttpSession session = new MockHttpSession();
 
     @Bean
-    public MockHttpSession session(){
-        return new MockHttpSession();
+    MockHttpSession session() {
+        return session;
     }
 }

@@ -56,13 +56,6 @@ public class ProductController {
         return productService.getProductsPage(page, page_size, query, null, true);
     }
 
-    @Operation(summary = "Clear deleted products")
-    @DeleteMapping("/deleted/clear")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void clearDeletedProducts() {
-        productService.clearDeletedProducts();
-    }
-
     @Operation(summary = "Create a product")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -88,6 +81,14 @@ public class ProductController {
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         productService.deleteProduct(productId, userDetails);
     }
+
+    @Operation(summary = "Clear deleted products")
+    @DeleteMapping("/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void clearDeletedProducts() {
+        productService.clearDeletedProducts();
+    }
+
 
     @Operation(summary = "Get product reviews page")
     @GetMapping("/{productId}/reviews")
