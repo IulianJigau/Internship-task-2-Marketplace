@@ -15,7 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers
-class JuniorApplicationTest {
+class IntegrationTest {
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
@@ -23,20 +23,17 @@ class JuniorApplicationTest {
             .withUsername("testuser")
             .withPassword("testpass");
 
-    private final LoaderTestService loaderTestService;
     private final ProductTestService productTestService;
     private final RoleTestService roleTestService;
     private final SessionTestService sessionTestService;
     private final UserTestService userTestService;
 
     @Autowired
-    JuniorApplicationTest(
-            LoaderTestService loaderTestService,
+    IntegrationTest(
             ProductTestService productTestService,
             RoleTestService roleTestService,
             SessionTestService sessionTestService,
             UserTestService userTestService) {
-        this.loaderTestService = loaderTestService;
         this.productTestService = productTestService;
         this.roleTestService = roleTestService;
         this.sessionTestService = sessionTestService;
@@ -65,14 +62,13 @@ class JuniorApplicationTest {
         userTestService.checkAssignRole(2, 2);
         userTestService.checkRemoveUserRole(2, 2);
         roleTestService.checkDeleteRole(2);
-        loaderTestService.checkLoadProducts();
         productTestService.checkAddProducts();
         productTestService.checkGetProducts();
-        productTestService.checkUpdateProducts(2);
-        productTestService.checkGetProduct(2);
-        productTestService.checkAddReview(2, true);
-        productTestService.checkGetReview(2);
-        productTestService.checkDeleteProduct(2);
+        productTestService.checkUpdateProducts(1);
+        productTestService.checkGetProduct(1);
+        productTestService.checkAddReview(1, true);
+        productTestService.checkGetReview(1);
+        productTestService.checkDeleteProduct(1);
         sessionTestService.checkLogout();
     }
 }

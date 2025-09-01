@@ -27,7 +27,6 @@ public class RoleController {
 
     @Operation(summary = "Get roles")
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     public List<Role> getRoles() {
         return roleService.getRoles();
@@ -44,7 +43,6 @@ public class RoleController {
 
     @Operation(summary = "Delete role")
     @DeleteMapping("/{roleId}")
-    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteRole(
             @NotNull @Positive @PathVariable Integer roleId) {

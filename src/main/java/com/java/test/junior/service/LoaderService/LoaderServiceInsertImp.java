@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -25,20 +26,27 @@ public class LoaderServiceInsertImp implements LoaderService {
     @Value("${app.product-file}")
     private String productFilePath;
 
-    private <T> List<T> loadCSV(String path, Class<T> type) {
+    private <T> List<T> loadCSV(String fileName, Class<T> type) {
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
 
-        try (InputStream stream = getClass().getResourceAsStream("/data/" + path)) {
+        String resourcePath = "/data/" + fileName;
+        try (InputStream stream = getClass().getResourceAsStream(resourcePath)) {
             if (stream == null) {
-                throw new ResourceNotFoundException("Resource not found: /data/" + path);
+                throw new ResourceNotFoundException("CSV resource not found: " + resourcePath);
             }
-            MappingIterator<T> iterator = mapper.readerFor(type).with(schema).readValues(stream);
+
+            MappingIterator<T> iterator = mapper
+                    .readerFor(type)
+                    .with(schema)
+                    .readValues(stream);
+
             return iterator.readAll();
-        } catch (Exception e) {
-            throw new ResourceNotFoundException(e.getMessage());
+        } catch (IOException e) {
+            throw new ResourceNotFoundException("Failed to read CSV: " + e.getMessage());
         }
     }
+
 
     @Override
     public void loadProducts(ExtendedUserDetails userDetails) {

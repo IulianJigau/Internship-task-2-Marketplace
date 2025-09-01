@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -84,6 +84,7 @@ public class UserController {
 
     @Operation(summary = "Create an user")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User createUser(
             @Valid @RequestBody UserDTO user) {
         return userService.createUser(user);
@@ -96,7 +97,7 @@ public class UserController {
             @Size(min = 3, max = 30) @RequestParam(required = false) String username,
             @Size(min = 5, max = 30) @RequestBody(required = false) @Pattern(regexp = "\\S+") String password,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-            userService.update(userId, username, password, userDetails);
+        userService.update(userId, username, password, userDetails);
     }
 
     @Operation(summary = "Delete an user")
@@ -117,6 +118,7 @@ public class UserController {
 
     @Operation(summary = "Assign a role")
     @PostMapping("/{userId}/roles")
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     public void assignUserRole(
             @NotNull @Positive @PathVariable Long userId,

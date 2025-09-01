@@ -39,7 +39,7 @@
 
     <select id="getTotalEntries" parameterType="map">
         SELECT COUNT(*)
-        FROM product
+        FROM product_review
         <where>
             <if test="userId != null">
                 AND user_id = #{userId}

@@ -25,7 +25,6 @@ public class SessionController {
 
     @Operation(summary = "Logs the user in")
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
     public void login(
             @Valid @RequestBody CredentialsDTO credentials,
             HttpServletRequest request,
@@ -35,7 +34,6 @@ public class SessionController {
 
     @Operation(summary = "Logs the user out")
     @PostMapping("/logout")
-    @ResponseStatus(HttpStatus.OK)
     public void logout(
             HttpServletRequest request) {
         sessionService.logout(request);

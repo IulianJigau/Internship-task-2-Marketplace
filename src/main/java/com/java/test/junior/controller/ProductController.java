@@ -32,7 +32,6 @@ public class ProductController {
 
     @Operation(summary = "Get product by id")
     @GetMapping("/{productId}")
-    @ResponseStatus(HttpStatus.OK)
     public Product getProductById(
             @NotNull @Positive @PathVariable Long productId) {
         return productService.getProductById(productId);
@@ -40,7 +39,6 @@ public class ProductController {
 
     @Operation(summary = "Get products page")
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public PaginationResponse<Product> getProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
@@ -50,7 +48,6 @@ public class ProductController {
 
     @Operation(summary = "Get the deleted products' page")
     @GetMapping("/deleted")
-    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     public PaginationResponse<Product> getDeletedProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
@@ -61,7 +58,6 @@ public class ProductController {
 
     @Operation(summary = "Clear deleted products")
     @DeleteMapping("/deleted/clear")
-    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     public void clearDeletedProducts() {
         productService.clearDeletedProducts();
@@ -78,7 +74,6 @@ public class ProductController {
 
     @Operation(summary = "Update a product")
     @PutMapping("/{productId}")
-    @ResponseStatus(HttpStatus.OK)
     public void updateProduct(
             @NotNull @Positive @PathVariable Long productId,
             @Valid @RequestBody ProductDTO product,
@@ -88,7 +83,6 @@ public class ProductController {
 
     @Operation(summary = "Delete a product")
     @DeleteMapping("/{productId}")
-    @ResponseStatus(HttpStatus.OK)
     public void deleteProduct(
             @NotNull @Positive @PathVariable Long productId,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
@@ -97,7 +91,6 @@ public class ProductController {
 
     @Operation(summary = "Get product reviews page")
     @GetMapping("/{productId}/reviews")
-    @ResponseStatus(HttpStatus.OK)
     public PaginationResponse<ProductReview> getReviewsPage(
             @NotNull @Positive @PathVariable Long productId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
@@ -108,7 +101,6 @@ public class ProductController {
 
     @Operation(summary = "Add, update or remove a product review")
     @PostMapping("/{productId}/reviews")
-    @ResponseStatus(HttpStatus.OK)
     public void addReview(
             @NotNull @Positive @PathVariable Long productId,
             @NotNull @RequestParam Boolean isLiked,
