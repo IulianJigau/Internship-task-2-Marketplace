@@ -46,7 +46,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public PaginationResponse<User> getUsersPage(Integer page, Integer size, Boolean isDeleted) {
+    public PaginationResponse<?> getUsersPage(Integer page, Integer size, Boolean isDeleted) {
         try {
             List<User> users = userMapper.getPage(page, size, isDeleted);
             Long entries = userMapper.getTotalEntries(isDeleted);

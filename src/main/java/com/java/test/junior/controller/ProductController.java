@@ -3,10 +3,9 @@ package com.java.test.junior.controller;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
-import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
-import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.Product.ProductService;
+import com.java.test.junior.service.ProductReview.ProductReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,7 +38,7 @@ public class ProductController {
 
     @Operation(summary = "Get products page")
     @GetMapping
-    public PaginationResponse<Product> getProductsPage(
+    public PaginationResponse<?> getProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
@@ -49,7 +48,7 @@ public class ProductController {
     @Operation(summary = "Get the deleted products' page")
     @GetMapping("/deleted")
     @PreAuthorize("hasRole('ADMIN')")
-    public PaginationResponse<Product> getDeletedProductsPage(
+    public PaginationResponse<?> getDeletedProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query) {
@@ -92,7 +91,7 @@ public class ProductController {
 
     @Operation(summary = "Get product reviews page")
     @GetMapping("/{productId}/reviews")
-    public PaginationResponse<ProductReview> getReviewsPage(
+    public PaginationResponse<?> getReviewsPage(
             @NotNull @Positive @PathVariable Long productId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,

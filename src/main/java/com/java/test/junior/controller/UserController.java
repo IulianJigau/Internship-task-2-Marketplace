@@ -50,7 +50,7 @@ public class UserController {
 
     @Operation(summary = "Get users page")
     @GetMapping
-    public PaginationResponse<User> getUsersPage(
+    public PaginationResponse<?> getUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
         return userService.getUsersPage(page, page_size, false);
@@ -58,7 +58,7 @@ public class UserController {
 
     @Operation(summary = "Get users page")
     @GetMapping("/{userId}/products")
-    public PaginationResponse<Product> getUserProductsPage(
+    public PaginationResponse<?> getUserProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
             @RequestParam(required = false) String query,
@@ -69,7 +69,7 @@ public class UserController {
     @Operation(summary = "Get deleted users' page")
     @GetMapping("/deleted")
     @PreAuthorize("hasRole('ADMIN')")
-    public PaginationResponse<User> getDeletedUsersPage(
+    public PaginationResponse<?> getDeletedUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
         return userService.getUsersPage(page, page_size, true);
@@ -137,7 +137,7 @@ public class UserController {
 
     @Operation(summary = "Get an user's reviews")
     @GetMapping("/{userId}/reviews")
-    public PaginationResponse<ProductReview> getReviews(
+    public PaginationResponse<?> getReviews(
             @NotNull @Positive @PathVariable Long userId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {

@@ -8,7 +8,7 @@ import com.java.test.junior.model.User.UserDTO;
 public interface UserService {
     User getUserById(Long userId);
 
-    PaginationResponse<User> getUsersPage(Integer page, Integer size, Boolean isDeleted);
+    PaginationResponse<?> getUsersPage(Integer page, Integer size, Boolean isDeleted);
 
     User createUser(UserDTO user);
 

@@ -6,7 +6,7 @@ import com.java.test.junior.model.RequestResponses.PaginationResponse;
 
 public interface ProductReviewService {
 
-    PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked);
+    PaginationResponse<?> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked);
 
     void addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails);
 }
