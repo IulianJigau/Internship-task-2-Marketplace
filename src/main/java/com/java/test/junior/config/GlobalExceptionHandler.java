@@ -1,9 +1,6 @@
 package com.java.test.junior.config;
 
-import com.java.test.junior.exception.DatabaseFailException;
-import com.java.test.junior.exception.ResourceConflictException;
-import com.java.test.junior.exception.ResourceDeletedException;
-import com.java.test.junior.exception.ResourceNotFoundException;
+import com.java.test.junior.exception.*;
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -16,6 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
@@ -28,27 +26,34 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(DatabaseFailException.class)
-    public ResponseEntity<?> handleDatabaseFailException(DatabaseFailException ex) {
+    public ResponseEntity<?> handleException(DatabaseFailException ex) {
         logger.error(ex.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("The database malfunctioned"));
     }
 
     @ExceptionHandler(ResourceConflictException.class)
-    public ResponseEntity<?> handleResourceConflictException(ResourceConflictException ex) {
+    public ResponseEntity<?> handleException(ResourceConflictException ex) {
         logger.error(ex.toString());
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(ResourceValidationException.class)
+    public ResponseEntity<?> handleException(ResourceValidationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+
     @ExceptionHandler(ResourceDeletedException.class)
-    public ResponseEntity<?> handleResourceDeletedException(ResourceDeletedException ex) {
+    public ResponseEntity<?> handleException(ResourceDeletedException ex) {
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    public ResponseEntity<?> handleException(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(ex.getMessage()));
     }
@@ -61,13 +66,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
+    public ResponseEntity<?> handleException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<?> handleException(MethodArgumentNotValidException ex) {
         FieldError fieldError = (FieldError) ex.getBindingResult().getAllErrors().getFirst();
         String field = fieldError.getField();
         String message = fieldError.getDefaultMessage();
@@ -77,7 +82,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<ErrorResponse> handleException(ConstraintViolationException ex) {
         ConstraintViolation<?> violation = ex.getConstraintViolations().iterator().next();
         String paramName = lastNodeName(violation.getPropertyPath());
         String message = violation.getMessage();
@@ -86,31 +91,37 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<?> handleGenericException(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<?> handleException(MethodArgumentTypeMismatchException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("The request parameter " + ex.getName() + " has the wrong type"));
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<?> handleGenericException(HandlerMethodValidationException ex) {
+    public ResponseEntity<?> handleException(HandlerMethodValidationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("There was an error validating the request"));
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException ex) {
+    public ResponseEntity<?> handleException(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<?> handleException(MissingServletRequestParameterException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<?> handleException(HttpRequestMethodNotSupportedException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGenericException(Exception ex) {
+    public ResponseEntity<?> handleException(Exception ex) {
         logger.error(ex.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Internal Server Error"));

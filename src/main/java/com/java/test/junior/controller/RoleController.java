@@ -1,7 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.Role;
-import com.java.test.junior.service.RoleService.RoleService;
+import com.java.test.junior.service.Role.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;

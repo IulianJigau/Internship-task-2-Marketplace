@@ -1,10 +1,9 @@
-package com.java.test.junior.service.UserService;
+package com.java.test.junior.service.User;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
-import org.springframework.http.ResponseEntity;
 
 public interface UserService {
     User getUserById(Long userId);

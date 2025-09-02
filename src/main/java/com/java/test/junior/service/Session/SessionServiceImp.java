@@ -1,4 +1,4 @@
-package com.java.test.junior.service.SessionService;
+package com.java.test.junior.service.Session;
 
 import com.java.test.junior.model.CredentialsDTO;
 import jakarta.servlet.http.HttpServletRequest;

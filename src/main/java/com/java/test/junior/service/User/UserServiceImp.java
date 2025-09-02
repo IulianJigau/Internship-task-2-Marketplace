@@ -1,4 +1,4 @@
-package com.java.test.junior.service.UserService;
+package com.java.test.junior.service.User;
 
 import com.java.test.junior.exception.DatabaseFailException;
 import com.java.test.junior.exception.ResourceConflictException;

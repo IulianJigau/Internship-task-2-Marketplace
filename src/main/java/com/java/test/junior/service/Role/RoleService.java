@@ -1,7 +1,6 @@
-package com.java.test.junior.service.RoleService;
+package com.java.test.junior.service.Role;
 
 import com.java.test.junior.model.Role;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 

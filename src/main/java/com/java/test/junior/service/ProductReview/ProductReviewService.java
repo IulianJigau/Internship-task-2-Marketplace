@@ -3,7 +3,6 @@ package com.java.test.junior.service.ProductReview;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
-import org.springframework.http.ResponseEntity;
 
 public interface ProductReviewService {
 

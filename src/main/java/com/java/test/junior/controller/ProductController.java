@@ -6,7 +6,7 @@ import com.java.test.junior.model.Product.ProductDTO;
 import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.service.ProductReview.ProductReviewService;
-import com.java.test.junior.service.ProductService.ProductService;
+import com.java.test.junior.service.Product.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
