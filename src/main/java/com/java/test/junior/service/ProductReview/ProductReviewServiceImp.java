@@ -20,9 +20,12 @@ public class ProductReviewServiceImp implements ProductReviewService {
     private final ProductReviewMapper productReviewMapper;
 
     @Override
-    public PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean isLiked) throws DatabaseFailException {
+    public PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean refresh, Boolean isLiked) throws DatabaseFailException {
         List<ProductReview> reviews = productReviewMapper.getPage(userId, productId, page, size, isLiked);
-        Long entries = productReviewMapper.getTotalEntries(userId, productId, isLiked);
+        long entries = -1L;
+        if(refresh) {
+            entries = productReviewMapper.getTotalEntries(userId, productId, isLiked);
+        }
         return new PaginationResponse<>(entries, reviews);
     }
 

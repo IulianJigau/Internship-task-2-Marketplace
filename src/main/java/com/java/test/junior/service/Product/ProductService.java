@@ -9,7 +9,7 @@ public interface ProductService {
 
     Product getProductById(Long productId);
 
-    PaginationResponse<?> getProductsPage(Integer page, Integer size, String query, Long userId, Boolean isDeleted);
+    PaginationResponse<?> getProductsPage(Integer page, Integer size, Boolean refresh, String query, Long userId, Boolean isDeleted);
 
     Product createProduct(ProductDTO product, ExtendedUserDetails userDetails);
 

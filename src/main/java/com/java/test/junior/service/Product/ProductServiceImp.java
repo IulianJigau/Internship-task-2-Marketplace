@@ -38,9 +38,12 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public PaginationResponse<Product> getProductsPage(Integer page, Integer size, String query, Long userId, Boolean isDeleted) throws DatabaseFailException {
+    public PaginationResponse<?> getProductsPage(Integer page, Integer size, Boolean refresh, String query, Long userId, Boolean isDeleted) throws DatabaseFailException {
         List<Product> products = productMapper.getPage(page, size, query, userId, isDeleted);
-        Long entries = productMapper.getTotalEntries(query, userId, isDeleted);
+        long entries = -1L;
+        if(refresh) {
+            entries = productMapper.getTotalEntries(query, userId, isDeleted);
+        }
         return new PaginationResponse<>(entries, products);
     }
 

@@ -9,9 +9,7 @@ import com.java.test.junior.service.ProductReview.ProductReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,8 +39,9 @@ public class ProductController {
     public PaginationResponse<?> getProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(defaultValue = "true") Boolean refresh,
             @RequestParam(required = false) String query) {
-        return productService.getProductsPage(page, page_size, query, null, false);
+        return productService.getProductsPage(page, page_size, refresh, query, null, false);
     }
 
     @Operation(summary = "Get the deleted products' page")
@@ -51,8 +50,9 @@ public class ProductController {
     public PaginationResponse<?> getDeletedProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(defaultValue = "true") Boolean refresh,
             @RequestParam(required = false) String query) {
-        return productService.getProductsPage(page, page_size, query, null, true);
+        return productService.getProductsPage(page, page_size, refresh, query, null, true);
     }
 
     @Operation(summary = "Create a product")
@@ -95,8 +95,9 @@ public class ProductController {
             @NotNull @Positive @PathVariable Long productId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(defaultValue = "true") Boolean refresh,
             @RequestParam(required = false) Boolean isLiked) {
-        return productReviewService.getReviewsPage(null, productId, page, page_size, isLiked);
+        return productReviewService.getReviewsPage(null, productId, page, page_size, refresh, isLiked);
     }
 
     @Operation(summary = "Add, update or remove a product review")

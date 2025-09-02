@@ -1,13 +1,11 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.Product.Product;
-import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
-import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.Product.ProductService;
+import com.java.test.junior.service.ProductReview.ProductReviewService;
 import com.java.test.junior.service.Role.RoleService;
 import com.java.test.junior.service.User.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,8 +50,9 @@ public class UserController {
     @GetMapping
     public PaginationResponse<?> getUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return userService.getUsersPage(page, page_size, false);
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(defaultValue = "true") Boolean refresh) {
+        return userService.getUsersPage(page, page_size, refresh, false);
     }
 
     @Operation(summary = "Get users page")
@@ -61,9 +60,10 @@ public class UserController {
     public PaginationResponse<?> getUserProductsPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(defaultValue = "true") Boolean refresh,
             @RequestParam(required = false) String query,
             @NotNull @Positive @PathVariable Long userId) {
-        return productService.getProductsPage(page, page_size, query, userId, false);
+        return productService.getProductsPage(page, page_size, refresh, query, userId, false);
     }
 
     @Operation(summary = "Get deleted users' page")
@@ -71,8 +71,9 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public PaginationResponse<?> getDeletedUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return userService.getUsersPage(page, page_size, true);
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(defaultValue = "true") Boolean refresh) {
+        return userService.getUsersPage(page, page_size, refresh, true);
     }
 
     @Operation(summary = "Create an user")
@@ -140,7 +141,8 @@ public class UserController {
     public PaginationResponse<?> getReviews(
             @NotNull @Positive @PathVariable Long userId,
             @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size) {
-        return productReviewService.getReviewsPage(userId, null, page, page_size, null);
+            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
+            @RequestParam(defaultValue = "true") Boolean refresh) {
+        return productReviewService.getReviewsPage(userId, null, page, page_size, refresh, null);
     }
 }
