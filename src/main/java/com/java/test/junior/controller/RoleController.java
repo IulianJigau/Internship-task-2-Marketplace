@@ -1,7 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.Role;
-import com.java.test.junior.service.Role.RoleService;
+import com.java.test.junior.service.role.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -27,7 +27,7 @@ public class RoleController {
 
     @Operation(summary = "Get roles")
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
     public List<Role> getRoles() {
         return roleService.getRoles();
     }
@@ -35,15 +35,15 @@ public class RoleController {
     @Operation(summary = "Create role")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
-    public void createRole(
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    public Role createRole(
             @NotBlank @Size(min = 3, max = 30) @RequestParam String name) {
-        roleService.createRole(name);
+        return roleService.createRole(name);
     }
 
     @Operation(summary = "Delete role")
     @DeleteMapping("/{roleId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
     public void deleteRole(
             @NotNull @Positive @PathVariable Integer roleId) {
         roleService.deleteRole(roleId);

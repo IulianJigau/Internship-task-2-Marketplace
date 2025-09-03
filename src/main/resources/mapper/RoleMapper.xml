@@ -40,6 +40,7 @@
             parameterType="String">
         INSERT INTO role (name)
         VALUES (UPPER(#{name}))
+        RETURNING id
     </insert>
 
     <delete id="delete" parameterType="Integer">

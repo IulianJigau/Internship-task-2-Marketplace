@@ -1,6 +1,5 @@
-package com.java.test.junior.service.Role;
+package com.java.test.junior.service.role;
 
-import com.java.test.junior.exception.DatabaseFailException;
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.RoleMapper;
@@ -19,21 +18,22 @@ public class RoleServiceImp implements RoleService {
     private final UserMapper userMapper;
 
     @Override
-    public List<Role> getRoles() throws DatabaseFailException {
+    public List<Role> getRoles() {
         return roleMapper.findAll();
     }
 
     @Override
-    public void createRole(String name) throws DatabaseFailException {
+    public Role createRole(String name) {
         if (roleMapper.existsName(name)) {
             throw new ResourceConflictException("A role with this name already exists.");
         }
 
-        roleMapper.insert(name);
+        Integer newId = roleMapper.insert(name);
+        return roleMapper.find(newId);
     }
 
     @Override
-    public void deleteRole(Integer roleId) throws DatabaseFailException {
+    public void deleteRole(Integer roleId) {
         int result = roleMapper.delete(roleId);
         if (result == 0) {
             throw new ResourceNotFoundException("The requested role was not found.");
@@ -41,7 +41,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public List<String> getUserRoles(Long userId) throws DatabaseFailException {
+    public List<String> getUserRoles(Long userId) {
         boolean exists = userMapper.exists(userId);
         if (!exists) {
             throw new ResourceNotFoundException("The requested user was not found.");
@@ -51,7 +51,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public void assignUserRole(Long userId, Integer roleId) throws DatabaseFailException {
+    public void assignUserRole(Long userId, Integer roleId) {
         boolean exists = userMapper.exists(userId) && roleMapper.exists(roleId);
         if (!exists) {
             throw new ResourceNotFoundException("The requested user or role were not found.");
@@ -65,7 +65,7 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
-    public void removeUserRole(Long userId, Integer roleId) throws DatabaseFailException {
+    public void removeUserRole(Long userId, Integer roleId) {
         int result = roleMapper.deleteUserRole(userId, roleId);
         if (result == 0) {
             throw new ResourceNotFoundException("The requested role was not found.");

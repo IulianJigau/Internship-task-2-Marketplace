@@ -16,7 +16,7 @@ public interface RoleMapper {
 
     List<Role> findAll();
 
-    void insert(String name);
+    int insert(String name);
 
     int delete(Integer id);
 

@@ -4,10 +4,10 @@ import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
-import com.java.test.junior.service.Product.ProductService;
-import com.java.test.junior.service.ProductReview.ProductReviewService;
-import com.java.test.junior.service.Role.RoleService;
-import com.java.test.junior.service.User.UserService;
+import com.java.test.junior.service.product.ProductService;
+import com.java.test.junior.service.productReview.ProductReviewService;
+import com.java.test.junior.service.role.RoleService;
+import com.java.test.junior.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -68,7 +68,7 @@ public class UserController {
 
     @Operation(summary = "Get deleted users' page")
     @GetMapping("/deleted")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
     public PaginationResponse<?> getDeletedUsersPage(
             @Positive @RequestParam(defaultValue = "1") Integer page,
             @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
@@ -104,14 +104,14 @@ public class UserController {
 
     @Operation(summary = "Clear deleted users")
     @DeleteMapping("/deleted")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
     public void clearDeletedUsers() {
         userService.clearDeletedUsers();
     }
 
     @Operation(summary = "Get an user's roles")
     @GetMapping("/{userId}/roles")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
     public List<String> getUserRoles(
             @NotNull @Positive @PathVariable Long userId) {
         return roleService.getUserRoles(userId);
@@ -120,7 +120,7 @@ public class UserController {
     @Operation(summary = "Assign a role")
     @PostMapping("/{userId}/roles")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
     public void assignUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer roleId) {
@@ -129,7 +129,7 @@ public class UserController {
 
     @Operation(summary = "Remove a role")
     @DeleteMapping("/{userId}/roles")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
     public void removeUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer roleId) {

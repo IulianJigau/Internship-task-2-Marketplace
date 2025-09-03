@@ -1,36 +1,31 @@
 package com.java.test.junior.config;
 
-import com.java.test.junior.exception.*;
+import com.java.test.junior.exception.ResourceConflictException;
+import com.java.test.junior.exception.ResourceDeletedException;
+import com.java.test.junior.exception.ResourceNotFoundException;
+import com.java.test.junior.exception.ResourceValidationException;
 import com.java.test.junior.model.RequestResponses.ErrorResponse;
+import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    @ExceptionHandler(DatabaseFailException.class)
-    public ResponseEntity<?> handleException(DatabaseFailException ex) {
-        logger.error(ex.toString());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("The database malfunctioned"));
-    }
 
     @ExceptionHandler(ResourceConflictException.class)
     public ResponseEntity<?> handleException(ResourceConflictException ex) {
@@ -102,22 +97,17 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("There was an error validating the request"));
     }
 
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<?> handleException(NoResourceFoundException ex) {
+    @ExceptionHandler(ServletException.class)
+    public ResponseEntity<?> handleException(ServletException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<?> handleException(MissingServletRequestParameterException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getMessage()));
-    }
-
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<?> handleException(HttpRequestMethodNotSupportedException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getMessage()));
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<?> handleException(DataAccessException ex) {
+        logger.error(ex.toString());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("The database malfunctioned"));
     }
 
     @ExceptionHandler(Exception.class)

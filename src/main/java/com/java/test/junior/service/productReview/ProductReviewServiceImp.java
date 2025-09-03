@@ -1,6 +1,5 @@
-package com.java.test.junior.service.ProductReview;
+package com.java.test.junior.service.productReview;
 
-import com.java.test.junior.exception.DatabaseFailException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.mapper.ProductReviewMapper;
@@ -20,17 +19,17 @@ public class ProductReviewServiceImp implements ProductReviewService {
     private final ProductReviewMapper productReviewMapper;
 
     @Override
-    public PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean refresh, Boolean isLiked) throws DatabaseFailException {
+    public PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean refresh, Boolean isLiked) {
         List<ProductReview> reviews = productReviewMapper.getPage(userId, productId, page, size, isLiked);
         long entries = -1L;
-        if(refresh) {
+        if (refresh) {
             entries = productReviewMapper.getTotalEntries(userId, productId, isLiked);
         }
         return new PaginationResponse<>(entries, reviews);
     }
 
     @Override
-    public void addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails) throws DatabaseFailException {
+    public void addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails) {
         boolean exists = productMapper.exists(productId);
         if (!exists) {
             throw new ResourceNotFoundException("The requested product was not found.");

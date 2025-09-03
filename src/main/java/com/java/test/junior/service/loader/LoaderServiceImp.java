@@ -1,7 +1,6 @@
-package com.java.test.junior.service.Loader;
+package com.java.test.junior.service.loader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.java.test.junior.exception.DatabaseFailException;
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
@@ -28,13 +27,13 @@ public class LoaderServiceImp implements LoaderService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${app.storage-site-url}")
+    @Value("${junior.storage.site-url}")
     private String storageUrl;
-    @Value("${app.storage-path}")
+    @Value("${junior.storage.path}")
     private String tempStoragePath;
 
     @Override
-    public void loadProducts(ExtendedUserDetails userDetails) throws DatabaseFailException {
+    public void loadProducts(ExtendedUserDetails userDetails) {
         String url = storageUrl + "data/products";
 
         String csvContent = webClient.get()

@@ -1,7 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.CredentialsDTO;
-import com.java.test.junior.service.Session.SessionService;
+import com.java.test.junior.service.session.SessionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

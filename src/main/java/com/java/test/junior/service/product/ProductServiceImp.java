@@ -1,6 +1,5 @@
-package com.java.test.junior.service.Product;
+package com.java.test.junior.service.product;
 
-import com.java.test.junior.exception.DatabaseFailException;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
@@ -26,7 +25,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public Product getProductById(Long productId) throws DatabaseFailException {
+    public Product getProductById(Long productId) {
         Product product = productMapper.find(productId);
         if (product == null) {
             throw new ResourceNotFoundException("The requested product was not found.");
@@ -38,22 +37,22 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public PaginationResponse<?> getProductsPage(Integer page, Integer size, Boolean refresh, String query, Long userId, Boolean isDeleted) throws DatabaseFailException {
+    public PaginationResponse<?> getProductsPage(Integer page, Integer size, Boolean refresh, String query, Long userId, Boolean isDeleted) {
         List<Product> products = productMapper.getPage(page, size, query, userId, isDeleted);
         long entries = -1L;
-        if(refresh) {
+        if (refresh) {
             entries = productMapper.getTotalEntries(query, userId, isDeleted);
         }
         return new PaginationResponse<>(entries, products);
     }
 
     @Override
-    public Product createProduct(ProductDTO product, ExtendedUserDetails userDetails) throws DatabaseFailException {
+    public Product createProduct(ProductDTO product, ExtendedUserDetails userDetails) {
         Long newId = productMapper.insert(userDetails.getId(), product);
         return productMapper.find(newId);
     }
 
-    public void checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) throws DatabaseFailException {
+    public void checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
         Product product = productMapper.find(productId);
         if (product == null) {
             throw new ResourceNotFoundException("The requested product was not found.");
@@ -77,7 +76,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public void clearDeletedProducts() throws DatabaseFailException {
+    public void clearDeletedProducts() {
         productMapper.clearDeleted();
     }
 

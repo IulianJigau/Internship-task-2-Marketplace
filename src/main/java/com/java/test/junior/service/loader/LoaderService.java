@@ -1,4 +1,4 @@
-package com.java.test.junior.service.Loader;
+package com.java.test.junior.service.loader;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 

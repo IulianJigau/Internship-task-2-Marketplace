@@ -1,4 +1,4 @@
-package com.java.test.junior.service.Product;
+package com.java.test.junior.service.product;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Product.Product;

@@ -1,13 +1,14 @@
-package com.java.test.junior.service.Role;
+package com.java.test.junior.service.role;
 
 import com.java.test.junior.model.Role;
 
 import java.util.List;
 
 public interface RoleService {
+
     List<Role> getRoles();
 
-    void createRole(String name);
+    Role createRole(String name);
 
     void deleteRole(Integer roleId);
 

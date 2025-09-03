@@ -1,7 +1,6 @@
-package com.java.test.junior.service.ProductReview;
+package com.java.test.junior.service.productReview;
 
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 
 public interface ProductReviewService {

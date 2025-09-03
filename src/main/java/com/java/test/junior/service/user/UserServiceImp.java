@@ -1,6 +1,5 @@
-package com.java.test.junior.service.User;
+package com.java.test.junior.service.user;
 
-import com.java.test.junior.exception.DatabaseFailException;
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
@@ -10,6 +9,7 @@ import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,13 +23,16 @@ public class UserServiceImp implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
+    @Value("${junior.storage.site-url}")
+    private String adminRole;
+
     private boolean isAdmin(ExtendedUserDetails userDetails) {
         return userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + adminRole));
     }
 
     @Override
-    public User getUserById(Long userId) throws DatabaseFailException {
+    public User getUserById(Long userId) {
         User user = userMapper.find(userId);
         if (user == null) {
             throw new ResourceNotFoundException("The requested user was not found.");
@@ -41,17 +44,17 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public PaginationResponse<?> getUsersPage(Integer page, Integer size, Boolean refresh, Boolean isDeleted) throws DatabaseFailException {
+    public PaginationResponse<?> getUsersPage(Integer page, Integer size, Boolean refresh, Boolean isDeleted) {
         List<User> users = userMapper.getPage(page, size, isDeleted);
         long entries = -1L;
-        if(refresh) {
+        if (refresh) {
             entries = userMapper.getTotalEntries(isDeleted);
         }
         return new PaginationResponse<>(entries, users);
     }
 
     @Override
-    public User createUser(UserDTO user) throws DatabaseFailException {
+    public User createUser(UserDTO user) {
         if (userMapper.existsEmail(user.getEmail())) {
             throw new ResourceConflictException("The provided email is already in use.");
         }
@@ -61,7 +64,7 @@ public class UserServiceImp implements UserService {
         return userMapper.find(newId);
     }
 
-    public void checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) throws DatabaseFailException {
+    public void checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
         if (!isAdmin(userDetails) && !userId.equals(userDetails.getId())) {
             throw new AccessDeniedException("You must be the owner of this account to perform this operation.");
         }
@@ -85,7 +88,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void clearDeletedUsers() throws DatabaseFailException {
+    public void clearDeletedUsers() {
         userMapper.clearDeleted();
     }
 

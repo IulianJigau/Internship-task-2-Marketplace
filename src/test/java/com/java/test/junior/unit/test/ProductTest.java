@@ -4,8 +4,8 @@ import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.Product.Product;
-import com.java.test.junior.service.Product.ProductService;
-import com.java.test.junior.service.Product.ProductServiceImp;
+import com.java.test.junior.service.product.ProductService;
+import com.java.test.junior.service.product.ProductServiceImp;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
 
