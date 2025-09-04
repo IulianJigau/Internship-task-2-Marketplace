@@ -14,14 +14,16 @@ import java.util.List;
 public class EndpointAccessConfig {
 
     @Bean
-    public List<RequestMatcher> permittedEndpointMatchers(){
+    public List<RequestMatcher> permittedEndpointMatchers() {
         return
                 List.of(
-                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/users"),
-                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/login"),
-                PathPatternRequestMatcher.withDefaults().matcher("/v3/api-docs/**"),
-                PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui.html"),
-                PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**")
-        );
-    };
+                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/users"),
+                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/login"),
+                        PathPatternRequestMatcher.withDefaults().matcher("/v3/api-docs/**"),
+                        PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui.html"),
+                        PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**")
+                );
+    }
+
+    ;
 }

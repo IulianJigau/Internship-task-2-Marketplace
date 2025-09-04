@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 public class PaginationOptionsDTO {
     @Positive
     Integer page = 1;
-    @Max(1000) @Positive
+    @Max(1000)
+    @Positive
     Integer pageSize = 10;
     Boolean refresh = true;
 }

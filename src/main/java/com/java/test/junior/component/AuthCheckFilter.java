@@ -3,7 +3,7 @@ package com.java.test.junior.component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.RequestResponses.ErrorResponse;
+import com.java.test.junior.model.RequestResponse.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -2,9 +2,7 @@ package com.java.test.junior.service.productReview;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
-import com.java.test.junior.model.RequestResponses.PaginationResponse;
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import com.java.test.junior.model.RequestResponse.PaginationResponse;
 
 public interface ProductReviewService {
 

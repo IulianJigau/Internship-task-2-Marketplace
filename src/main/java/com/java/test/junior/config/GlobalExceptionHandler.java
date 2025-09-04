@@ -4,7 +4,7 @@ import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.exception.ResourceValidationException;
-import com.java.test.junior.model.RequestResponses.ErrorResponse;
+import com.java.test.junior.model.RequestResponse.ErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

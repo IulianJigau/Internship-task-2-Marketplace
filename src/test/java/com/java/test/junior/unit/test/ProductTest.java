@@ -1,5 +1,6 @@
 package com.java.test.junior.unit.test;
 
+import com.java.test.junior.component.RoleChecker;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
@@ -20,7 +21,8 @@ public class ProductTest {
 
     ProductTest() {
         productMapper = mock(ProductMapper.class);
-        productService = new ProductServiceImp(productMapper);
+        RoleChecker roleChecker = mock(RoleChecker.class);
+        productService = new ProductServiceImp(productMapper, roleChecker);
     }
 
     @Test

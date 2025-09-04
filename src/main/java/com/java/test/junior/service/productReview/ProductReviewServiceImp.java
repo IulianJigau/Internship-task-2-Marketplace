@@ -6,7 +6,7 @@ import com.java.test.junior.mapper.ProductReviewMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.ProductReview;
-import com.java.test.junior.model.RequestResponses.PaginationResponse;
+import com.java.test.junior.model.RequestResponse.PaginationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

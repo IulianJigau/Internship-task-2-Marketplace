@@ -5,7 +5,7 @@ import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.RequestResponses.ErrorResponse;
+import com.java.test.junior.model.RequestResponse.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;

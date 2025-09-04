@@ -1,4 +1,4 @@
-package com.java.test.junior.model.RequestResponses;
+package com.java.test.junior.model.RequestResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
