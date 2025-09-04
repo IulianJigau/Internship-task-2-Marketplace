@@ -1,6 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
@@ -49,31 +50,25 @@ public class UserController {
     @Operation(summary = "Get users page")
     @GetMapping
     public PaginationResponse<?> getUsersPage(
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(defaultValue = "true") Boolean refresh) {
-        return userService.getUsersPage(page, page_size, refresh, false);
+            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
+        return userService.getUsersPage(paginationOptions, false);
     }
 
     @Operation(summary = "Get users page")
     @GetMapping("/{userId}/products")
     public PaginationResponse<?> getUserProductsPage(
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(defaultValue = "true") Boolean refresh,
+            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
             @RequestParam(required = false) String query,
             @NotNull @Positive @PathVariable Long userId) {
-        return productService.getProductsPage(page, page_size, refresh, query, userId, false);
+        return productService.getProductsPage(paginationOptions, query, userId, false);
     }
 
     @Operation(summary = "Get deleted users' page")
     @GetMapping("/deleted")
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public PaginationResponse<?> getDeletedUsersPage(
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(defaultValue = "true") Boolean refresh) {
-        return userService.getUsersPage(page, page_size, refresh, true);
+            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
+        return userService.getUsersPage(paginationOptions, true);
     }
 
     @Operation(summary = "Create an user")
@@ -104,14 +99,14 @@ public class UserController {
 
     @Operation(summary = "Clear deleted users")
     @DeleteMapping("/deleted")
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public void clearDeletedUsers() {
         userService.clearDeletedUsers();
     }
 
     @Operation(summary = "Get an user's roles")
     @GetMapping("/{userId}/roles")
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public List<String> getUserRoles(
             @NotNull @Positive @PathVariable Long userId) {
         return roleService.getUserRoles(userId);
@@ -120,7 +115,7 @@ public class UserController {
     @Operation(summary = "Assign a role")
     @PostMapping("/{userId}/roles")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public void assignUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer roleId) {
@@ -129,7 +124,7 @@ public class UserController {
 
     @Operation(summary = "Remove a role")
     @DeleteMapping("/{userId}/roles")
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public void removeUserRole(
             @NotNull @Positive @PathVariable Long userId,
             @NotNull @Positive @RequestParam(required = true) Integer roleId) {
@@ -140,9 +135,7 @@ public class UserController {
     @GetMapping("/{userId}/reviews")
     public PaginationResponse<?> getReviews(
             @NotNull @Positive @PathVariable Long userId,
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(defaultValue = "true") Boolean refresh) {
-        return productReviewService.getReviewsPage(userId, null, page, page_size, refresh, null);
+            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
+        return productReviewService.getReviewsPage(userId, null, paginationOptions, null);
     }
 }

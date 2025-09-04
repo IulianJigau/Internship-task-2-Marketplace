@@ -1,6 +1,7 @@
 package com.java.test.junior.service.user;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
@@ -8,7 +9,7 @@ import com.java.test.junior.model.User.UserDTO;
 public interface UserService {
     User getUserById(Long userId);
 
-    PaginationResponse<?> getUsersPage(Integer page, Integer size, Boolean refresh, Boolean isDeleted);
+    PaginationResponse<?> getUsersPage(PaginationOptionsDTO paginationOptions, Boolean isDeleted);
 
     User createUser(UserDTO user);
 

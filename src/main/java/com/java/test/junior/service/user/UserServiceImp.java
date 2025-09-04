@@ -1,15 +1,16 @@
 package com.java.test.junior.service.user;
 
+import com.java.test.junior.component.RoleChecker;
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,14 +23,7 @@ public class UserServiceImp implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-
-    @Value("${junior.storage.site-url}")
-    private String adminRole;
-
-    private boolean isAdmin(ExtendedUserDetails userDetails) {
-        return userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + adminRole));
-    }
+    private final RoleChecker roleChecker;
 
     @Override
     public User getUserById(Long userId) {
@@ -44,10 +38,10 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public PaginationResponse<?> getUsersPage(Integer page, Integer size, Boolean refresh, Boolean isDeleted) {
-        List<User> users = userMapper.getPage(page, size, isDeleted);
+    public PaginationResponse<?> getUsersPage(PaginationOptionsDTO paginationOptions, Boolean isDeleted) {
+        List<User> users = userMapper.getPage(paginationOptions.getPage(), paginationOptions.getPageSize(), isDeleted);
         long entries = -1L;
-        if (refresh) {
+        if (paginationOptions.getRefresh()) {
             entries = userMapper.getTotalEntries(isDeleted);
         }
         return new PaginationResponse<>(entries, users);
@@ -65,7 +59,7 @@ public class UserServiceImp implements UserService {
     }
 
     public void checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
-        if (!isAdmin(userDetails) && !userId.equals(userDetails.getId())) {
+        if (!roleChecker.hasAdminRole(userDetails) && !userId.equals(userDetails.getId())) {
             throw new AccessDeniedException("You must be the owner of this account to perform this operation.");
         }
 

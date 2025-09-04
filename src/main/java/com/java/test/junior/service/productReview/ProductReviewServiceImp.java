@@ -4,6 +4,7 @@ import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.mapper.ProductReviewMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.ProductReview;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,10 @@ public class ProductReviewServiceImp implements ProductReviewService {
     private final ProductReviewMapper productReviewMapper;
 
     @Override
-    public PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, Integer page, Integer size, Boolean refresh, Boolean isLiked) {
-        List<ProductReview> reviews = productReviewMapper.getPage(userId, productId, page, size, isLiked);
+    public PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, PaginationOptionsDTO paginationOptions, Boolean isLiked) {
+        List<ProductReview> reviews = productReviewMapper.getPage(userId, productId, paginationOptions.getPage(), paginationOptions.getPageSize(), isLiked);
         long entries = -1L;
-        if (refresh) {
+        if (paginationOptions.getRefresh()) {
             entries = productReviewMapper.getTotalEntries(userId, productId, isLiked);
         }
         return new PaginationResponse<>(entries, reviews);

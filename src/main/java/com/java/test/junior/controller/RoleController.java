@@ -27,7 +27,7 @@ public class RoleController {
 
     @Operation(summary = "Get roles")
     @GetMapping
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public List<Role> getRoles() {
         return roleService.getRoles();
     }
@@ -35,7 +35,7 @@ public class RoleController {
     @Operation(summary = "Create role")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public Role createRole(
             @NotBlank @Size(min = 3, max = 30) @RequestParam String name) {
         return roleService.createRole(name);
@@ -43,7 +43,7 @@ public class RoleController {
 
     @Operation(summary = "Delete role")
     @DeleteMapping("/{roleId}")
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public void deleteRole(
             @NotNull @Positive @PathVariable Integer roleId) {
         roleService.deleteRole(roleId);

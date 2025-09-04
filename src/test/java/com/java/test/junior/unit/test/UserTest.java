@@ -1,5 +1,6 @@
 package com.java.test.junior.unit.test;
 
+import com.java.test.junior.component.RoleChecker;
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
@@ -23,8 +24,9 @@ public class UserTest {
 
     UserTest() {
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+        RoleChecker roleChecker = mock(RoleChecker.class);
         userMapper = mock(UserMapper.class);
-        userService = new UserServiceImp(passwordEncoder, userMapper);
+        userService = new UserServiceImp(passwordEncoder, userMapper, roleChecker);
     }
 
     @Test

@@ -5,7 +5,6 @@ import com.java.test.junior.service.loader.LoaderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +26,7 @@ public class LoaderController {
     @Operation(summary = "Load products from csv")
     @PostMapping("/products")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("@roleChecker.hasAdminRole(authentication)")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public void loadProducts(@AuthenticationPrincipal ExtendedUserDetails userDetails) {
         loaderService.loadProducts(userDetails);
     }

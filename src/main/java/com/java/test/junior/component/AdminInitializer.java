@@ -22,11 +22,14 @@ public class AdminInitializer {
     private final String email = System.getenv("INIT_EMAIL");
     private final String password = System.getenv("INIT_PASSWORD");
 
-    @Value("${junior.storage.site-url}")
+    @Value("${junior.admin-role}")
     private String adminRole;
 
     @PostConstruct
     public void init() {
+        if (email == null || password == null) {
+            return;
+        }
         try {
             Long userId = userService.createUser(new UserDTO(email, password, adminRole)).getId();
             Integer roleId = roleService.createRole(adminRole).getId();

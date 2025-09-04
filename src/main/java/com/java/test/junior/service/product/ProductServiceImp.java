@@ -1,9 +1,11 @@
 package com.java.test.junior.service.product;
 
+import com.java.test.junior.component.RoleChecker;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
@@ -18,11 +20,7 @@ import java.util.List;
 public class ProductServiceImp implements ProductService {
 
     private final ProductMapper productMapper;
-
-    private boolean isAdmin(ExtendedUserDetails userDetails) {
-        return userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-    }
+    private final RoleChecker roleChecker;
 
     @Override
     public Product getProductById(Long productId) {
@@ -37,10 +35,10 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public PaginationResponse<?> getProductsPage(Integer page, Integer size, Boolean refresh, String query, Long userId, Boolean isDeleted) {
-        List<Product> products = productMapper.getPage(page, size, query, userId, isDeleted);
+    public PaginationResponse<?> getProductsPage(PaginationOptionsDTO paginationOptions, String query, Long userId, Boolean isDeleted) {
+        List<Product> products = productMapper.getPage(paginationOptions.getPage(), paginationOptions.getPageSize(), query, userId, isDeleted);
         long entries = -1L;
-        if (refresh) {
+        if (paginationOptions.getRefresh()) {
             entries = productMapper.getTotalEntries(query, userId, isDeleted);
         }
         return new PaginationResponse<>(entries, products);
@@ -58,7 +56,7 @@ public class ProductServiceImp implements ProductService {
             throw new ResourceNotFoundException("The requested product was not found.");
         }
 
-        if (!isAdmin(userDetails) && !userDetails.getId().equals(product.getUserId())) {
+        if (!roleChecker.hasAdminRole(userDetails) && !userDetails.getId().equals(product.getUserId())) {
             throw new AccessDeniedException("You must be the owner of this product to perform this operation.");
         }
 

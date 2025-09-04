@@ -1,6 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.Product.Product;
 import com.java.test.junior.model.Product.ProductDTO;
 import com.java.test.junior.model.RequestResponses.PaginationResponse;
@@ -37,22 +38,18 @@ public class ProductController {
     @Operation(summary = "Get products page")
     @GetMapping
     public PaginationResponse<?> getProductsPage(
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(defaultValue = "true") Boolean refresh,
+            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
             @RequestParam(required = false) String query) {
-        return productService.getProductsPage(page, page_size, refresh, query, null, false);
+        return productService.getProductsPage(paginationOptions, query, null, false);
     }
 
     @Operation(summary = "Get the deleted products' page")
     @GetMapping("/deleted")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public PaginationResponse<?> getDeletedProductsPage(
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(defaultValue = "true") Boolean refresh,
+            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
             @RequestParam(required = false) String query) {
-        return productService.getProductsPage(page, page_size, refresh, query, null, true);
+        return productService.getProductsPage(paginationOptions, query, null, true);
     }
 
     @Operation(summary = "Create a product")
@@ -83,7 +80,7 @@ public class ProductController {
 
     @Operation(summary = "Clear deleted products")
     @DeleteMapping("/deleted")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public void clearDeletedProducts() {
         productService.clearDeletedProducts();
     }
@@ -93,11 +90,9 @@ public class ProductController {
     @GetMapping("/{productId}/reviews")
     public PaginationResponse<?> getReviewsPage(
             @NotNull @Positive @PathVariable Long productId,
-            @Positive @RequestParam(defaultValue = "1") Integer page,
-            @Max(1000) @Positive @RequestParam(defaultValue = "10") Integer page_size,
-            @RequestParam(defaultValue = "true") Boolean refresh,
+            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
             @RequestParam(required = false) Boolean isLiked) {
-        return productReviewService.getReviewsPage(null, productId, page, page_size, refresh, isLiked);
+        return productReviewService.getReviewsPage(null, productId, paginationOptions, isLiked);
     }
 
     @Operation(summary = "Add, update or remove a product review")
