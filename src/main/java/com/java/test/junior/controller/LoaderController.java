@@ -28,6 +28,6 @@ public class LoaderController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public void loadProducts(@AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        loaderService.loadProducts(userDetails);
+        loaderService.load(userDetails).subscribe();
     }
 }

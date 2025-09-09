@@ -72,4 +72,3 @@ public class AuthCheckFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-

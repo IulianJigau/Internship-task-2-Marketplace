@@ -36,12 +36,12 @@
         FROM role
     </select>
 
-    <insert id="insert"
+    <select id="insert"
             parameterType="String">
         INSERT INTO role (name)
         VALUES (UPPER(#{name}))
         RETURNING id
-    </insert>
+    </select>
 
     <delete id="delete" parameterType="Integer">
         DELETE

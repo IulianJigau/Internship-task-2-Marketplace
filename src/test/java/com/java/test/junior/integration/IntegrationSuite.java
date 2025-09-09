@@ -5,8 +5,6 @@ import com.java.test.junior.integration.test.RoleTest;
 import com.java.test.junior.integration.test.SessionTest;
 import com.java.test.junior.integration.test.UserTest;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +18,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureMockMvc
 @Testcontainers
 class IntegrationSuite {
-
-    private static final Logger logger = LoggerFactory.getLogger(IntegrationSuite.class);
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")

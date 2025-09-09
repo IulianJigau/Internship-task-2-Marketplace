@@ -31,7 +31,7 @@ public class AdminInitializer {
             return;
         }
         try {
-            Long userId = userService.createUser(new UserDTO(email, password, adminRole)).getId();
+            Long userId = userService.createUser(new UserDTO(email, adminRole, password)).getId();
             Integer roleId = roleService.createRole(adminRole).getId();
             roleService.assignUserRole(userId, roleId);
         } catch (Exception e) {
