@@ -1,86 +1,55 @@
 package com.java.test.junior.service.loader;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.RequestResponse.ErrorResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.BufferedWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class LoaderServiceImp implements LoaderService {
 
-    private final WebClient webClient = WebClient.builder().build();
+    private static final int BATCH_SIZE = 50;
+    private final WebClient webClient = WebClient.create();
     private final ProductMapper productMapper;
-    private final String storageUrl = "http://localhost:8082/dat/stream/products.csv";
-    ObjectMapper objectMapper = new ObjectMapper();
-    @Value("${junior.storage.path}")
-    private String tempStoragePath;
 
     @Override
-    public Mono<Void> load(ExtendedUserDetails userDetails) {
-        Path destination = Path.of(tempStoragePath, "products.csv");
-
-        return Mono.fromRunnable(() -> {
-                    try {
-                        Files.createDirectories(destination.getParent());
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                })
-                .then(
-                        webClient.get()
-                                .uri(storageUrl)
-                                .accept(MediaType.TEXT_PLAIN)
-                                .exchangeToMono(response -> {
-                                    HttpStatusCode status = response.statusCode();
-
-                                    if (status.isError()) {
-                                        return response.bodyToMono(String.class).flatMap(errorBody -> {
-                                            try {
-                                                ErrorResponse err = objectMapper.readValue(errorBody, ErrorResponse.class);
-                                                return Mono.error(new ResourceNotFoundException(err.getDetails()));
-                                            } catch (Exception e) {
-                                                return Mono.error(new ResourceNotFoundException("Failed to parse error: " + errorBody));
-                                            }
-                                        });
-                                    }
-
-                                    return response.bodyToFlux(DataBuffer.class)
-                                            .transform(bufFlux -> DataBufferUtils.write(bufFlux, destination,
-                                                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
-                                            .then();
-                                })
-                )
-                .then(Mono.fromRunnable(() -> {
-                    try {
-                        if (!Files.exists(destination) || Files.size(destination) == 0) {
-                            throw new ResourceNotFoundException("Downloaded CSV file is empty or missing");
-                        }
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                }))
-                .then(Mono.fromRunnable(() ->
-                        productMapper.bulkImport(destination.toString(), userDetails.getId())
-                ).subscribeOn(Schedulers.boundedElastic()))
+    public Mono<Void> load(String fileName, ExtendedUserDetails userDetails) {
+        return webClient.get()
+                .uri("http://localhost:8082/data/stream/" + fileName)
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .retrieve()
+                .bodyToFlux(String.class)
+                .publishOn(Schedulers.boundedElastic())
+                .skip(1)
+                .buffer(BATCH_SIZE)
+                .concatMap(batch -> processBatch(batch, userDetails))
                 .then();
+    }
+
+    private Mono<Object> processBatch(List<String> batch, ExtendedUserDetails userDetails) {
+        return Mono.fromCallable(() -> {
+            Path batchPath = Files.createTempFile(Paths.get("C:/Temp"), "batch-", ".csv");
+            try (BufferedWriter writer = Files.newBufferedWriter(batchPath, StandardCharsets.UTF_8)) {
+                for (String line : batch) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+            productMapper.bulkImport(batchPath.toString(), userDetails.getId());
+            Files.deleteIfExists(batchPath);
+            return null;
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 }

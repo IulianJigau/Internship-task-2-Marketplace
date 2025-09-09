@@ -83,7 +83,7 @@
 
         COPY product_import(name, price, description)
             FROM '${filePath}'
-            WITH (FORMAT csv, HEADER true, ENCODING 'UTF8');
+            WITH (FORMAT csv, HEADER false, ENCODING 'UTF8');
 
         INSERT INTO product (name, price, description, user_id)
         SELECT name, price, description, #{userId}

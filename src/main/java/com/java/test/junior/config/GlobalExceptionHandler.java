@@ -40,7 +40,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
-
     @ExceptionHandler(ResourceDeletedException.class)
     public ResponseEntity<?> handleException(ResourceDeletedException ex) {
         return ResponseEntity.status(HttpStatus.GONE)
@@ -107,7 +106,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleException(DataAccessException ex) {
         logger.error(ex.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("The database malfunctioned"));
+                .body(new ErrorResponse("Database malfunction"));
     }
 
     @ExceptionHandler(Exception.class)
