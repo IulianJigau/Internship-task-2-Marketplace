@@ -59,10 +59,15 @@ public class LoaderServiceImp implements LoaderService {
                 .block();
     }
 
-    @Override
-    public Mono<ResponseEntity<Object>> load(String fileName, ExtendedUserDetails userDetails) {
+    public Mono<ResponseEntity<Object>> loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails){
+        return load(productMapper::bulkImport, resourceId, fileName, userDetails);
+    }
+
+    public Mono<ResponseEntity<Object>> load(Action action, Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
+        String baseUrl = storageServers.get(resourceId).getPath();
+
         return webClient.get()
-                .uri("http://localhost:8082/data/stream/" + fileName)
+                .uri(baseUrl + "/data/stream/" + fileName)
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {
@@ -77,7 +82,7 @@ public class LoaderServiceImp implements LoaderService {
                 })
                 .skip(1)
                 .buffer(BATCH_SIZE)
-                .concatMap(batch -> processBatch(batch, userDetails))
+                .concatMap(batch -> processBatch(action, batch, userDetails))
                 .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()))
                 .onErrorResume(ex ->
                         Mono.just(ResponseEntity
@@ -86,7 +91,7 @@ public class LoaderServiceImp implements LoaderService {
                 );
     }
 
-    private Mono<Void> processBatch(List<String> batch, ExtendedUserDetails userDetails) {
+    private Mono<Void> processBatch(Action action, List<String> batch, ExtendedUserDetails userDetails) {
         return Mono.fromCallable(() -> {
             Path batchPath = Files.createTempFile(Paths.get("C:/Temp"), "batch-", ".csv");
             try (BufferedWriter writer = Files.newBufferedWriter(batchPath, StandardCharsets.UTF_8)) {
@@ -95,10 +100,15 @@ public class LoaderServiceImp implements LoaderService {
                     writer.newLine();
                 }
             }
-            productMapper.bulkImport(batchPath.toString(), userDetails.getId());
+            action.execute(batchPath.toString(), userDetails.getId());
             Files.deleteIfExists(batchPath);
             return null;
         }).subscribeOn(Schedulers.boundedElastic()).then();
+    }
+
+    @FunctionalInterface
+    public interface Action {
+        void execute(String filePath, Long userId);
     }
 }
 

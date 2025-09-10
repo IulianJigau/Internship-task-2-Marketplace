@@ -10,7 +10,7 @@ import java.util.List;
 public interface LoaderService {
     List<Resource> getResources();
 
-    Mono<ResponseEntity<Object>> load(String fileName, ExtendedUserDetails userDetails);
+    Mono<ResponseEntity<Object>> loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails);
 
     List<String> getResourceFiles(Integer resourceId);
 }

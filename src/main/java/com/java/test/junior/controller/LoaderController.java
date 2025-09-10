@@ -32,13 +32,14 @@ public class LoaderController {
     private final LoaderService loaderService;
 
     @Operation(summary = "Load products from csv")
-    @PostMapping("/products/{fileName}")
+    @PostMapping("/products/{resourceId}/{fileName}")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public Mono<ResponseEntity<Object>> loadProducts(
+            @NotNull @PathVariable Integer resourceId,
             @NotBlank @PathVariable String fileName,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return loaderService.load(fileName, userDetails);
+        return loaderService.loadProducts(resourceId, fileName, userDetails);
     }
 
     @GetMapping("/resources")
