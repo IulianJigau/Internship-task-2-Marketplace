@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "product_import"
+CREATE TABLE IF NOT EXISTS "staging_product"
 (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255)   NOT NULL,

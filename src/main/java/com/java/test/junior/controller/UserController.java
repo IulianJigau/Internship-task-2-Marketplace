@@ -6,7 +6,7 @@ import com.java.test.junior.model.RequestResponse.PaginationResponse;
 import com.java.test.junior.model.User.User;
 import com.java.test.junior.model.User.UserDTO;
 import com.java.test.junior.service.product.ProductService;
-import com.java.test.junior.service.productReview.ProductReviewService;
+import com.java.test.junior.service.product.review.ProductReviewService;
 import com.java.test.junior.service.role.RoleService;
 import com.java.test.junior.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;

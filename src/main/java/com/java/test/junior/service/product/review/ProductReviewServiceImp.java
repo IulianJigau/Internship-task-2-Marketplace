@@ -1,11 +1,11 @@
-package com.java.test.junior.service.productReview;
+package com.java.test.junior.service.product.review;
 
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.mapper.ProductReviewMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
-import com.java.test.junior.model.ProductReview;
+import com.java.test.junior.model.Product.ProductReview;
 import com.java.test.junior.model.RequestResponse.PaginationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

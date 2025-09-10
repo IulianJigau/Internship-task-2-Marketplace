@@ -2,15 +2,13 @@ package com.java.test.junior.service.loader;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Resource;
-import org.springframework.http.ResponseEntity;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 public interface LoaderService {
     List<Resource> getResources();
 
-    Mono<ResponseEntity<Object>> loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails);
+    void loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails);
 
     List<String> getResourceFiles(Integer resourceId);
 }

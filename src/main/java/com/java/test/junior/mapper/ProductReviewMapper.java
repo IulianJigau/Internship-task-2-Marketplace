@@ -1,6 +1,6 @@
 package com.java.test.junior.mapper;
 
-import com.java.test.junior.model.ProductReview;
+import com.java.test.junior.model.Product.ProductReview;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.java.test.junior.model;
+package com.java.test.junior.model.Product;
 
 import lombok.Data;
 

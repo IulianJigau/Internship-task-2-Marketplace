@@ -23,5 +23,5 @@ public interface ProductMapper {
 
     void clearDeleted();
 
-    void bulkImport(String filePath, Long userId);
+    void copyStaging(Long userId);
 }

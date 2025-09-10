@@ -1,4 +1,4 @@
-package com.java.test.junior.service.productReview;
+package com.java.test.junior.service.product.review;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;

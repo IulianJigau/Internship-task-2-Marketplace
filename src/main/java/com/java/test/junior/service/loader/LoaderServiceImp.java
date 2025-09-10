@@ -1,36 +1,34 @@
 package com.java.test.junior.service.loader;
 
 import com.java.test.junior.exception.ResourceNotFoundException;
+import com.java.test.junior.exception.ResourceValidationException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.RequestResponse.ErrorResponse;
 import com.java.test.junior.model.Resource;
 import lombok.RequiredArgsConstructor;
+import org.postgresql.PGConnection;
+import org.postgresql.copy.CopyManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
-import java.io.BufferedWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.sql.Connection;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class LoaderServiceImp implements LoaderService {
 
-    private static final int BATCH_SIZE = 50;
     private final WebClient webClient = WebClient.create();
     private final ProductMapper productMapper;
+    private final DataSource dataSource;
 
     @Qualifier("storageServers")
     private final List<Resource> storageServers;
@@ -59,56 +57,36 @@ public class LoaderServiceImp implements LoaderService {
                 .block();
     }
 
-    public Mono<ResponseEntity<Object>> loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails){
-        return load(productMapper::bulkImport, resourceId, fileName, userDetails);
+    @Override
+    public void loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
+        String copyQuery = "COPY staging_product (name, price, description) FROM STDIN WITH (FORMAT csv, HEADER true)";
+        load(copyQuery, resourceId, fileName, userDetails);
     }
 
-    public Mono<ResponseEntity<Object>> load(Action action, Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
+    public void load(String copyQuery, Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
         String baseUrl = storageServers.get(resourceId).getPath();
+        URL url;
+        HttpURLConnection serverConn;
 
-        return webClient.get()
-                .uri(baseUrl + "/data/stream/" + fileName)
-                .accept(MediaType.TEXT_EVENT_STREAM)
-                .retrieve()
-                .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {
-                })
-                .publishOn(Schedulers.boundedElastic())
-                .<String>handle((event, sink) -> {
-                    if ("error".equals(event.event())) {
-                        sink.error(new ResourceNotFoundException(event.data()));
-                    } else if ("data".equals(event.event())) {
-                        sink.next(event.data());
-                    }
-                })
-                .skip(1)
-                .buffer(BATCH_SIZE)
-                .concatMap(batch -> processBatch(action, batch, userDetails))
-                .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()))
-                .onErrorResume(ex ->
-                        Mono.just(ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(new ErrorResponse(ex.getMessage())))
-                );
-    }
+        try {
+            url = URI.create(baseUrl + "/data/stream/" + fileName).toURL();
+            serverConn = (HttpURLConnection) url.openConnection();
+            serverConn.setRequestMethod("GET");
+        } catch (Exception e) {
+            throw new ResourceValidationException("The server you are trying to reach is not valid.");
+        }
 
-    private Mono<Void> processBatch(Action action, List<String> batch, ExtendedUserDetails userDetails) {
-        return Mono.fromCallable(() -> {
-            Path batchPath = Files.createTempFile(Paths.get("C:/Temp"), "batch-", ".csv");
-            try (BufferedWriter writer = Files.newBufferedWriter(batchPath, StandardCharsets.UTF_8)) {
-                for (String line : batch) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-            }
-            action.execute(batchPath.toString(), userDetails.getId());
-            Files.deleteIfExists(batchPath);
-            return null;
-        }).subscribeOn(Schedulers.boundedElastic()).then();
-    }
+        try (InputStream inputStream = serverConn.getInputStream();
+             Connection dataConn = dataSource.getConnection()) {
+            PGConnection pgConn = dataConn.unwrap(PGConnection.class);
+            CopyManager copyManager = pgConn.getCopyAPI();
 
-    @FunctionalInterface
-    public interface Action {
-        void execute(String filePath, Long userId);
+            copyManager.copyIn(copyQuery, inputStream);
+            productMapper.copyStaging(userDetails.getId());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
 

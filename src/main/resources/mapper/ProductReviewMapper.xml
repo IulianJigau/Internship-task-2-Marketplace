@@ -73,7 +73,7 @@
           AND user_id = #{userId}
     </update>
 
-    <resultMap id="productReviewResultMapper" type="com.java.test.junior.model.ProductReview">
+    <resultMap id="productReviewResultMapper" type="com.java.test.junior.model.Product.ProductReview">
         <id property="productId" column="product_id"/>
         <id property="userId" column="user_id"/>
         <result property="isLiked" column="is_liked"/>
