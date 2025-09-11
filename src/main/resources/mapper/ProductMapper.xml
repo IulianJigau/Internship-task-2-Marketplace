@@ -53,7 +53,7 @@
     </select>
 
     <select id="insert"
-            parameterType="com.java.test.junior.model.Product.ProductDTO">
+            parameterType="com.java.test.junior.model.product.ProductDTO">
         INSERT INTO product (name, price, description, user_id)
         VALUES (#{product.name}, #{product.price}, #{product.description}, #{userId})
         RETURNING id
@@ -84,7 +84,7 @@
         FROM staging_product
     </insert>
 
-    <resultMap id="productResultMapper" type="com.java.test.junior.model.Product.Product">
+    <resultMap id="productResultMapper" type="com.java.test.junior.model.product.Product">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="price" column="price"/>

@@ -50,7 +50,7 @@
     </select>
 
     <select id="insert"
-            parameterType="com.java.test.junior.model.User.UserDTO">
+            parameterType="com.java.test.junior.model.user.UserDTO">
         INSERT INTO "user" (email, username, password)
         VALUES (LOWER(#{email}), #{username}, #{password})
         RETURNING id
@@ -80,7 +80,7 @@
         WHERE is_deleted = true
     </delete>
 
-    <resultMap id="userResultMapper" type="com.java.test.junior.model.User.User">
+    <resultMap id="userResultMapper" type="com.java.test.junior.model.user.User">
         <id property="id" column="id"/>
         <result property="email" column="email"/>
         <result property="username" column="username"/>

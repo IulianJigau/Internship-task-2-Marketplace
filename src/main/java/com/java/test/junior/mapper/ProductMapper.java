@@ -1,7 +1,7 @@
 package com.java.test.junior.mapper;
 
-import com.java.test.junior.model.Product.Product;
-import com.java.test.junior.model.Product.ProductDTO;
+import com.java.test.junior.model.product.Product;
+import com.java.test.junior.model.product.ProductDTO;
 
 import java.util.List;
 

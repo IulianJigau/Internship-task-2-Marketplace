@@ -1,7 +1,7 @@
 package com.java.test.junior.mapper;
 
-import com.java.test.junior.model.User.User;
-import com.java.test.junior.model.User.UserDTO;
+import com.java.test.junior.model.user.User;
+import com.java.test.junior.model.user.UserDTO;
 
 import java.util.List;
 

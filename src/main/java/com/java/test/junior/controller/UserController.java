@@ -2,9 +2,9 @@ package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
-import com.java.test.junior.model.RequestResponse.PaginationResponse;
-import com.java.test.junior.model.User.User;
-import com.java.test.junior.model.User.UserDTO;
+import com.java.test.junior.model.response.PaginationResponse;
+import com.java.test.junior.model.user.User;
+import com.java.test.junior.model.user.UserDTO;
 import com.java.test.junior.service.product.ProductService;
 import com.java.test.junior.service.product.review.ProductReviewService;
 import com.java.test.junior.service.role.RoleService;

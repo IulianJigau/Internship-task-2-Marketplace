@@ -1,6 +1,6 @@
-package com.java.test.junior.component;
+package com.java.test.junior.service;
 
-import com.java.test.junior.model.User.UserDTO;
+import com.java.test.junior.model.user.UserDTO;
 import com.java.test.junior.service.role.RoleService;
 import com.java.test.junior.service.user.UserService;
 import jakarta.annotation.PostConstruct;
@@ -8,13 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class AdminInitializer {
+public class AdminInitializerService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminInitializer.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminInitializerService.class);
 
     private final UserService userService;
     private final RoleService roleService;

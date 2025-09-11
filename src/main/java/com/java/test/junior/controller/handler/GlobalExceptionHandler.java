@@ -1,10 +1,10 @@
-package com.java.test.junior.config;
+package com.java.test.junior.controller.handler;
 
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.exception.ResourceValidationException;
-import com.java.test.junior.model.RequestResponse.ErrorResponse;
+import com.java.test.junior.model.response.ErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

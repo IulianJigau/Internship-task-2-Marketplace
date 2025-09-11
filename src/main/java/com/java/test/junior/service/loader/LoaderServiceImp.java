@@ -1,7 +1,6 @@
 package com.java.test.junior.service.loader;
 
 import com.java.test.junior.exception.ResourceNotFoundException;
-import com.java.test.junior.exception.ResourceValidationException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Resource;
@@ -10,15 +9,13 @@ import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
 import java.sql.Connection;
 import java.util.List;
 
@@ -32,6 +29,7 @@ public class LoaderServiceImp implements LoaderService {
 
     @Qualifier("storageServers")
     private final List<Resource> storageServers;
+    private final RestTemplate restTemplate;
 
     @Override
     public List<Resource> getResources() {
@@ -63,30 +61,31 @@ public class LoaderServiceImp implements LoaderService {
         load(copyQuery, resourceId, fileName, userDetails);
     }
 
-    public void load(String copyQuery, Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
+    private void load(String copyQuery, Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
         String baseUrl = storageServers.get(resourceId).getPath();
-        URL url;
-        HttpURLConnection serverConn;
+        String url = baseUrl + "/data/stream/" + fileName;
 
-        try {
-            url = URI.create(baseUrl + "/data/stream/" + fileName).toURL();
-            serverConn = (HttpURLConnection) url.openConnection();
-            serverConn.setRequestMethod("GET");
-        } catch (Exception e) {
-            throw new ResourceValidationException("The server you are trying to reach is not valid.");
-        }
+        try (
+                InputStream inputStream = restTemplate.execute(
+                        url,
+                        HttpMethod.GET,
+                        null,
+                        clientHttpResponse -> clientHttpResponse.getBody()
+                );
 
-        try (InputStream inputStream = serverConn.getInputStream();
-             Connection dataConn = dataSource.getConnection()) {
+                Connection dataConn = dataSource.getConnection()
+        ) {
             PGConnection pgConn = dataConn.unwrap(PGConnection.class);
             CopyManager copyManager = pgConn.getCopyAPI();
 
             copyManager.copyIn(copyQuery, inputStream);
+
             productMapper.copyStaging(userDetails.getId());
 
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Error while copying data: " + e.getMessage(), e);
         }
     }
+
 }
 

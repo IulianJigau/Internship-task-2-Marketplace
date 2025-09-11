@@ -1,4 +1,4 @@
-package com.java.test.junior.model.Product;
+package com.java.test.junior.model.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

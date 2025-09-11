@@ -2,9 +2,9 @@ package com.java.test.junior.service.product;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
-import com.java.test.junior.model.Product.Product;
-import com.java.test.junior.model.Product.ProductDTO;
-import com.java.test.junior.model.RequestResponse.PaginationResponse;
+import com.java.test.junior.model.product.Product;
+import com.java.test.junior.model.product.ProductDTO;
+import com.java.test.junior.model.response.PaginationResponse;
 
 public interface ProductService {
 

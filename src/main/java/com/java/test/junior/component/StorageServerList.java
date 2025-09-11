@@ -1,14 +1,14 @@
-package com.java.test.junior.config;
+package com.java.test.junior.component;
 
 import com.java.test.junior.model.Resource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Configuration
-public class StorageServersList {
+@Component
+public class StorageServerList {
 
     @Bean
     @Qualifier("storageServers")

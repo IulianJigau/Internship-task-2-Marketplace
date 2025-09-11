@@ -2,7 +2,7 @@ package com.java.test.junior.service.product.review;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
-import com.java.test.junior.model.RequestResponse.PaginationResponse;
+import com.java.test.junior.model.response.PaginationResponse;
 
 public interface ProductReviewService {
 

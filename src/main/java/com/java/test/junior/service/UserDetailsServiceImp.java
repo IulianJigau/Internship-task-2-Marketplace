@@ -3,7 +3,7 @@ package com.java.test.junior.service;
 import com.java.test.junior.mapper.RoleMapper;
 import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.User.User;
+import com.java.test.junior.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

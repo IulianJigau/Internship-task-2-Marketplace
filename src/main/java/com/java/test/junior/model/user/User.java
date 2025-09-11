@@ -1,4 +1,4 @@
-package com.java.test.junior.model.User;
+package com.java.test.junior.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

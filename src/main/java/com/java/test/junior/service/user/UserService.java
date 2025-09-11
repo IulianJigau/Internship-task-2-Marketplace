@@ -2,9 +2,9 @@ package com.java.test.junior.service.user;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
-import com.java.test.junior.model.RequestResponse.PaginationResponse;
-import com.java.test.junior.model.User.User;
-import com.java.test.junior.model.User.UserDTO;
+import com.java.test.junior.model.response.PaginationResponse;
+import com.java.test.junior.model.user.User;
+import com.java.test.junior.model.user.UserDTO;
 
 public interface UserService {
     User getUserById(Long userId);
