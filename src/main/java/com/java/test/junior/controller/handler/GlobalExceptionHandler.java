@@ -1,9 +1,6 @@
 package com.java.test.junior.controller.handler;
 
-import com.java.test.junior.exception.ResourceConflictException;
-import com.java.test.junior.exception.ResourceDeletedException;
-import com.java.test.junior.exception.ResourceNotFoundException;
-import com.java.test.junior.exception.ResourceValidationException;
+import com.java.test.junior.exception.*;
 import com.java.test.junior.model.response.ErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolation;
@@ -26,6 +23,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(RequestFailException.class)
+    public ResponseEntity<?> handleException(RequestFailException ex) {
+        logger.error(ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Failed to process the request"));
+    }
 
     @ExceptionHandler(ResourceConflictException.class)
     public ResponseEntity<?> handleException(ResourceConflictException ex) {
@@ -88,12 +92,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleException(MethodArgumentTypeMismatchException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("The request parameter " + ex.getName() + " has the wrong type"));
-    }
-
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<?> handleException(HandlerMethodValidationException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("There was an error validating the request"));
     }
 
     @ExceptionHandler(ServletException.class)

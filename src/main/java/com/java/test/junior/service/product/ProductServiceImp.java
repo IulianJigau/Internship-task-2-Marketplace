@@ -9,6 +9,7 @@ import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.product.Product;
 import com.java.test.junior.model.product.ProductDTO;
 import com.java.test.junior.model.response.PaginationResponse;
+import com.java.test.junior.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,13 @@ import java.util.List;
 public class ProductServiceImp implements ProductService {
 
     private final ProductMapper productMapper;
+    private final UserService userService;
     private final RoleChecker roleChecker;
+
+    @Override
+    public Boolean existsProductId(Long id){
+        return productMapper.exists(id);
+    }
 
     @Override
     public Product getProductById(Long productId) {
@@ -36,6 +43,13 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public PaginationResponse<?> getProductsPage(PaginationOptionsDTO paginationOptions, String query, Long userId, Boolean isDeleted) {
+        if(userId != null) {
+            boolean exists = userService.existsUserId(userId);
+            if (!exists) {
+                throw new ResourceNotFoundException("The requested user was not found.");
+            }
+        }
+
         List<Product> products = productMapper.getPage(paginationOptions.getPage(), paginationOptions.getPageSize(), query, userId, isDeleted);
         long entries = -1L;
         if (paginationOptions.getRefresh()) {
@@ -47,11 +61,11 @@ public class ProductServiceImp implements ProductService {
     @Override
     public Product createProduct(ProductDTO product, ExtendedUserDetails userDetails) {
         Long newId = productMapper.insert(userDetails.getId(), product);
-        return productMapper.find(newId);
+        return getProductById(newId);
     }
 
     public void checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
-        Product product = productMapper.find(productId);
+        Product product = getProductById(productId);
         if (product == null) {
             throw new ResourceNotFoundException("The requested product was not found.");
         }
@@ -76,6 +90,10 @@ public class ProductServiceImp implements ProductService {
     @Override
     public void clearDeletedProducts() {
         productMapper.clearDeleted();
+    }
+
+    public void copyStagingProducts(Long userId){
+        productMapper.copyStaging(userId);
     }
 
     @FunctionalInterface

@@ -7,13 +7,20 @@ import com.java.test.junior.model.user.User;
 import com.java.test.junior.model.user.UserDTO;
 
 public interface UserService {
+
+    Boolean existsUserId(Long id);
+
+    Boolean existsUserEmail(String email);
+
+    User getUserByEmail(String email);
+
     User getUserById(Long userId);
 
     PaginationResponse<?> getUsersPage(PaginationOptionsDTO paginationOptions, Boolean isDeleted);
 
     User createUser(UserDTO user);
 
-    void update(Long userId, String username, String password, ExtendedUserDetails userDetails);
+    void updateUser(Long userId, String username, String password, ExtendedUserDetails userDetails);
 
     void deleteUser(Long userId, ExtendedUserDetails userDetails);
 

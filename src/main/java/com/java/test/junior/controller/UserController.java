@@ -89,7 +89,7 @@ public class UserController {
             @Size(min = 3, max = 30) @RequestParam(required = false) String username,
             @Size(min = 5, max = 30) @RequestBody(required = false) @Pattern(regexp = "\\S+") String password,
             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        userService.update(userId, username, password, userDetails);
+        userService.updateUser(userId, username, password, userDetails);
     }
 
     @Operation(summary = "Delete an user")

@@ -6,11 +6,21 @@ import java.util.List;
 
 public interface RoleService {
 
+    Boolean existsRoleId(Integer id);
+
+    Boolean existsRoleName(String name);
+
+    Role findRoleById(Integer id);
+
+    Role findRoleByName(String name);
+
     List<Role> getRoles();
 
     Role createRole(String name);
 
     void deleteRole(Integer roleId);
+
+    Boolean existsUserRole(Long userId, Integer roleId);
 
     List<String> getUserRoles(Long userId);
 

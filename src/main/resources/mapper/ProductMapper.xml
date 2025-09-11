@@ -81,7 +81,8 @@
     <insert id="copyStaging" parameterType="Long">
         INSERT INTO product(name, price, description, user_id)
         SELECT name, price, description, #{userId}
-        FROM staging_product
+        FROM staging_product;
+        TRUNCATE TABLE staging_product;
     </insert>
 
     <resultMap id="productResultMapper" type="com.java.test.junior.model.product.Product">

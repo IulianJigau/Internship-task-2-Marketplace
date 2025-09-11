@@ -1,9 +1,9 @@
 package com.java.test.junior.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.response.ErrorResponse;
+import com.java.test.junior.service.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthCheckFilter extends OncePerRequestFilter {
 
-    private final UserMapper userMapper;
+    private final UserService userService;
     private final List<RequestMatcher> permittedEndpointMatchers;
     private final ObjectMapper objectMapper;
 
@@ -62,7 +62,7 @@ public class AuthCheckFilter extends OncePerRequestFilter {
 
         ExtendedUserDetails userDetails = (ExtendedUserDetails) auth.getPrincipal();
         LocalDateTime authTime = userDetails.getAuthTime();
-        LocalDateTime updateTime = userMapper.find(userDetails.getId()).getUpdatedAt();
+        LocalDateTime updateTime = userService.getUserById(userDetails.getId()).getUpdatedAt();
 
         if (authTime.isBefore(updateTime)) {
             sendErrorResponse(response, "Your session has expired");

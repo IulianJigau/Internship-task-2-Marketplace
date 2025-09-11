@@ -8,6 +8,8 @@ import com.java.test.junior.model.response.PaginationResponse;
 
 public interface ProductService {
 
+    Boolean existsProductId(Long id);
+
     Product getProductById(Long productId);
 
     PaginationResponse<?> getProductsPage(PaginationOptionsDTO paginationOptions, String query, Long userId, Boolean isDeleted);
@@ -19,4 +21,6 @@ public interface ProductService {
     void deleteProduct(Long productId, ExtendedUserDetails userDetails);
 
     void clearDeletedProducts();
+
+    void copyStagingProducts(Long userId);
 }

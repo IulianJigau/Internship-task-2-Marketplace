@@ -69,6 +69,7 @@ public class UserTest {
 
         User user = new User();
         user.setId(1L);
+        user.setIsDeleted(false);
 
         when(userMapper.existsEmail(userDTO.getEmail())).thenReturn(false);
         when(userMapper.insert(userDTO)).thenReturn(1L);

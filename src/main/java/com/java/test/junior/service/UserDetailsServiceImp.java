@@ -1,9 +1,9 @@
 package com.java.test.junior.service;
 
-import com.java.test.junior.mapper.RoleMapper;
-import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.user.User;
+import com.java.test.junior.service.role.RoleService;
+import com.java.test.junior.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,17 +20,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserDetailsServiceImp implements UserDetailsService {
 
-    private final UserMapper userMapper;
-    private final RoleMapper roleMapper;
+    private final UserService userService;
+    private final RoleService roleService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userMapper.findByEmail(email);
+        User user = userService.getUserByEmail(email);
         if (user == null || user.getIsDeleted()) {
             throw new UsernameNotFoundException(email);
         }
 
-        List<String> roles = roleMapper.findUserRoles(user.getId());
+        List<String> roles = roleService.getUserRoles(user.getId());
 
         List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))

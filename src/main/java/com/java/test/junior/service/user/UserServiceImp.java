@@ -26,6 +26,27 @@ public class UserServiceImp implements UserService {
     private final RoleChecker roleChecker;
 
     @Override
+    public Boolean existsUserId(Long id){
+        return userMapper.exists(id);
+    }
+
+    @Override
+    public Boolean existsUserEmail(String email){
+        return userMapper.existsEmail(email);
+    }
+
+    public User getUserByEmail(String email) {
+        User user = userMapper.findByEmail(email);
+        if (user == null) {
+            throw new ResourceNotFoundException("The requested user was not found.");
+        }
+        if (user.getIsDeleted()) {
+            throw new ResourceDeletedException("The requested user was deleted.");
+        }
+        return user;
+    }
+
+    @Override
     public User getUserById(Long userId) {
         User user = userMapper.find(userId);
         if (user == null) {
@@ -49,13 +70,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User createUser(UserDTO user) {
-        if (userMapper.existsEmail(user.getEmail())) {
+        if (existsUserEmail(user.getEmail())) {
             throw new ResourceConflictException("The provided email is already in use.");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Long newId = userMapper.insert(user);
-        return userMapper.find(newId);
+        return getUserById(newId);
     }
 
     public void checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
@@ -70,7 +91,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void update(Long userId, String username, String password, ExtendedUserDetails userDetails) {
+    public void updateUser(Long userId, String username, String password, ExtendedUserDetails userDetails) {
         checkOwnershipAndRun(
                 () -> userMapper.update(userId, username, password != null ? passwordEncoder.encode(password) : null),
                 userId, userDetails);

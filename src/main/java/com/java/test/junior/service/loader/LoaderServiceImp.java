@@ -1,18 +1,19 @@
 package com.java.test.junior.service.loader;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.test.junior.exception.RequestFailException;
 import com.java.test.junior.exception.ResourceNotFoundException;
-import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.Resource;
+import com.java.test.junior.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
@@ -23,13 +24,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoaderServiceImp implements LoaderService {
 
-    private final WebClient webClient = WebClient.create();
-    private final ProductMapper productMapper;
+    private final ProductService productService;
     private final DataSource dataSource;
 
     @Qualifier("storageServers")
     private final List<Resource> storageServers;
     private final RestTemplate restTemplate;
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public List<Resource> getResources() {
@@ -46,46 +48,56 @@ public class LoaderServiceImp implements LoaderService {
         }
 
         String baseUrl = storageServers.get(resourceId).getPath();
+        String url = baseUrl + "/data/files";
 
-        return webClient.get()
-                .uri(baseUrl + "/data/files")
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<String>>() {
-                })
-                .block();
+        try {
+            return restTemplate.execute(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    response -> {
+                        try (InputStream inputStream = response.getBody()) {
+                            return objectMapper.readValue(inputStream, new TypeReference<>() {
+                            });
+                        }
+                    }
+            );
+        } catch (Exception e) {
+            throw new RequestFailException(e.getMessage());
+        }
     }
 
     @Override
     public void loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
         String copyQuery = "COPY staging_product (name, price, description) FROM STDIN WITH (FORMAT csv, HEADER true)";
-        load(copyQuery, resourceId, fileName, userDetails);
+        load(copyQuery, resourceId, fileName);
+        productService.copyStagingProducts(userDetails.getId());
     }
 
-    private void load(String copyQuery, Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
+    private void load(String copyQuery, Integer resourceId, String fileName) {
         String baseUrl = storageServers.get(resourceId).getPath();
         String url = baseUrl + "/data/stream/" + fileName;
 
-        try (
-                InputStream inputStream = restTemplate.execute(
-                        url,
-                        HttpMethod.GET,
-                        null,
-                        clientHttpResponse -> clientHttpResponse.getBody()
-                );
-
-                Connection dataConn = dataSource.getConnection()
-        ) {
+        try (Connection dataConn = dataSource.getConnection()) {
             PGConnection pgConn = dataConn.unwrap(PGConnection.class);
             CopyManager copyManager = pgConn.getCopyAPI();
 
-            copyManager.copyIn(copyQuery, inputStream);
-
-            productMapper.copyStaging(userDetails.getId());
-
+            restTemplate.execute(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    response -> {
+                        try (InputStream inputStream = response.getBody()) {
+                            copyManager.copyIn(copyQuery, inputStream);
+                            return null;
+                        } catch (Exception e) {
+                            throw new RuntimeException(e.getMessage());
+                        }
+                    }
+            );
         } catch (Exception e) {
-            throw new RuntimeException("Error while copying data: " + e.getMessage(), e);
+            throw new RequestFailException(e.getMessage());
         }
     }
-
 }
 

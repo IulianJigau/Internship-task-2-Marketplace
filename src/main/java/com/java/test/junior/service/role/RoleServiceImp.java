@@ -3,8 +3,8 @@ package com.java.test.junior.service.role;
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.RoleMapper;
-import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.Role;
+import com.java.test.junior.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,35 @@ import java.util.List;
 public class RoleServiceImp implements RoleService {
 
     private final RoleMapper roleMapper;
-    private final UserMapper userMapper;
+    private final UserService userService;
+
+    @Override
+    public Boolean existsRoleId(Integer id){
+        return roleMapper.exists(id);
+    }
+
+    @Override
+    public Boolean existsRoleName(String name){
+        return roleMapper.existsName(name);
+    }
+
+    @Override
+    public Role findRoleById(Integer id){
+        Role role = roleMapper.find(id);
+        if (role == null) {
+            throw new ResourceNotFoundException("The requested role was not found.");
+        }
+        return role;
+    }
+
+    @Override
+    public Role findRoleByName(String name){
+        Role role = roleMapper.findByName(name);
+        if (role == null) {
+            throw new ResourceNotFoundException("The requested role was not found.");
+        }
+        return role;
+    }
 
     @Override
     public List<Role> getRoles() {
@@ -24,7 +52,7 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public Role createRole(String name) {
-        if (roleMapper.existsName(name)) {
+        if (existsRoleName(name)) {
             throw new ResourceConflictException("A role with this name already exists.");
         }
 
@@ -41,8 +69,13 @@ public class RoleServiceImp implements RoleService {
     }
 
     @Override
+    public Boolean existsUserRole(Long userId, Integer roleId) {
+        return roleMapper.existsUserRole(userId, roleId);
+    }
+
+    @Override
     public List<String> getUserRoles(Long userId) {
-        boolean exists = userMapper.exists(userId);
+        boolean exists = userService.existsUserId(userId);
         if (!exists) {
             throw new ResourceNotFoundException("The requested user was not found.");
         }
@@ -52,12 +85,12 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public void assignUserRole(Long userId, Integer roleId) {
-        boolean exists = userMapper.exists(userId) && roleMapper.exists(roleId);
+        boolean exists = userService.existsUserId(userId) && roleMapper.exists(roleId);
         if (!exists) {
             throw new ResourceNotFoundException("The requested user or role were not found.");
         }
 
-        if (roleMapper.existsUserRole(userId, roleId)) {
+        if (existsUserRole(userId, roleId)) {
             throw new ResourceConflictException("The user role has already been assigned.");
         }
 

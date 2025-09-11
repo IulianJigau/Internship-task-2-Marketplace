@@ -27,15 +27,26 @@ public class AdminInitializerService {
 
     @PostConstruct
     public void init() {
-        if (email == null || password == null) {
-            return;
+        if (email == null) {
+            logger.info("Admin user initialization skipped. No email was provided.");
         }
-        try {
-            Long userId = userService.createUser(new UserDTO(email, adminRole, password)).getId();
-            Integer roleId = roleService.createRole(adminRole).getId();
+
+        Long userId;
+        if (userService.existsUserEmail(email)) {
+            userId = userService.getUserByEmail(email).getId();
+        } else {
+            if (password == null) {
+                logger.info("Admin user initialization skipped. No password was provided.");
+            }
+            userId = userService.createUser(new UserDTO(email, adminRole, password)).getId();
+        }
+
+        Integer roleId = roleService.existsRoleName(adminRole) ?
+                roleService.findRoleByName(adminRole).getId() :
+                roleService.createRole(adminRole).getId();
+
+        if (!roleService.existsUserRole(userId, roleId)) {
             roleService.assignUserRole(userId, roleId);
-        } catch (Exception e) {
-            logger.info(e.getMessage());
         }
     }
 }

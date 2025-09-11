@@ -1,12 +1,12 @@
 package com.java.test.junior.service.product.review;
 
 import com.java.test.junior.exception.ResourceNotFoundException;
-import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.mapper.ProductReviewMapper;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.product.ProductReview;
 import com.java.test.junior.model.response.PaginationResponse;
+import com.java.test.junior.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductReviewServiceImp implements ProductReviewService {
 
-    private final ProductMapper productMapper;
+    private final ProductService productService;
     private final ProductReviewMapper productReviewMapper;
 
     @Override
@@ -31,7 +31,7 @@ public class ProductReviewServiceImp implements ProductReviewService {
 
     @Override
     public void addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails) {
-        boolean exists = productMapper.exists(productId);
+        boolean exists = productService.existsProductId(productId);
         if (!exists) {
             throw new ResourceNotFoundException("The requested product was not found.");
         }
