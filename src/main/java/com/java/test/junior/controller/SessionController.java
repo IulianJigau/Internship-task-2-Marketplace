@@ -23,17 +23,15 @@ public class SessionController {
 
     @Operation(summary = "Logs the user in")
     @PostMapping("/login")
-    public void login(
-            @Valid @RequestBody CredentialsDTO credentials,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+    public void login(@Valid @RequestBody CredentialsDTO credentials,
+                      HttpServletRequest request,
+                      HttpServletResponse response) {
         sessionService.login(credentials, request, response);
     }
 
     @Operation(summary = "Logs the user out")
     @PostMapping("/logout")
-    public void logout(
-            HttpServletRequest request) {
+    public void logout(HttpServletRequest request) {
         sessionService.logout(request);
     }
 }

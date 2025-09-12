@@ -19,19 +19,19 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImp implements UserService {
+public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final RoleChecker roleChecker;
 
     @Override
-    public Boolean existsUserId(Long id){
+    public Boolean existsUserId(Long id) {
         return userMapper.exists(id);
     }
 
     @Override
-    public Boolean existsUserEmail(String email){
+    public Boolean existsUserEmail(String email) {
         return userMapper.existsEmail(email);
     }
 
@@ -40,9 +40,11 @@ public class UserServiceImp implements UserService {
         if (user == null) {
             throw new ResourceNotFoundException("The requested user was not found.");
         }
+
         if (user.getIsDeleted()) {
             throw new ResourceDeletedException("The requested user was deleted.");
         }
+
         return user;
     }
 
@@ -52,19 +54,23 @@ public class UserServiceImp implements UserService {
         if (user == null) {
             throw new ResourceNotFoundException("The requested user was not found.");
         }
+
         if (user.getIsDeleted()) {
             throw new ResourceDeletedException("The requested user was deleted.");
         }
+
         return user;
     }
 
     @Override
     public PaginationResponse<?> getUsersPage(PaginationOptionsDTO paginationOptions, Boolean isDeleted) {
         List<User> users = userMapper.getPage(paginationOptions.getPage(), paginationOptions.getPageSize(), isDeleted);
+
         long entries = -1L;
         if (paginationOptions.getRefresh()) {
             entries = userMapper.getTotalEntries(isDeleted);
         }
+
         return new PaginationResponse<>(entries, users);
     }
 
@@ -80,14 +86,14 @@ public class UserServiceImp implements UserService {
     }
 
     public void checkOwnershipAndRun(Action action, Long userId, ExtendedUserDetails userDetails) {
-        if (!roleChecker.hasAdminRole(userDetails) && !userId.equals(userDetails.getId())) {
-            throw new AccessDeniedException("You must be the owner of this account to perform this operation.");
+        if (roleChecker.hasAdminRole(userDetails) || userId.equals(userDetails.getId())) {
+            if (action.execute() == 0) {
+                throw new ResourceNotFoundException("The requested user was not found.");
+            }
+            return;
         }
 
-        int result = action.execute();
-        if (result == 0) {
-            throw new ResourceNotFoundException("The requested user was not found.");
-        }
+        throw new AccessDeniedException("You must be the owner of this account to perform this operation.");
     }
 
     @Override

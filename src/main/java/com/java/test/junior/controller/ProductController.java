@@ -31,51 +31,45 @@ public class ProductController {
 
     @Operation(summary = "Get product by id")
     @GetMapping("/{productId}")
-    public Product getProductById(
-            @NotNull @Positive @PathVariable Long productId) {
+    public Product getProductById(@NotNull @Positive @PathVariable Long productId) {
         return productService.getProductById(productId);
     }
 
     @Operation(summary = "Get products page")
     @GetMapping
-    public PaginationResponse<?> getProductsPage(
-            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
-            @RequestParam(required = false) String query) {
+    public PaginationResponse<?> getProductsPage(@Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
+                                                 @RequestParam(required = false) String query) {
         return productService.getProductsPage(paginationOptions, query, null, false);
     }
 
     @Operation(summary = "Get the deleted products' page")
     @GetMapping("/deleted")
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public PaginationResponse<?> getDeletedProductsPage(
-            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
-            @RequestParam(required = false) String query) {
+    public PaginationResponse<?> getDeletedProductsPage(@Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
+                                                        @RequestParam(required = false) String query) {
         return productService.getProductsPage(paginationOptions, query, null, true);
     }
 
     @Operation(summary = "Create a product")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(
-            @Valid @RequestBody ProductDTO product,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public Product createProduct(@Valid @RequestBody ProductDTO product,
+                                 @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         return productService.createProduct(product, userDetails);
     }
 
     @Operation(summary = "Update a product")
     @PutMapping("/{productId}")
-    public void updateProduct(
-            @NotNull @Positive @PathVariable Long productId,
-            @Valid @RequestBody ProductDTO product,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public void updateProduct(@NotNull @Positive @PathVariable Long productId,
+                              @Valid @RequestBody ProductDTO product,
+                              @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         productService.updateProduct(productId, product, userDetails);
     }
 
     @Operation(summary = "Delete a product")
     @DeleteMapping("/{productId}")
-    public void deleteProduct(
-            @NotNull @Positive @PathVariable Long productId,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public void deleteProduct(@NotNull @Positive @PathVariable Long productId,
+                              @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         productService.deleteProduct(productId, userDetails);
     }
 
@@ -89,19 +83,17 @@ public class ProductController {
 
     @Operation(summary = "Get product reviews page")
     @GetMapping("/{productId}/reviews")
-    public PaginationResponse<?> getReviewsPage(
-            @NotNull @Positive @PathVariable Long productId,
-            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
-            @RequestParam(required = false) Boolean isLiked) {
+    public PaginationResponse<?> getReviewsPage(@NotNull @Positive @PathVariable Long productId,
+                                                @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
+                                                @RequestParam(required = false) Boolean isLiked) {
         return productReviewService.getReviewsPage(null, productId, paginationOptions, isLiked);
     }
 
     @Operation(summary = "Add, update or remove a product review")
     @PostMapping("/{productId}/reviews")
-    public void addReview(
-            @NotNull @Positive @PathVariable Long productId,
-            @NotNull @RequestParam Boolean isLiked,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public void addReview(@NotNull @Positive @PathVariable Long productId,
+                          @NotNull @RequestParam Boolean isLiked,
+                          @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         productReviewService.addReview(productId, isLiked, userDetails);
     }
 }

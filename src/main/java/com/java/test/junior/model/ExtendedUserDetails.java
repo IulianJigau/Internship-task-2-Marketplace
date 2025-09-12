@@ -16,8 +16,7 @@ public class ExtendedUserDetails implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     private LocalDateTime authTime;
 
-    public ExtendedUserDetails(
-            Long id,
+    public ExtendedUserDetails(Long id,
             String username,
             String email,
             String password,

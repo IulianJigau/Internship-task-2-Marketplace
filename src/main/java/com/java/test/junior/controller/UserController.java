@@ -45,32 +45,28 @@ public class UserController {
 
     @Operation(summary = "Get user by id")
     @GetMapping("/{userId}")
-    public User getUserById(
-            @NotNull @Positive @PathVariable Long userId) {
+    public User getUserById(@NotNull @Positive @PathVariable Long userId) {
         return userService.getUserById(userId);
     }
 
     @Operation(summary = "Get users page")
     @GetMapping
-    public PaginationResponse<?> getUsersPage(
-            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
+    public PaginationResponse<?> getUsersPage(@Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
         return userService.getUsersPage(paginationOptions, false);
     }
 
     @Operation(summary = "Get users page")
     @GetMapping("/{userId}/products")
-    public PaginationResponse<?> getUserProductsPage(
-            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
-            @RequestParam(required = false) String query,
-            @NotNull @Positive @PathVariable Long userId) {
+    public PaginationResponse<?> getUserProductsPage(@Valid @ModelAttribute PaginationOptionsDTO paginationOptions,
+                                                     @RequestParam(required = false) String query,
+                                                     @NotNull @Positive @PathVariable Long userId) {
         return productService.getProductsPage(paginationOptions, query, userId, false);
     }
 
     @Operation(summary = "Get deleted users' page")
     @GetMapping("/deleted")
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public PaginationResponse<?> getDeletedUsersPage(
-            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
+    public PaginationResponse<?> getDeletedUsersPage(@Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
         return userService.getUsersPage(paginationOptions, true);
     }
 
@@ -84,19 +80,17 @@ public class UserController {
 
     @Operation(summary = "Update user's credentials")
     @PutMapping("/{userId}")
-    public void updateUser(
-            @NotNull @Positive @PathVariable Long userId,
-            @Size(min = 3, max = 30) @RequestParam(required = false) String username,
-            @Size(min = 5, max = 30) @RequestBody(required = false) @Pattern(regexp = "\\S+") String password,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public void updateUser(@NotNull @Positive @PathVariable Long userId,
+                           @Size(min = 3, max = 30) @RequestParam(required = false) String username,
+                           @Size(min = 5, max = 30) @RequestBody(required = false) @Pattern(regexp = "\\S+") String password,
+                           @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         userService.updateUser(userId, username, password, userDetails);
     }
 
     @Operation(summary = "Delete an user")
     @DeleteMapping("/{userId}")
-    public void deleteUser(
-            @NotNull @Positive @PathVariable Long userId,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public void deleteUser(@NotNull @Positive @PathVariable Long userId,
+                           @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         userService.deleteUser(userId, userDetails);
     }
 
@@ -110,8 +104,7 @@ public class UserController {
     @Operation(summary = "Get an user's roles")
     @GetMapping("/{userId}/roles")
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public List<String> getUserRoles(
-            @NotNull @Positive @PathVariable Long userId) {
+    public List<String> getUserRoles(@NotNull @Positive @PathVariable Long userId) {
         return roleService.getUserRoles(userId);
     }
 
@@ -119,26 +112,23 @@ public class UserController {
     @PostMapping("/{userId}/roles")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public void assignUserRole(
-            @NotNull @Positive @PathVariable Long userId,
-            @NotNull @Positive @RequestParam(required = true) Integer roleId) {
+    public void assignUserRole(@NotNull @Positive @PathVariable Long userId,
+                               @NotNull @Positive @RequestParam(required = true) Integer roleId) {
         roleService.assignUserRole(userId, roleId);
     }
 
     @Operation(summary = "Remove a role")
     @DeleteMapping("/{userId}/roles")
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public void removeUserRole(
-            @NotNull @Positive @PathVariable Long userId,
-            @NotNull @Positive @RequestParam(required = true) Integer roleId) {
+    public void removeUserRole(@NotNull @Positive @PathVariable Long userId,
+                               @NotNull @Positive @RequestParam(required = true) Integer roleId) {
         roleService.removeUserRole(userId, roleId);
     }
 
     @Operation(summary = "Get an user's reviews")
     @GetMapping("/{userId}/reviews")
-    public PaginationResponse<?> getReviews(
-            @NotNull @Positive @PathVariable Long userId,
-            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
+    public PaginationResponse<?> getReviews(@NotNull @Positive @PathVariable Long userId,
+                                            @Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
         return productReviewService.getReviewsPage(userId, null, paginationOptions, null);
     }
 }

@@ -36,16 +36,14 @@ public class RoleController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public Role createRole(
-            @NotBlank @Size(min = 3, max = 30) @RequestParam String name) {
+    public Role createRole(@NotBlank @Size(min = 3, max = 30) @RequestParam String name) {
         return roleService.createRole(name);
     }
 
     @Operation(summary = "Delete role")
     @DeleteMapping("/{roleId}")
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public void deleteRole(
-            @NotNull @Positive @PathVariable Integer roleId) {
+    public void deleteRole(@NotNull @Positive @PathVariable Integer roleId) {
         roleService.deleteRole(roleId);
     }
 }

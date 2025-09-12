@@ -10,7 +10,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.util.List;
 
 @Configuration
-@Data
 public class EndpointAccessConfig {
 
     @Bean

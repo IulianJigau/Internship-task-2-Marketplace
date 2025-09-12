@@ -24,6 +24,7 @@ class IntegrationSuite {
             .withDatabaseName("testdb")
             .withUsername("testuser")
             .withPassword("testpass");
+
     @Autowired
     private ProductTest productTest;
     @Autowired

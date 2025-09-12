@@ -10,6 +10,7 @@ import com.java.test.junior.model.product.Product;
 import com.java.test.junior.model.product.ProductDTO;
 import com.java.test.junior.model.response.PaginationResponse;
 import com.java.test.junior.service.user.UserService;
+import com.java.test.junior.util.Procedure;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ProductServiceImp implements ProductService {
     private final RoleChecker roleChecker;
 
     @Override
-    public Boolean existsProductId(Long id){
+    public Boolean existsProductId(Long id) {
         return productMapper.exists(id);
     }
 
@@ -35,26 +36,40 @@ public class ProductServiceImp implements ProductService {
         if (product == null) {
             throw new ResourceNotFoundException("The requested product was not found.");
         }
+
         if (product.getIsDeleted()) {
             throw new ResourceDeletedException("The requested product was deleted.");
         }
+
         return product;
     }
 
     @Override
     public PaginationResponse<?> getProductsPage(PaginationOptionsDTO paginationOptions, String query, Long userId, Boolean isDeleted) {
-        if(userId != null) {
-            boolean exists = userService.existsUserId(userId);
-            if (!exists) {
-                throw new ResourceNotFoundException("The requested user was not found.");
-            }
+        if (userId == null) {
+            return getProductPaginationResponse(paginationOptions, query, null, isDeleted);
         }
 
-        List<Product> products = productMapper.getPage(paginationOptions.getPage(), paginationOptions.getPageSize(), query, userId, isDeleted);
+        if (userService.existsUserId(userId)) {
+            return getProductPaginationResponse(paginationOptions, query, userId, isDeleted);
+        }
+
+        throw new ResourceNotFoundException("The requested user was not found.");
+    }
+
+    private PaginationResponse<Product> getProductPaginationResponse(PaginationOptionsDTO paginationOptions, String query, Long userId, Boolean isDeleted) {
+        List<Product> products = productMapper.getPage(
+                paginationOptions.getPage(),
+                paginationOptions.getPageSize(),
+                query,
+                userId,
+                isDeleted);
+
         long entries = -1L;
         if (paginationOptions.getRefresh()) {
             entries = productMapper.getTotalEntries(query, userId, isDeleted);
         }
+
         return new PaginationResponse<>(entries, products);
     }
 
@@ -64,17 +79,18 @@ public class ProductServiceImp implements ProductService {
         return getProductById(newId);
     }
 
-    public void checkOwnershipAndRun(Action action, Long productId, ExtendedUserDetails userDetails) {
+    public void checkOwnershipAndRun(Procedure procedure, Long productId, ExtendedUserDetails userDetails) {
         Product product = getProductById(productId);
         if (product == null) {
             throw new ResourceNotFoundException("The requested product was not found.");
         }
 
-        if (!roleChecker.hasAdminRole(userDetails) && !userDetails.getId().equals(product.getUserId())) {
-            throw new AccessDeniedException("You must be the owner of this product to perform this operation.");
+        if (roleChecker.hasAdminRole(userDetails) || userDetails.getId().equals(product.getUserId())) {
+            procedure.execute();
+            return;
         }
 
-        action.execute();
+        throw new AccessDeniedException("You must be the owner of this product to perform this operation.");
     }
 
     @Override
@@ -92,12 +108,7 @@ public class ProductServiceImp implements ProductService {
         productMapper.clearDeleted();
     }
 
-    public void copyStagingProducts(Long userId){
+    public void copyStagingProducts(Long userId) {
         productMapper.copyStaging(userId);
-    }
-
-    @FunctionalInterface
-    public interface Action {
-        void execute();
     }
 }

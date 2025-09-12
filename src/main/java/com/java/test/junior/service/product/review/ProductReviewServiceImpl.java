@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ProductReviewServiceImp implements ProductReviewService {
+public class ProductReviewServiceImpl implements ProductReviewService {
 
     private final ProductService productService;
     private final ProductReviewMapper productReviewMapper;
@@ -22,29 +22,32 @@ public class ProductReviewServiceImp implements ProductReviewService {
     @Override
     public PaginationResponse<ProductReview> getReviewsPage(Long userId, Long productId, PaginationOptionsDTO paginationOptions, Boolean isLiked) {
         List<ProductReview> reviews = productReviewMapper.getPage(userId, productId, paginationOptions.getPage(), paginationOptions.getPageSize(), isLiked);
+
         long entries = -1L;
         if (paginationOptions.getRefresh()) {
             entries = productReviewMapper.getTotalEntries(userId, productId, isLiked);
         }
+
         return new PaginationResponse<>(entries, reviews);
     }
 
     @Override
     public void addReview(Long productId, Boolean isLiked, ExtendedUserDetails userDetails) {
-        boolean exists = productService.existsProductId(productId);
-        if (!exists) {
+        if (!productService.existsProductId(productId)) {
             throw new ResourceNotFoundException("The requested product was not found.");
         }
 
         ProductReview productReview = productReviewMapper.getProductReview(productId, userDetails.getId());
-        if (productReview != null) {
-            if (productReview.getIsLiked() == isLiked) {
-                productReviewMapper.delete(productId, userDetails.getId());
-            } else {
-                productReviewMapper.update(productId, userDetails.getId(), isLiked);
-            }
-        } else {
+        if(productReview == null){
             productReviewMapper.insert(productId, userDetails.getId(), isLiked);
+            return;
         }
+
+        if (productReview.getIsLiked() == isLiked) {
+            productReviewMapper.delete(productId, userDetails.getId());
+            return;
+        }
+
+        productReviewMapper.update(productId, userDetails.getId(), isLiked);
     }
 }

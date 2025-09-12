@@ -8,7 +8,7 @@ import com.java.test.junior.mapper.UserMapper;
 import com.java.test.junior.model.user.User;
 import com.java.test.junior.model.user.UserDTO;
 import com.java.test.junior.service.user.UserService;
-import com.java.test.junior.service.user.UserServiceImp;
+import com.java.test.junior.service.user.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class UserTest {
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         RoleChecker roleChecker = mock(RoleChecker.class);
         userMapper = mock(UserMapper.class);
-        userService = new UserServiceImp(passwordEncoder, userMapper, roleChecker);
+        userService = new UserServiceImpl(passwordEncoder, userMapper, roleChecker);
     }
 
     @Test

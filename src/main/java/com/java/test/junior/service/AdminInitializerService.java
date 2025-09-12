@@ -5,16 +5,14 @@ import com.java.test.junior.service.role.RoleService;
 import com.java.test.junior.service.user.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class AdminInitializerService {
-
-    private static final Logger logger = LoggerFactory.getLogger(AdminInitializerService.class);
 
     private final UserService userService;
     private final RoleService roleService;
@@ -28,22 +26,33 @@ public class AdminInitializerService {
     @PostConstruct
     public void init() {
         if (email == null) {
-            logger.info("Admin user initialization skipped. No email was provided.");
+            log.info("Admin user initialization skipped. No email was provided.");
+            return;
         }
 
         Long userId;
         if (userService.existsUserEmail(email)) {
             userId = userService.getUserByEmail(email).getId();
-        } else {
-            if (password == null) {
-                logger.info("Admin user initialization skipped. No password was provided.");
-            }
-            userId = userService.createUser(new UserDTO(email, adminRole, password)).getId();
+            addUserRole(userId);
+            return;
         }
 
-        Integer roleId = roleService.existsRoleName(adminRole) ?
-                roleService.findRoleByName(adminRole).getId() :
-                roleService.createRole(adminRole).getId();
+        if (password == null) {
+            log.info("Admin user initialization skipped. No password was provided.");
+            return;
+        }
+
+        userId = userService.createUser(new UserDTO(email, adminRole, password)).getId();
+        addUserRole(userId);
+    }
+
+    private void addUserRole(Long userId) {
+        Integer roleId;
+        if (roleService.existsRoleName(adminRole)) {
+            roleId = roleService.findRoleByName(adminRole).getId();
+        } else {
+            roleId = roleService.createRole(adminRole).getId();
+        }
 
         if (!roleService.existsUserRole(userId, roleId)) {
             roleService.assignUserRole(userId, roleId);

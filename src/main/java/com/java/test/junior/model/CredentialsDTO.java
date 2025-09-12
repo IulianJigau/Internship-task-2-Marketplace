@@ -19,4 +19,9 @@ public class CredentialsDTO {
     @Size(min = 5, max = 30)
     @Pattern(regexp = "\\S+")
     private String password;
+
+
+    public String getPassword() {
+        return password == null? "DEFAULT" : password;
+    }
 }

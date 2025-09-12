@@ -12,36 +12,38 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RoleServiceImp implements RoleService {
+public class RoleServiceImpl implements RoleService {
 
     private final RoleMapper roleMapper;
     private final UserService userService;
 
     @Override
-    public Boolean existsRoleId(Integer id){
+    public Boolean existsRoleId(Integer id) {
         return roleMapper.exists(id);
     }
 
     @Override
-    public Boolean existsRoleName(String name){
+    public Boolean existsRoleName(String name) {
         return roleMapper.existsName(name);
     }
 
     @Override
-    public Role findRoleById(Integer id){
+    public Role findRoleById(Integer id) {
         Role role = roleMapper.find(id);
         if (role == null) {
             throw new ResourceNotFoundException("The requested role was not found.");
         }
+
         return role;
     }
 
     @Override
-    public Role findRoleByName(String name){
+    public Role findRoleByName(String name) {
         Role role = roleMapper.findByName(name);
         if (role == null) {
             throw new ResourceNotFoundException("The requested role was not found.");
         }
+
         return role;
     }
 
@@ -57,13 +59,12 @@ public class RoleServiceImp implements RoleService {
         }
 
         Integer newId = roleMapper.insert(name);
-        return roleMapper.find(newId);
+        return findRoleById(newId);
     }
 
     @Override
     public void deleteRole(Integer roleId) {
-        int result = roleMapper.delete(roleId);
-        if (result == 0) {
+        if (roleMapper.delete(roleId) == 0) {
             throw new ResourceNotFoundException("The requested role was not found.");
         }
     }
@@ -75,19 +76,21 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public List<String> getUserRoles(Long userId) {
-        boolean exists = userService.existsUserId(userId);
-        if (!exists) {
-            throw new ResourceNotFoundException("The requested user was not found.");
+        if (userService.existsUserId(userId)) {
+            return roleMapper.findUserRoles(userId);
         }
 
-        return roleMapper.findUserRoles(userId);
+        throw new ResourceNotFoundException("The requested user was not found.");
     }
 
     @Override
     public void assignUserRole(Long userId, Integer roleId) {
-        boolean exists = userService.existsUserId(userId) && roleMapper.exists(roleId);
-        if (!exists) {
-            throw new ResourceNotFoundException("The requested user or role were not found.");
+        if (!userService.existsUserId(userId)) {
+            throw new ResourceNotFoundException("The requested user was not found.");
+        }
+
+        if(!existsRoleId(roleId)){
+            throw new ResourceNotFoundException("The requested role was not found.");
         }
 
         if (existsUserRole(userId, roleId)) {
@@ -99,8 +102,7 @@ public class RoleServiceImp implements RoleService {
 
     @Override
     public void removeUserRole(Long userId, Integer roleId) {
-        int result = roleMapper.deleteUserRole(userId, roleId);
-        if (result == 0) {
+        if (roleMapper.deleteUserRole(userId, roleId) == 0) {
             throw new ResourceNotFoundException("The requested role was not found.");
         }
     }

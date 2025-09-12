@@ -14,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.InputStream;
 import java.util.List;
 
 @Tag(name = "Data Loader", description = "Loads data from pre-made csv files")
@@ -30,10 +29,9 @@ public class LoaderController {
     @PostMapping("/products/{resourceId}/{fileName}")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public void loadProducts(
-            @NotNull @PathVariable Integer resourceId,
-            @NotBlank @PathVariable String fileName,
-            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+    public void loadProducts(@NotNull @PathVariable Integer resourceId,
+                             @NotBlank @PathVariable String fileName,
+                             @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         loaderService.loadProducts(resourceId, fileName, userDetails);
     }
 
@@ -43,9 +41,7 @@ public class LoaderController {
     }
 
     @GetMapping("/resources/{resourceId}")
-    public List<String> resourcesData(
-            @NotNull @PathVariable Integer resourceId
-    ) {
+    public List<String> resourcesData(@NotNull @PathVariable Integer resourceId) {
         return loaderService.getResourceFiles(resourceId);
     }
 }
