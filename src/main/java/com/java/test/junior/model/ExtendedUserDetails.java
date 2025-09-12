@@ -17,11 +17,11 @@ public class ExtendedUserDetails implements UserDetails {
     private LocalDateTime authTime;
 
     public ExtendedUserDetails(Long id,
-            String username,
-            String email,
-            String password,
-            Collection<? extends GrantedAuthority> authorities,
-            LocalDateTime authTime) {
+                               String username,
+                               String email,
+                               String password,
+                               Collection<? extends GrantedAuthority> authorities,
+                               LocalDateTime authTime) {
         this.id = id;
         this.username = username;
         this.email = email;

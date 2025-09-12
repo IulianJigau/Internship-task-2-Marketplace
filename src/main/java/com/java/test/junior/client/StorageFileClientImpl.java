@@ -3,18 +3,14 @@ package com.java.test.junior.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.test.junior.exception.RequestFailException;
-import com.java.test.junior.exception.ResourceValidationException;
 import lombok.RequiredArgsConstructor;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import com.java.test.junior.model.response.ErrorResponse;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.List;
@@ -22,7 +18,7 @@ import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
-public class StorageFileClientImpl implements StorageFileClient{
+public class StorageFileClientImpl implements StorageFileClient {
 
     private final static String DATA_PATH = "/data";
     private final static String FILES_PATH = "/files";
@@ -42,7 +38,8 @@ public class StorageFileClientImpl implements StorageFileClient{
     private Function<InputStream, List<String>> stringListDeserializer() {
         return inputStream -> {
             try {
-                return objectMapper.readValue(inputStream, new TypeReference<List<String>>() {});
+                return objectMapper.readValue(inputStream, new TypeReference<List<String>>() {
+                });
             } catch (Exception e) {
                 throw new RequestFailException(e.getMessage());
             }
@@ -62,7 +59,7 @@ public class StorageFileClientImpl implements StorageFileClient{
             throw new RequestFailException(e.getMessage());
         }
 
-            executeRequest(streamHandler, url);
+        executeRequest(streamHandler, url);
     }
 
     private Function<InputStream, Void> executeCopy(CopyManager copyManager, String copyQuery) {

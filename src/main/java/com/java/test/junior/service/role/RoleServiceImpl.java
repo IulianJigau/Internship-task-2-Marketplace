@@ -89,7 +89,7 @@ public class RoleServiceImpl implements RoleService {
             throw new ResourceNotFoundException("The requested user was not found.");
         }
 
-        if(!existsRoleId(roleId)){
+        if (!existsRoleId(roleId)) {
             throw new ResourceNotFoundException("The requested role was not found.");
         }
 

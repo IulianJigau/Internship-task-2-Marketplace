@@ -22,6 +22,6 @@ public class CredentialsDTO {
 
 
     public String getPassword() {
-        return password == null? "DEFAULT" : password;
+        return password == null ? "DEFAULT" : password;
     }
 }

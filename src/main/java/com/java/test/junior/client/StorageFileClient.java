@@ -1,6 +1,5 @@
 package com.java.test.junior.client;
 
-import java.io.InputStream;
 import java.util.List;
 
 public interface StorageFileClient {

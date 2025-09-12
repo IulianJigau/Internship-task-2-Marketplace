@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -35,13 +36,15 @@ public class AppConfig {
         restTemplate.setErrorHandler(new ResponseErrorHandler() {
 
             @Override
-            public boolean hasError(ClientHttpResponse response) throws IOException{
+            public boolean hasError(@NonNull ClientHttpResponse response) throws IOException {
                 HttpStatusCode status = response.getStatusCode();
                 return status.is4xxClientError() || status.is5xxServerError();
             }
 
             @Override
-            public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
+            public void handleError(@NonNull URI url,
+                                    @NonNull HttpMethod method,
+                                    @NonNull ClientHttpResponse response) throws IOException {
                 if (response.getStatusCode().is4xxClientError()) {
                     getError(response, details -> {
                         throw new ResourceValidationException(details);

@@ -38,7 +38,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
         }
 
         ProductReview productReview = productReviewMapper.getProductReview(productId, userDetails.getId());
-        if(productReview == null){
+        if (productReview == null) {
             productReviewMapper.insert(productId, userDetails.getId(), isLiked);
             return;
         }
