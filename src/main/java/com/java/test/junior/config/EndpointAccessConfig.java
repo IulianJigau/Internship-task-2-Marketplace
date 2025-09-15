@@ -22,6 +22,4 @@ public class EndpointAccessConfig {
                         PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**")
                 );
     }
-
-    ;
 }

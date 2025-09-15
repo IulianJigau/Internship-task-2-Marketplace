@@ -32,18 +32,20 @@ public class LoaderServiceImpl implements LoaderService {
         boolean exists = storageServers.stream()
                 .anyMatch(server -> server.getId().equals(resourceId));
 
-        String baseUrl = storageServers.get(resourceId).getPath();
+        if (!exists) { throw new ResourceNotFoundException("The requested resource was not found."); }
 
-        if (exists) {
+            String baseUrl = storageServers.get(resourceId).getPath();
             return storageFileClient.listFiles(baseUrl);
-        }
-
-        throw new ResourceNotFoundException("The requested resource was not found.");
 
     }
 
     @Override
     public void loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
+        boolean exists = storageServers.stream()
+                .anyMatch(server -> server.getId().equals(resourceId));
+
+        if (!exists) { throw new ResourceNotFoundException("The requested resource was not found."); }
+
         String baseUrl = storageServers.get(resourceId).getPath();
 
         storageFileClient.loadFile(PRODUCT_COPY_QUERY, baseUrl, fileName);

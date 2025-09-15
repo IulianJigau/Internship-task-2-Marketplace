@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImp implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserService userService;
     private final RoleService roleService;
