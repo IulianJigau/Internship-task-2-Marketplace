@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "Data Loader", description = "Loads data from pre-made csv files")
 @RestController
 @Validated
-@RequestMapping("/loading")
+@RequestMapping("/loader")
 @RequiredArgsConstructor
 public class LoaderController {
 
@@ -35,13 +35,13 @@ public class LoaderController {
         loaderService.loadProducts(resourceId, fileName, userDetails);
     }
 
-    @GetMapping("/resources")
-    public List<Resource> resources() {
-        return loaderService.getResources();
+    @GetMapping("/providers")
+    public List<Resource> getProviders() {
+        return loaderService.getProviders();
     }
 
-    @GetMapping("/resources/{resourceId}")
-    public List<String> resourcesData(@NotNull @PathVariable Integer resourceId) {
-        return loaderService.getResourceFiles(resourceId);
+    @GetMapping("/providers/{resourceId}")
+    public List<String> getProviderFiles(@NotNull @PathVariable Integer resourceId) {
+        return loaderService.getProviderFiles(resourceId);
     }
 }

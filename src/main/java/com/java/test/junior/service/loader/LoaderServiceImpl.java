@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LoaderServiceImp implements LoaderService {
+public class LoaderServiceImpl implements LoaderService {
 
     private final static String PRODUCT_COPY_QUERY =
             "COPY staging_product (name, price, description) FROM STDIN WITH (FORMAT csv, HEADER true)";
@@ -23,12 +23,12 @@ public class LoaderServiceImp implements LoaderService {
     private final List<Resource> storageServers;
 
     @Override
-    public List<Resource> getResources() {
+    public List<Resource> getProviders() {
         return storageServers;
     }
 
     @Override
-    public List<String> getResourceFiles(Integer resourceId) {
+    public List<String> getProviderFiles(Integer resourceId) {
         boolean exists = storageServers.stream()
                 .anyMatch(server -> server.getId().equals(resourceId));
 

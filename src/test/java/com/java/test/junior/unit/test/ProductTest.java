@@ -6,7 +6,7 @@ import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
 import com.java.test.junior.model.product.Product;
 import com.java.test.junior.service.product.ProductService;
-import com.java.test.junior.service.product.ProductServiceImp;
+import com.java.test.junior.service.product.ProductServiceImpl;
 import com.java.test.junior.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class ProductTest {
         productMapper = mock(ProductMapper.class);
         UserService userService = mock(UserService.class);
         RoleChecker roleChecker = mock(RoleChecker.class);
-        productService = new ProductServiceImp(productMapper, userService, roleChecker);
+        productService = new ProductServiceImpl(productMapper, userService, roleChecker);
     }
 
     @Test

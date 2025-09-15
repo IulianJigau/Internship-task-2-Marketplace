@@ -1,15 +1,13 @@
 package com.java.test.junior.integration;
 
-import com.java.test.junior.integration.test.ProductTest;
-import com.java.test.junior.integration.test.RoleTest;
-import com.java.test.junior.integration.test.SessionTest;
-import com.java.test.junior.integration.test.UserTest;
+import com.java.test.junior.integration.test.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -33,12 +31,26 @@ class IntegrationSuite {
     private SessionTest sessionTest;
     @Autowired
     private UserTest userTest;
+    @Autowired
+    private LoaderTest loaderTest;
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+    }
+
+    @Container
+    static GenericContainer<?> storageApp = new GenericContainer<>("storage-app")
+            .withExposedPorts(8082)
+            .withEnv("STORAGE_PATH", "/data/output")
+            .withFileSystemBind("C:/Temp/Output", "/data/output");
+
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("junior.server-list",
+                () -> "http://" + storageApp.getHost() + ":" + storageApp.getFirstMappedPort());
     }
 
     @Test
@@ -82,6 +94,10 @@ class IntegrationSuite {
             userTest.checkDeleteUser();
             userTest.checkGetDeletedUsersPage();
             userTest.checkClearDeletedUsers();
+
+            loaderTest.checkGetProviders();
+            loaderTest.checkGetProviderFiles();
+            loaderTest.checkLoadProducts();
 
             sessionTest.checkLogout();
         } catch (Exception e) {
