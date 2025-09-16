@@ -17,10 +17,12 @@ public class AdminInitializerService {
     private final UserService userService;
     private final RoleService roleService;
 
-    private final String email = System.getenv("INIT_EMAIL");
-    private final String password = System.getenv("INIT_PASSWORD");
+    @Value("${junior.admin.email}")
+    private String email;
+    @Value("${junior.admin.password}")
+    private  String password;
 
-    @Value("${junior.admin-role}")
+    @Value("${junior.admin.role}")
     private String adminRole;
 
     @PostConstruct

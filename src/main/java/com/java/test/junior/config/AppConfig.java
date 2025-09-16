@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.test.junior.exception.RequestFailException;
 import com.java.test.junior.exception.ResourceValidationException;
 import com.java.test.junior.model.response.ErrorResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,9 +22,10 @@ import java.net.URI;
 import java.util.function.Consumer;
 
 @Configuration
+@RequiredArgsConstructor
 public class AppConfig {
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

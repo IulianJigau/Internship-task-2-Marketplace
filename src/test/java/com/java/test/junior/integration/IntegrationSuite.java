@@ -49,7 +49,9 @@ class IntegrationSuite {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("junior.server-list",
+        registry.add("junior.providers[0].id",
+                () -> "0");
+        registry.add("junior.providers[0].path",
                 () -> "http://" + storageApp.getHost() + ":" + storageApp.getFirstMappedPort());
     }
 

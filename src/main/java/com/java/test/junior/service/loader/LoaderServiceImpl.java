@@ -3,10 +3,9 @@ package com.java.test.junior.service.loader;
 import com.java.test.junior.client.StorageFileClient;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.Resource;
+import com.java.test.junior.model.Provider;
 import com.java.test.junior.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,34 +18,36 @@ public class LoaderServiceImpl implements LoaderService {
             "COPY staging_product (name, price, description) FROM STDIN WITH (FORMAT csv, HEADER true)";
     private final ProductService productService;
     private final StorageFileClient storageFileClient;
-    @Qualifier("storageServers")
-    private final List<Resource> storageServers;
+    private final List<Provider> providers;
 
     @Override
-    public List<Resource> getProviders() {
-        return storageServers;
+    public List<Provider> getProviders() {
+        return providers;
     }
 
     @Override
     public List<String> getProviderFiles(Integer resourceId) {
-        boolean exists = storageServers.stream()
+        boolean exists = providers.stream()
                 .anyMatch(server -> server.getId().equals(resourceId));
 
-        if (!exists) { throw new ResourceNotFoundException("The requested resource was not found."); }
+        if (!exists) {
+            throw new ResourceNotFoundException("The requested resource was not found.");
+        }
 
-            String baseUrl = storageServers.get(resourceId).getPath();
-            return storageFileClient.listFiles(baseUrl);
-
+        String baseUrl = providers.get(resourceId).getPath();
+        return storageFileClient.listFiles(baseUrl);
     }
 
     @Override
     public void loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
-        boolean exists = storageServers.stream()
+        boolean exists = providers.stream()
                 .anyMatch(server -> server.getId().equals(resourceId));
 
-        if (!exists) { throw new ResourceNotFoundException("The requested resource was not found."); }
+        if (!exists) {
+            throw new ResourceNotFoundException("The requested resource was not found.");
+        }
 
-        String baseUrl = storageServers.get(resourceId).getPath();
+        String baseUrl = providers.get(resourceId).getPath();
 
         storageFileClient.loadFile(PRODUCT_COPY_QUERY, baseUrl, fileName);
         productService.copyStagingProducts(userDetails.getId());

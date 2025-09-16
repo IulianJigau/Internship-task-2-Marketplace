@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
+
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
@@ -16,7 +17,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.function.Function;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class StorageFileClientImpl implements StorageFileClient {
 
@@ -26,7 +27,7 @@ public class StorageFileClientImpl implements StorageFileClient {
 
     private final RestTemplate restTemplate;
     private final DataSource dataSource;
-    ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     public List<String> listFiles(String baseURL) {

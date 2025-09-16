@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component("roleChecker")
 public class RoleChecker {
-    @Value("${junior.admin-role}")
+    @Value("${junior.admin.role}")
     private String adminRole;
 
     public boolean hasAdminRole(UserDetails userDetails) {

@@ -63,7 +63,8 @@ public class ProductServiceImpl implements ProductService {
                 paginationOptions.getPageSize(),
                 query,
                 userId,
-                isDeleted);
+                isDeleted
+        );
 
         long entries = -1L;
         if (paginationOptions.getRefresh()) {
