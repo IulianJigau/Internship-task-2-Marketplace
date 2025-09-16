@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
 import org.springframework.http.HttpMethod;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

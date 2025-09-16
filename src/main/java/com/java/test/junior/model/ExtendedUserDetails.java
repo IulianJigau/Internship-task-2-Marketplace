@@ -1,13 +1,15 @@
 package com.java.test.junior.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-@Data
+@Getter
+@Setter
 public class ExtendedUserDetails implements UserDetails {
     private Long id;
     private String username;

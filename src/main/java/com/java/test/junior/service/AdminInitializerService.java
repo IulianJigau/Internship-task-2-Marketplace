@@ -20,7 +20,7 @@ public class AdminInitializerService {
     @Value("${junior.admin.email}")
     private String email;
     @Value("${junior.admin.password}")
-    private  String password;
+    private String password;
 
     @Value("${junior.admin.role}")
     private String adminRole;

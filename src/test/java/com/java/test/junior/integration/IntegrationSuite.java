@@ -23,6 +23,12 @@ class IntegrationSuite {
             .withUsername("testuser")
             .withPassword("testpass");
 
+    @Container
+    static GenericContainer<?> storageApp = new GenericContainer<>("storage-app")
+            .withExposedPorts(8082)
+            .withEnv("STORAGE_PATH", "/data/output")
+            .withFileSystemBind("C:/Temp/Output", "/data/output");
+
     @Autowired
     private ProductTest productTest;
     @Autowired
@@ -40,12 +46,6 @@ class IntegrationSuite {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
-
-    @Container
-    static GenericContainer<?> storageApp = new GenericContainer<>("storage-app")
-            .withExposedPorts(8082)
-            .withEnv("STORAGE_PATH", "/data/output")
-            .withFileSystemBind("C:/Temp/Output", "/data/output");
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
