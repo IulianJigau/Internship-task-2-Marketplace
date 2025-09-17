@@ -3,7 +3,7 @@ package com.java.test.junior.service.loader;
 import com.java.test.junior.client.StorageFileClient;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.Provider;
+import com.java.test.junior.client.model.Provider;
 import com.java.test.junior.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

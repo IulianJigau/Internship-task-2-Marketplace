@@ -1,7 +1,7 @@
 package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.model.Provider;
+import com.java.test.junior.client.model.Provider;
 import com.java.test.junior.service.loader.LoaderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

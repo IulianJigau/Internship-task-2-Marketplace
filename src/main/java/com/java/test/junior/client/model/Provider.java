@@ -1,4 +1,4 @@
-package com.java.test.junior.model;
+package com.java.test.junior.client.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

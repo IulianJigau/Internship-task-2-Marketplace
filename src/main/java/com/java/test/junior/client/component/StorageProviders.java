@@ -1,6 +1,6 @@
 package com.java.test.junior.client.component;
 
-import com.java.test.junior.model.Provider;
+import com.java.test.junior.client.model.Provider;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
