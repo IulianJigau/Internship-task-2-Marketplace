@@ -1,6 +1,7 @@
 package com.java.test.junior.integration.test;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionTest {
@@ -17,6 +19,8 @@ public class SessionTest {
     private final MockMvc mockMvc;
 
     public void checkLogin() throws Exception {
+        log.debug("Check login");
+
         String body = """
                     {
                         "email": "admin@example.com",
@@ -34,6 +38,8 @@ public class SessionTest {
     }
 
     public void checkLogout() throws Exception {
+        log.debug("Check logout");
+
         mockMvc.perform(post("/logout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .session(session))

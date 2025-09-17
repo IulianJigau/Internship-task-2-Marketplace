@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS action_history (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+    action VARCHAR(20) NOT NULL,
+    address VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

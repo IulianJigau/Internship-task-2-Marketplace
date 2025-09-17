@@ -2,6 +2,7 @@ package com.java.test.junior.controller;
 
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.PaginationOptionsDTO;
+import com.java.test.junior.model.Role;
 import com.java.test.junior.model.response.PaginationResponse;
 import com.java.test.junior.model.user.User;
 import com.java.test.junior.model.user.UserDTO;
@@ -104,7 +105,7 @@ public class UserController {
     @Operation(summary = "Get an user's roles")
     @GetMapping("/{userId}/roles")
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public List<String> getUserRoles(@NotNull @Positive @PathVariable Long userId) {
+    public List<Role> getUserRoles(@NotNull @Positive @PathVariable Long userId) {
         return roleService.getUserRoles(userId);
     }
 

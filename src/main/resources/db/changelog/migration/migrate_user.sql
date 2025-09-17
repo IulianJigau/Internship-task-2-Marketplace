@@ -1,12 +1,11 @@
-CREATE TABLE IF NOT EXISTS "user"
-(
-    id         BIGSERIAL PRIMARY KEY,
-    username   VARCHAR(255) NOT NULL,
-    email      VARCHAR(255) NOT NULL UNIQUE,
-    password   VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP    NOT NULL DEFAULT NOW(),
-    is_deleted    BOOLEAN      NOT NULL DEFAULT false
+CREATE TABLE IF NOT EXISTS "user" (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 
 DO $$
@@ -19,5 +18,5 @@ BEGIN
         FOR EACH ROW
         EXECUTE FUNCTION refresh_updated_at();
     END IF;
-END
+END;
 $$;

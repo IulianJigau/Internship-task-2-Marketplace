@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS "user_role" (
     user_id BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
     role_id INT NOT NULL REFERENCES role(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
-);
+    );
 
 DO $$
 BEGIN
@@ -14,5 +14,5 @@ BEGIN
         FOR EACH ROW
         EXECUTE FUNCTION touch_user_updated_at();
     END IF;
-END
+END;
 $$;

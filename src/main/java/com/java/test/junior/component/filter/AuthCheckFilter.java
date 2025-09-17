@@ -1,31 +1,36 @@
-package com.java.test.junior.config;
+package com.java.test.junior.component.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.test.junior.component.RoleChecker;
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.actionHistory.ActionHistoryDTO;
 import com.java.test.junior.model.response.ErrorResponse;
+import com.java.test.junior.service.actionHistory.ActionHistoryService;
 import com.java.test.junior.service.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Configuration
+@Component
 @RequiredArgsConstructor
-public class AuthCheckFilterConfig extends OncePerRequestFilter {
+public class AuthCheckFilter extends OncePerRequestFilter {
 
     private final UserService userService;
+    private final RoleChecker roleChecker;
+    private final ActionHistoryService actionHistoryService;
     private final List<RequestMatcher> permittedEndpointMatchers;
     private final ObjectMapper objectMapper;
 
@@ -46,7 +51,6 @@ public class AuthCheckFilterConfig extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-
         if (!requiresAuth(request)) {
             filterChain.doFilter(request, response);
             return;
@@ -66,6 +70,19 @@ public class AuthCheckFilterConfig extends OncePerRequestFilter {
         if (authTime.isBefore(updateTime)) {
             sendErrorResponse(response, "Your session has expired");
             return;
+        }
+
+        if (!roleChecker.hasAdminRole(userDetails)) {
+            filterChain.doFilter(request, response);
+        }
+
+        if ("DELETE".equalsIgnoreCase(request.getMethod()) || "PUT".equalsIgnoreCase(request.getMethod())) {
+            ActionHistoryDTO actionHistory = new ActionHistoryDTO(
+                    userDetails.getId(),
+                    request.getMethod(),
+                    request.getRequestURI()
+            );
+            actionHistoryService.createActionHistory(actionHistory);
         }
 
         filterChain.doFilter(request, response);

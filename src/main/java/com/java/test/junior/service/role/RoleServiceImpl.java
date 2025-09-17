@@ -75,7 +75,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<String> getUserRoles(Long userId) {
+    public List<Role> getUserRoles(Long userId) {
         if (userService.existsUserId(userId)) {
             return roleMapper.findUserRoles(userId);
         }

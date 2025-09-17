@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.java.test.junior.mapper.ActionHistoryMapper">
+
+    <select id="getPage" parameterType="map" resultMap="actionHistoryResultMapper">
+        SELECT *
+        FROM action_history
+        ORDER BY id
+        LIMIT #{size}
+        OFFSET #{size} * (#{page} - 1)
+    </select>
+
+    <insert id="insert"
+            parameterType="com.java.test.junior.model.actionHistory.ActionHistoryDTO">
+        INSERT INTO action_history (user_id, action, address)
+        VALUES (#{userId}, #{action}, #{address});
+    </insert>
+
+    <select id="getTotalEntries" parameterType="map">
+        SELECT COUNT(*)
+        FROM action_history
+    </select>
+
+    <resultMap id="actionHistoryResultMapper" type="com.java.test.junior.model.actionHistory.ActionHistory">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="action" column="action"/>
+        <result property="address" column="address"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+</mapper>

@@ -22,7 +22,7 @@ public interface RoleService {
 
     Boolean existsUserRole(Long userId, Integer roleId);
 
-    List<String> getUserRoles(Long userId);
+    List<Role> getUserRoles(Long userId);
 
     void assignUserRole(Long userId, Integer roleId);
 

@@ -1,6 +1,7 @@
 package com.java.test.junior.service;
 
 import com.java.test.junior.model.ExtendedUserDetails;
+import com.java.test.junior.model.Role;
 import com.java.test.junior.model.user.User;
 import com.java.test.junior.service.role.RoleService;
 import com.java.test.junior.service.user.UserService;
@@ -30,10 +31,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(email);
         }
 
-        List<String> roles = roleService.getUserRoles(user.getId());
+        List<Role> roles = roleService.getUserRoles(user.getId());
 
         List<GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList());
 
         LocalDateTime authTime = LocalDateTime.now();

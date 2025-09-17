@@ -55,8 +55,7 @@
     <select id="insert"
             parameterType="com.java.test.junior.model.product.ProductDTO">
         INSERT INTO product (name, price, description, user_id)
-        VALUES (#{product.name}, #{product.price}, #{product.description}, #{userId})
-        RETURNING id
+        VALUES (#{product.name}, #{product.price}, #{product.description}, #{userId}) RETURNING id
     </select>
 
     <update id="update" parameterType="map">
@@ -74,7 +73,8 @@
     </update>
 
     <delete id="clearDeleted">
-        DELETE FROM product
+        DELETE
+        FROM product
         WHERE is_deleted = true
     </delete>
 

@@ -1,5 +1,6 @@
 package com.java.test.junior.config;
 
+import com.java.test.junior.component.filter.AuthCheckFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final AuthCheckFilterConfig authCheckFilter;
+    private final AuthCheckFilter authCheckFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

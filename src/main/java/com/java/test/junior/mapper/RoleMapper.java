@@ -22,7 +22,7 @@ public interface RoleMapper {
 
     boolean existsUserRole(Long userId, Integer roleId);
 
-    List<String> findUserRoles(Long userId);
+    List<Role> findUserRoles(Long userId);
 
     void insertUserRole(Long userId, Integer roleId);
 

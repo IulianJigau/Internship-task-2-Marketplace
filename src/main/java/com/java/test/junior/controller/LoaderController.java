@@ -35,12 +35,16 @@ public class LoaderController {
         loaderService.loadProducts(resourceId, fileName, userDetails);
     }
 
+    @Operation(summary = "Get the available providers' addresses")
     @GetMapping("/providers")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public List<Provider> getProviders() {
         return loaderService.getProviders();
     }
 
+    @Operation(summary = "List a provider's available files")
     @GetMapping("/providers/{resourceId}")
+    @PreAuthorize("@roleChecker.hasAdminRole(principal)")
     public List<String> getProviderFiles(@NotNull @PathVariable Integer resourceId) {
         return loaderService.getProviderFiles(resourceId);
     }
