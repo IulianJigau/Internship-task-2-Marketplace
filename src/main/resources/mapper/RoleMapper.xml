@@ -39,8 +39,7 @@
     <select id="insert"
             parameterType="String">
         INSERT INTO role (name)
-        VALUES (UPPER(#{name}))
-        RETURNING id
+        VALUES (UPPER(#{name})) RETURNING id
     </select>
 
     <delete id="delete" parameterType="Integer">

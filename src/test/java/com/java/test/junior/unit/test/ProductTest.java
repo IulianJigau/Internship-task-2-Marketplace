@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 @Service
 public class ProductTest {
+
     private final ProductMapper productMapper;
     private final ProductService productService;
 

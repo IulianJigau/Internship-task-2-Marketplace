@@ -6,6 +6,7 @@ import com.java.test.junior.model.actionHistory.ActionHistoryDTO;
 import java.util.List;
 
 public interface ActionHistoryMapper {
+
     List<ActionHistory> getPage(Integer page, Integer size);
 
     long getTotalEntries();

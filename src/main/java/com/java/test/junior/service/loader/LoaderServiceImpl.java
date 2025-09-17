@@ -1,9 +1,9 @@
 package com.java.test.junior.service.loader;
 
 import com.java.test.junior.client.StorageFileClient;
+import com.java.test.junior.client.model.Provider;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.model.ExtendedUserDetails;
-import com.java.test.junior.client.model.Provider;
 import com.java.test.junior.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ public class LoaderServiceImpl implements LoaderService {
         productService.copyStagingProducts(userDetails.getId());
     }
 
-    private void load(Integer resourceId, String fileName, String query){
+    private void load(Integer resourceId, String fileName, String query) {
         if (providerIsAbsent(resourceId)) {
             throw new ResourceNotFoundException("The requested resource was not found.");
         }

@@ -1,7 +1,7 @@
 package com.java.test.junior.service.loader;
 
-import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.client.model.Provider;
+import com.java.test.junior.model.ExtendedUserDetails;
 
 import java.util.List;
 

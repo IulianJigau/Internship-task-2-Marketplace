@@ -18,7 +18,7 @@ public class ActionHistoryTest {
     private final MockMvc mockMvc;
     private final MockHttpSession session;
 
-    public void checkGetActionHistoryPage() throws Exception{
+    public void checkGetActionHistoryPage() throws Exception {
         log.debug("Check get action history page");
 
         mockMvc.perform(get("/history")

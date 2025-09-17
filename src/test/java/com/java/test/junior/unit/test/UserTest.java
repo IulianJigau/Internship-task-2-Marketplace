@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 @Service
 public class UserTest {
+
     private final UserMapper userMapper;
     private final UserService userService;
 

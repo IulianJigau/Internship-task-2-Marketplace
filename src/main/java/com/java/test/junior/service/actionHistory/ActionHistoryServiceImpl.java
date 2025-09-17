@@ -12,11 +12,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ActionHistoryServiceImpl implements ActionHistoryService{
+public class ActionHistoryServiceImpl implements ActionHistoryService {
 
     private final ActionHistoryMapper actionHistoryMapper;
 
-    public PaginationResponse<ActionHistory> getActionHistoryPage(PaginationOptionsDTO paginationOptions){
+    public PaginationResponse<ActionHistory> getActionHistoryPage(PaginationOptionsDTO paginationOptions) {
         List<ActionHistory> actionHistory = actionHistoryMapper.getPage(paginationOptions.getPage(), paginationOptions.getPageSize());
 
         long entries = -1L;
@@ -27,7 +27,7 @@ public class ActionHistoryServiceImpl implements ActionHistoryService{
         return new PaginationResponse<>(entries, actionHistory);
     }
 
-    public void createActionHistory(ActionHistoryDTO actionHistory){
+    public void createActionHistory(ActionHistoryDTO actionHistory) {
         actionHistoryMapper.insert(actionHistory);
     }
 }

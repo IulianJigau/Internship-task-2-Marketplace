@@ -8,7 +8,7 @@
         SELECT *
         FROM action_history
         ORDER BY id
-        LIMIT #{size}
+            LIMIT #{size}
         OFFSET #{size} * (#{page} - 1)
     </select>
 

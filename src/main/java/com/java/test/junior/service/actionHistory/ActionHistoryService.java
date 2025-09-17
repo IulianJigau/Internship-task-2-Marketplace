@@ -6,6 +6,7 @@ import com.java.test.junior.model.actionHistory.ActionHistoryDTO;
 import com.java.test.junior.model.response.PaginationResponse;
 
 public interface ActionHistoryService {
+
     PaginationResponse<ActionHistory> getActionHistoryPage(PaginationOptionsDTO paginationOptions);
 
     void createActionHistory(ActionHistoryDTO actionHistory);
