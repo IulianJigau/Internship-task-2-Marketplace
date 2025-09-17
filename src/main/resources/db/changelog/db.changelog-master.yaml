@@ -3,26 +3,26 @@ databaseChangeLog:
       id: 1
       author: java-test-junior
   - include:
-      file: migration/migrate_functions.sql
+      file: migration/V1_migrate_functions.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_product.sql
+      file: migration/V1_migrate_product.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_user.sql
+      file: migration/V1_migrate_user.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_role.sql
+      file: migration/V1_migrate_role.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_user_role.sql
+      file: migration/V1_migrate_user_role.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_product_review.sql
+      file: migration/V1_migrate_product_review.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_staging_product.sql
+      file: migration/V1_migrate_staging_product.sql
       relativeToChangelogFile: true
   - include:
-      file: migration/migrate_action_history.sql
+      file: migration/V1_migrate_action_history.sql
       relativeToChangelogFile: true
