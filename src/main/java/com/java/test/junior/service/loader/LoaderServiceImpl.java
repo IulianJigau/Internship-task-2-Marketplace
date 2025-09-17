@@ -27,10 +27,7 @@ public class LoaderServiceImpl implements LoaderService {
 
     @Override
     public List<String> getProviderFiles(Integer resourceId) {
-        boolean exists = providers.stream()
-                .anyMatch(server -> server.getId().equals(resourceId));
-
-        if (!exists) {
+        if (providerIsAbsent(resourceId)) {
             throw new ResourceNotFoundException("The requested resource was not found.");
         }
 
@@ -40,17 +37,23 @@ public class LoaderServiceImpl implements LoaderService {
 
     @Override
     public void loadProducts(Integer resourceId, String fileName, ExtendedUserDetails userDetails) {
-        boolean exists = providers.stream()
-                .anyMatch(server -> server.getId().equals(resourceId));
+        load(resourceId, fileName, PRODUCT_COPY_QUERY);
+        productService.copyStagingProducts(userDetails.getId());
+    }
 
-        if (!exists) {
+    private void load(Integer resourceId, String fileName, String query){
+        if (providerIsAbsent(resourceId)) {
             throw new ResourceNotFoundException("The requested resource was not found.");
         }
 
         String baseUrl = providers.get(resourceId).getPath();
 
-        storageFileClient.loadFile(PRODUCT_COPY_QUERY, baseUrl, fileName);
-        productService.copyStagingProducts(userDetails.getId());
+        storageFileClient.loadFile(query, baseUrl, fileName);
+    }
+
+    private boolean providerIsAbsent(Integer resourceId) {
+        return providers.stream()
+                .noneMatch(server -> server.getId().equals(resourceId));
     }
 }
 

@@ -39,6 +39,8 @@ class IntegrationSuite {
     private UserTest userTest;
     @Autowired
     private LoaderTest loaderTest;
+    @Autowired
+    private ActionHistoryTest actionHistoryTest;
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -100,6 +102,8 @@ class IntegrationSuite {
             loaderTest.checkGetProviders();
             loaderTest.checkGetProviderFiles();
             loaderTest.checkLoadProducts();
+
+            actionHistoryTest.checkGetActionHistoryPage();
 
             sessionTest.checkLogout();
         } catch (Exception e) {

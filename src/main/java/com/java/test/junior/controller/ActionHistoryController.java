@@ -25,9 +25,9 @@ public class ActionHistoryController {
     private final ActionHistoryService actionHistoryService;
 
     @Operation(summary = "Get the user action history")
-    @GetMapping("/list")
+    @GetMapping()
     @PreAuthorize("@roleChecker.hasAdminRole(principal)")
-    public PaginationResponse<ActionHistory> getActionHistory(@Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
+    public PaginationResponse<ActionHistory> getActionHistoryPage(@Valid @ModelAttribute PaginationOptionsDTO paginationOptions) {
         return actionHistoryService.getActionHistoryPage(paginationOptions);
     }
 
