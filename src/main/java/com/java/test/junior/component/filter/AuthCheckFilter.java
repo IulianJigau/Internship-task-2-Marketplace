@@ -74,6 +74,7 @@ public class AuthCheckFilter extends OncePerRequestFilter {
 
         if (!roleChecker.hasAdminRole(userDetails)) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         if ("DELETE".equalsIgnoreCase(request.getMethod()) || "PUT".equalsIgnoreCase(request.getMethod())) {
