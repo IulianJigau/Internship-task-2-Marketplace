@@ -16,6 +16,7 @@ import java.util.List;
 @Configuration
 @ConfigurationProperties(prefix = "junior")
 public class StorageProviders {
+
     private List<Provider> providers;
 
     @Bean
