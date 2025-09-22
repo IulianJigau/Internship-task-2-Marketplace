@@ -22,7 +22,6 @@ public class CredentialsDTO {
     @Pattern(regexp = "\\S+")
     private String password;
 
-
     public String getPassword() {
         return password == null ? "DEFAULT" : password;
     }
