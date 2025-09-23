@@ -23,4 +23,6 @@ public interface ProductService {
     void clearDeletedProducts();
 
     void copyStagingProducts(Long userId);
+
+    Product scrollProducts(Boolean refresh, ExtendedUserDetails userDetails);
 }

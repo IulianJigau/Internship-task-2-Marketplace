@@ -1,6 +1,6 @@
 package com.java.test.junior.unit.test;
 
-import com.java.test.junior.component.RoleChecker;
+import com.java.test.junior.util.RoleChecker;
 import com.java.test.junior.exception.ResourceConflictException;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;

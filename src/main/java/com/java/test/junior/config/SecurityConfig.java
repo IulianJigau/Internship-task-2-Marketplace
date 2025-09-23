@@ -1,6 +1,6 @@
 package com.java.test.junior.config;
 
-import com.java.test.junior.component.filter.AuthCheckFilter;
+import com.java.test.junior.component.AuthCheckFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

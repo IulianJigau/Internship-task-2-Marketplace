@@ -1,12 +1,12 @@
-package com.java.test.junior.component.filter;
+package com.java.test.junior.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.java.test.junior.component.RoleChecker;
 import com.java.test.junior.model.ExtendedUserDetails;
 import com.java.test.junior.model.actionHistory.ActionHistoryDTO;
 import com.java.test.junior.model.response.ErrorResponse;
 import com.java.test.junior.service.actionHistory.ActionHistoryService;
 import com.java.test.junior.service.user.UserService;
+import com.java.test.junior.util.RoleChecker;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

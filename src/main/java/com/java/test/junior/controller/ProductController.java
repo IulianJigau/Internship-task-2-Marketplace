@@ -96,4 +96,11 @@ public class ProductController {
                           @AuthenticationPrincipal ExtendedUserDetails userDetails) {
         productReviewService.addReview(productId, isLiked, userDetails);
     }
+
+    @Operation(summary = "Get the next in line product")
+    @GetMapping("/scroll")
+    public Product scrollProducts(@RequestParam(defaultValue = "false") Boolean refresh,
+                                  @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return productService.scrollProducts(refresh, userDetails);
+    }
 }

@@ -1,6 +1,7 @@
 package com.java.test.junior.unit.test;
 
-import com.java.test.junior.component.RoleChecker;
+import com.java.test.junior.service.CacheService;
+import com.java.test.junior.util.RoleChecker;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
@@ -10,6 +11,7 @@ import com.java.test.junior.service.product.ProductServiceImpl;
 import com.java.test.junior.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
+import org.testcontainers.shaded.com.google.common.cache.Cache;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -25,7 +27,8 @@ public class ProductTest {
         productMapper = mock(ProductMapper.class);
         UserService userService = mock(UserService.class);
         RoleChecker roleChecker = mock(RoleChecker.class);
-        productService = new ProductServiceImpl(productMapper, userService, roleChecker);
+        CacheService cacheService = mock(CacheService.class);
+        productService = new ProductServiceImpl(productMapper, userService, roleChecker, cacheService);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.java.test.junior.service.product;
 
-import com.java.test.junior.component.RoleChecker;
 import com.java.test.junior.exception.ResourceDeletedException;
 import com.java.test.junior.exception.ResourceNotFoundException;
 import com.java.test.junior.mapper.ProductMapper;
@@ -9,8 +8,10 @@ import com.java.test.junior.model.PaginationOptionsDTO;
 import com.java.test.junior.model.product.Product;
 import com.java.test.junior.model.product.ProductDTO;
 import com.java.test.junior.model.response.PaginationResponse;
+import com.java.test.junior.service.CacheService;
 import com.java.test.junior.service.user.UserService;
 import com.java.test.junior.util.Procedure;
+import com.java.test.junior.util.RoleChecker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final UserService userService;
     private final RoleChecker roleChecker;
+    private final CacheService cacheService;
 
     @Override
     public Boolean existsProductId(Long id) {
@@ -109,7 +111,18 @@ public class ProductServiceImpl implements ProductService {
         productMapper.clearDeleted();
     }
 
+    @Override
     public void copyStagingProducts(Long userId) {
         productMapper.copyStaging(userId);
+    }
+
+    @Override
+    public Product scrollProducts(Boolean refresh, ExtendedUserDetails userDetails) {
+        String key = userDetails.getId() + "&products";
+        Long id = cacheService.nextId(key, refresh);
+        if (existsProductId(id)) {
+            return getProductById(id);
+        }
+        return null;
     }
 }
