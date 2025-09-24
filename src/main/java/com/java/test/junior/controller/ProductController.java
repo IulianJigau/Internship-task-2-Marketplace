@@ -99,8 +99,9 @@ public class ProductController {
 
     @Operation(summary = "Get the next in line product")
     @GetMapping("/scroll")
-    public Product scrollProducts(@RequestParam(defaultValue = "false") Boolean refresh,
+    public Product scrollProducts(@RequestParam(required = false) String query,
+                                  @RequestParam(defaultValue = "false") Boolean refresh,
                                   @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productService.scrollProducts(refresh, userDetails);
+        return productService.scrollProducts(query, refresh, userDetails);
     }
 }

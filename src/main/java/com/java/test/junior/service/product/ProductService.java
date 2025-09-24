@@ -24,5 +24,5 @@ public interface ProductService {
 
     void copyStagingProducts(Long userId);
 
-    Product scrollProducts(Boolean refresh, ExtendedUserDetails userDetails);
+    Product scrollProducts(String query, Boolean refresh, ExtendedUserDetails userDetails);
 }
