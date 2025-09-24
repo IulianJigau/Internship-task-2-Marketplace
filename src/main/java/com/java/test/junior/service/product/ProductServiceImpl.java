@@ -117,27 +117,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product scrollProducts(String query, Boolean refresh, ExtendedUserDetails userDetails) {
+    public List<Product> scrollProducts(Integer size, String query, Boolean refresh, ExtendedUserDetails userDetails) {
         String key = userDetails.getId() + "&products&" + query;
 
         if (refresh) {
             cacheService.refreshCache(key);
         }
 
-        Product product = cacheService.popItem(key, Product.class);
-        if (product != null) {
-            return product;
-        }
+        Long offset = cacheService.getOffset(key);
 
-        int nextPage = cacheService.getPageCount(key) + 1;
-        List<Product> products = productMapper.getPage(nextPage, 10, query, userDetails.getId(), false);
+        List<Product> products = productMapper.getProducts(offset, size, query, userDetails.getId());
 
-        if (products.isEmpty()) {
-            return null;
-        }
+        cacheService.setOffset(key, products.size());
 
-        cacheService.pushItems(key, products);
-        return cacheService.popItem(key, Product.class);
+        return products;
     }
 
 }

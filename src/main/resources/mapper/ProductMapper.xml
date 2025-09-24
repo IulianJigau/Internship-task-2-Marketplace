@@ -85,6 +85,23 @@
         TRUNCATE TABLE staging_product;
     </insert>
 
+    <select id="getProducts" parameterType="map" resultMap="productResultMapper">
+        SELECT *
+        FROM product
+        <where>
+            <if test="query != null and query != ''">
+                AND fts_vector @@ plainto_tsquery('english', #{query})
+            </if>
+        </where>
+        ORDER BY
+        <if test="userId != null">
+            (user_id = #{userId}) DESC,
+        </if>
+        id
+        LIMIT #{size}
+        OFFSET #{offset}
+    </select>
+
     <resultMap id="productResultMapper" type="com.java.test.junior.model.product.Product">
         <id property="id" column="id"/>
         <result property="name" column="name"/>

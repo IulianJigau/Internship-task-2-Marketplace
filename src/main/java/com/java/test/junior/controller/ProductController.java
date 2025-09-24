@@ -19,6 +19,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Product Handler", description = "Performs product oriented operations")
 @RestController
 @Validated
@@ -99,9 +101,11 @@ public class ProductController {
 
     @Operation(summary = "Get the next in line product")
     @GetMapping("/scroll")
-    public Product scrollProducts(@RequestParam(required = false) String query,
-                                  @RequestParam(defaultValue = "false") Boolean refresh,
-                                  @AuthenticationPrincipal ExtendedUserDetails userDetails) {
-        return productService.scrollProducts(query, refresh, userDetails);
+    public List<Product> scrollProducts(
+            @RequestParam(defaultValue = "5") @Positive Integer size,
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "false") Boolean refresh,
+            @AuthenticationPrincipal ExtendedUserDetails userDetails) {
+        return productService.scrollProducts(size, query, refresh, userDetails);
     }
 }

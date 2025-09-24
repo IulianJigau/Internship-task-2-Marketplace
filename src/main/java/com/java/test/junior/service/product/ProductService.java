@@ -6,6 +6,8 @@ import com.java.test.junior.model.product.Product;
 import com.java.test.junior.model.product.ProductDTO;
 import com.java.test.junior.model.response.PaginationResponse;
 
+import java.util.List;
+
 public interface ProductService {
 
     Boolean existsProductId(Long id);
@@ -24,5 +26,5 @@ public interface ProductService {
 
     void copyStagingProducts(Long userId);
 
-    Product scrollProducts(String query, Boolean refresh, ExtendedUserDetails userDetails);
+    List<Product> scrollProducts(Integer size, String query, Boolean refresh, ExtendedUserDetails userDetails);
 }

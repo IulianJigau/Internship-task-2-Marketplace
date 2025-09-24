@@ -24,4 +24,6 @@ public interface ProductMapper {
     void clearDeleted();
 
     void copyStaging(Long userId);
+
+    List<Product> getProducts(Long offset, Integer size, String query, Long userId);
 }
